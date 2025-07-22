@@ -13,7 +13,9 @@ import saturnData from './astronomia/data/vsop87Bsaturn.js';
 import uranusData from './astronomia/data/vsop87Buranus.js';
 import neptuneData from './astronomia/data/vsop87Bneptune.js';
 
-// --- TEXTURE LOADER ---
+// --- TEXTURE LOADER ----------------------------------------------
+
+
 const textureLoader = new THREE.TextureLoader();
 
 
@@ -25,11 +27,11 @@ renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-// SETTING DA SCENEE BACKGROUND SKY BOX CREATION 
+// SETTING DA SCENEE BACKGROUND SKY BOX CREATION -----------------------------
 
 const scene = new THREE.Scene();
 
-//  Add space skybox as cube map background
+//  Add space skybox as cube map background--------------------------
 
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxTexture = cubeLoader.load([
@@ -42,7 +44,7 @@ const skyboxTexture = cubeLoader.load([
 ]);
 scene.background = skyboxTexture;
 
-// camera set uppppppppppp
+// camera set uppppppppppp-------------------------------------------
 
 const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
 const cameraOffset = new THREE.Vector3(300, 400, 500);
@@ -79,7 +81,7 @@ sunLight.shadow.mapSize.width = 639 ;
 sunLight.shadow.mapSize.height = 639  ;
 scene.add(sunLight);
 
-// SUN SET UPPPPP 
+// SUN SET UPPPPP ------------------------------------------------------------------------
 
 const sunRadius = 171; // increased sun size for better scale
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
@@ -94,7 +96,7 @@ const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.castShadow = false;
 sun.receiveShadow = false;
 
-// Comet tail setup omitted here for brevity (same as your original code)
+// Comet tail setup omitted here for brevity (----------------------------------
 
 const tailLength = 333;
 const tailParticlesCount = 333;
@@ -190,12 +192,18 @@ scene.add(solarSystem);
 let t = 0;
 
 function animate() {
+  
   const jd = julian.DateToJD(new Date());
+  
+const tailDirection = new THREE.Vector3()
+  .subVectors(solarSystem.position, sun.position)
+  .normalize();
+
 
   planets.forEach((p, i) => {
     const pos = p.data.position(jd);
     const baseAngle = pos.lon;
-    const spin = t * 0.003 * (1 + i * 0.1);
+    const spin = t * 0.003 * (1.2 + i * 0.3);
     const angle = baseAngle + spin;
 
     const r = p.radius;
@@ -211,11 +219,12 @@ function animate() {
   });
 
   // Helix motion for solar system group
-  const helixRadius = 15;
-  const helixFrequency = 0.01;
+  
+  const helixRadius = 21;
+  const helixFrequency = 0.03;
   const helixX = helixRadius * Math.cos(t * helixFrequency);
   const helixY = helixRadius * Math.sin(t * helixFrequency);
-  const helixZ = t * 0.01;
+  const helixZ = t * 0.03;
 
   solarSystem.position.set(helixX, helixY, helixZ);
   sunLight.position.copy(solarSystem.position);
