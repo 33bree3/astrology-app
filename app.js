@@ -41,27 +41,51 @@ function getCurrentJD() {
   return julian.DateToJD(new Date());
 }
 
-// Draw heliocentric chart with orbits and planets
+// DRAW CIRCLE CHART MF 
+
 function drawHeliocentricChart(jd) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-// PLANET SIZE MAP 
-const sizeMap = 
-  Mercury: 9,
-  Venus: 15,
-  Earth: 15,
-  Mars: 12,
-  Jupiter: 24,
-  Saturn: 21,
-  Uranus: 18,
-  Neptune: 18,
-};
+  // Planet size map (for aesthetics)
+  const sizeMap = {
+    Mercury: 9,
+    Venus: 15,
+    Earth: 15,
+    Mars: 12,
+    Jupiter: 24,
+    Saturn: 21,
+    Uranus: 18,
+    Neptune: 18,
+  };
 
-const size = sizeMap[planet.name] || 6;
-ctx.beginPath();
-ctx.arc(x, y, size, 0, 2 * Math.PI);
-ctx.fill();
+  // Draw Sun at center
+  ctx.fillStyle = 'yellow';
+  ctx.beginPath();
+  ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
+  ctx.fill();
 
+  // Draw each planet's orbit and position
+  for (const planet of planets) {
+    const lon = planet.data.position(jd).lon; // radians
+    const angle = lon;
+
+    // Orbit circle
+    ctx.strokeStyle = '#333';
+    ctx.beginPath();
+    ctx.arc(cx, cy, planet.radius, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    // Planet position
+    const x = cx + planet.radius * Math.cos(angle);
+    const y = cy + planet.radius * Math.sin(angle);
+    const size = sizeMap[planet.name] || 6;
+
+    ctx.fillStyle = planet.color;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+}
 
   // Draw Sun at center
   ctx.fillStyle = 'yellow';
