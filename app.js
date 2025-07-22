@@ -64,7 +64,7 @@ scene.add(sunLight);
 
 // SUN SET UPPPPP 
 
-const sunRadius = 54; // increased sun size for better scale
+const sunRadius = 69; // increased sun size for better scale
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
@@ -136,17 +136,17 @@ const planetTextures = {
   },
 };
 
-const scaleFactor = 1;
+const scaleFactor = 0.5;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 35 * scaleFactor, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 50 * scaleFactor, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 70 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 85 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 110 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 130 * scaleFactor, planetSize: 27 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 145 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 160 * scaleFactor, planetSize: 21 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 135 * scaleFactor, planetSize: 9 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 150 * scaleFactor, planetSize: 15 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 171 * scaleFactor, planetSize: 18 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 183 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 210 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 230 * scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 245 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 260 * scaleFactor, planetSize: 21 },
 ];
 
 // Create meshes with color and bump maps applied
