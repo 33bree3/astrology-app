@@ -85,7 +85,7 @@ function drawHeliocentricChart(jd) {
     ctx.arc(x, y, size, 0, 2 * Math.PI);
     ctx.fill();
   }
-}
+
 
   // Draw Sun at center
   ctx.fillStyle = 'yellow';
