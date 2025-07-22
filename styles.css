@@ -1,60 +1,131 @@
-/* General page styling */
+/* -----------------------------------
+  GENERAL PAGE STYLING
+------------------------------------ */
 body {
-  margin: 0;
-  padding: 0;
-  background: #111;
-  color: white;
-  font-family: sans-serif;
+  margin: 0;                  /* Remove default margin */
+  padding: 0;                 /* Remove default padding */
+  background: #111;           /* Dark background for space effect */
+  color: white;               /* White text for contrast */
+  font-family: sans-serif;    /* Clean, simple font */
+  
+  /* Use flexbox to center content vertically and horizontally */
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: column;     /* Stack content vertically */
+  align-items: center;        /* Center horizontally */
+  justify-content: flex-start;/* Align items to the top initially */
+  min-height: 100vh;          /* Fill full viewport height */
 }
 
-/* Navigation styling */
+/* -----------------------------------
+  NAVIGATION BAR STYLING
+------------------------------------ */
 nav {
-  display: flex;
-  margin-top: 10px;
+  display: flex;              /* Place buttons inline */
+  margin-top: 10px;           /* Space above nav */
+  gap: 10px;                  /* Space between buttons */
+  z-index: 10;                /* Ensure nav is on top */
 }
 
 nav button {
-  background: #222;
-  border: 1px solid white;
-  color: white;
-  padding: 10px;
-  cursor: pointer;
+  background: #222;           /* Dark button background */
+  border: 1px solid white;    /* White border for contrast */
+  color: white;               /* White text */
+  padding: 10px 20px;         /* Comfortable padding */
+  cursor: pointer;            /* Pointer cursor on hover */
+  border-radius: 4px;         /* Slightly rounded corners */
+  transition: background 0.3s ease;
+}
+
+nav button:hover {
+  background: #444;           /* Slightly lighter on hover */
 }
 
 nav button.active {
-  background: #555;
+  background: #555;           /* Different shade for active tab */
+  font-weight: bold;
 }
 
-/* Sections */
+/* -----------------------------------
+  SECTION STYLING (TAB CONTENT)
+------------------------------------ */
 section {
-  display: none;
-  width: 90%;
-  max-width: 600px;
-  margin-top: 20px;
+  display: none;              /* Hide by default */
+  width: 90%;                /* Responsive width */
+  max-width: 600px;           /* Limit max width */
+  margin-top: 20px;           /* Space above section */
+  text-align: center;         /* Center text content */
 }
 
 section.active {
-  display: block;
+  display: block;             /* Show active section */
 }
 
-/* Canvas styling */
+/* -----------------------------------
+  CANVAS STYLING
+------------------------------------ */
 canvas {
-  border: 2px transparent;
-  margin-top: 20px;
-  display: block;
+  display: block;             /* Remove inline-block gap */
+  margin: 20px auto 0 auto;  /* Top margin and center horizontally */
+  border: 2px solid transparent; /* Transparent border placeholder */
+  max-width: 100%;            /* Responsive scaling */
+  height: auto;               /* Maintain aspect ratio */
+  background-color: black;    /* Black background to blend with page */
+  box-shadow: 0 0 15px #0ff; /* Subtle glowing effect around canvas */
+  border-radius: 8px;         /* Rounded corners for nicer look */
 }
 
-/* Table styling */
+/* -----------------------------------
+  TABLE STYLING (PLANETARY DATA)
+------------------------------------ */
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+  width: 100%;                /* Full width */
+  border-collapse: collapse;  /* No double borders */
+  margin-top: 10px;           /* Space above table */
+  font-size: 14px;            /* Slightly smaller text */
 }
 
 td, th {
-  border: 1px solid white;
-  padding: 5px;
+  border: 1px solid white;    /* White border */
+  padding: 8px 12px;          /* Comfortable padding */
+  text-align: center;         /* Center text in cells */
+}
+
+th {
+  background-color: #222;     /* Dark background for headers */
+  font-weight: bold;
+}
+
+/* -----------------------------------
+  PLANET INFO BOX STYLING (optional)
+------------------------------------ */
+#planetInfo {
+  margin-top: 15px;
+  color: #0ff;                /* Cyan text for highlights */
+  font-size: 16px;
+  min-height: 40px;           /* Reserve space even if empty */
+}
+
+/* -----------------------------------
+  SOLAR DATA & PLANETS SECTIONS
+------------------------------------ */
+#solar, #planets {
+  text-align: left;
+}
+
+/* -----------------------------------
+  RESPONSIVE TWEAKS
+------------------------------------ */
+@media (max-width: 700px) {
+  section {
+    max-width: 100%;
+  }
+
+  nav {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  nav button {
+    width: 100%;
+  }
 }
