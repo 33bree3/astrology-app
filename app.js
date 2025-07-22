@@ -75,7 +75,7 @@ sunLight.shadow.mapSize.height = 1024;
 scene.add(sunLight);
 
 // SUN
-const sunRadius = 102; // bigger sun radius for scale
+const sunRadius = 69; // bigger sun radius for scale
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
@@ -83,8 +83,8 @@ sun.castShadow = false;
 sun.receiveShadow = false;
 
 // COMETARY TAIL: Particle trail behind the sun
-const tailLength = 100;
-const tailParticlesCount = 111;
+const tailLength = 123;
+const tailParticlesCount = 333;
 const tailParticles = [];
 
 // Create simple transparent planes fading out to simulate tail
@@ -122,7 +122,7 @@ const planets = [
 // Planet meshes
 planets.forEach(p => {
   p.mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(21, 32, 32), // bigger planet sizes
+    new THREE.SphereGeometry(45, 32, 32), // bigger planet sizes
     new THREE.MeshStandardMaterial({ color: p.color })
   );
   p.mesh.castShadow = true;
