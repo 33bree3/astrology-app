@@ -1,5 +1,6 @@
 // app.js
 import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
+import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
 
 import julian from './astronomia/src/julian.js';
 import { Planet } from './astronomia/src/planetposition.js';
@@ -22,15 +23,23 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 
-// Initial camera position will be behind the solar system along negative Z
+// Camera starting position — above and diagonal (X,Z positive, Y above)
+// This will follow solar system position + this offset
 const camera = new THREE.PerspectiveCamera(65, canvas.clientWidth / canvas.clientHeight, 0.1, 3000);
-// We'll update camera.position dynamically in animate()
 
-// Ambient light for soft lighting
+const controls = new OrbitControls(camera, canvas);
+// Set some limits to prevent going under the plane or too far away
+controls.minDistance = 50;
+controls.maxDistance = 1000;
+controls.maxPolarAngle = Math.PI / 2; // restrict to above or at horizon
+
+// Initial camera offset from solar system center to see it from above & diagonal
+const cameraOffset = new THREE.Vector3(100, 150, 200);
+
+// Lighting
 const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
 scene.add(ambientLight);
 
-// Sun's point light with shadows
 const sunLight = new THREE.PointLight(0xffffff, 1.5);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 1024;
@@ -56,7 +65,7 @@ const planets = [
   { name: 'Neptune', data: new Planet(neptuneData), color: 0x4169e1, radius: 160 },
 ];
 
-// Create planet meshes and add to scene later
+// Create planet meshes and add to solar system group
 planets.forEach(p => {
   p.mesh = new THREE.Mesh(
     new THREE.SphereGeometry(3.5, 16, 16),
@@ -71,21 +80,17 @@ solarSystem.add(sun);
 planets.forEach(p => solarSystem.add(p.mesh));
 scene.add(solarSystem);
 
-let t = 0; // time progression
-
-// Camera offset from solar system's position to keep view on planets
-const cameraOffset = new THREE.Vector3(0, 80, -250);
+let t = 0; // time
 
 function animate() {
   const jd = julian.DateToJD(new Date());
 
-  // Update planet orbits relative to Sun inside solarSystem group
+  // Update planets' orbital positions relative to Sun (solarSystem origin)
   planets.forEach(p => {
     const pos = p.data.position(jd);
     const angle = pos.lon;
     const r = p.radius;
 
-    // Planets orbit on XY plane relative to Sun
     const x = r * Math.cos(angle);
     const y = r * Math.sin(angle);
     const z = 0;
@@ -93,37 +98,46 @@ function animate() {
     p.mesh.position.set(x, y, z);
   });
 
-  // Move entire solar system forward along positive Z with a helix path in X/Y
-  const helixRadius = 5;       // sideways radius for helix motion
-  const helixFrequency = 0.02; // helix tightness
+  // Helix path for solar system movement
+  const helixRadius = 5;
+  const helixFrequency = 0.02;
 
-  // Calculate helix offsets
   const helixX = helixRadius * Math.cos(t * helixFrequency);
   const helixY = helixRadius * Math.sin(t * helixFrequency);
-  const helixZ = t * 1.2;      // Moving forward along positive Z axis
+  const helixZ = t * 1.2;
 
-  // Set solar system position on helix path
   solarSystem.position.set(helixX, helixY, helixZ);
 
-  // Sun light follows solar system center
+  // Update sun light position to follow solar system center
   sunLight.position.copy(solarSystem.position);
 
-  // Update camera position to follow solar system, maintaining offset
-  camera.position.copy(solarSystem.position).add(cameraOffset);
-
-  // Camera looks at solar system center
-  camera.lookAt(solarSystem.position);
+  // Update camera position to follow solar system + offset
+  if (!controls.userIsInteracting) {
+    // Only auto-update camera if user is NOT interacting
+    camera.position.copy(solarSystem.position).add(cameraOffset);
+    controls.target.copy(solarSystem.position);
+    controls.update();
+  }
 
   renderer.render(scene, camera);
 
-  t += 1; // increment time
+  t += 1;
 
   requestAnimationFrame(animate);
 }
 
+// Flag to detect if user is interacting with controls
+controls.userIsInteracting = false;
+controls.addEventListener('start', () => {
+  controls.userIsInteracting = true;
+});
+controls.addEventListener('end', () => {
+  controls.userIsInteracting = false;
+});
+
 animate();
 
-// Tab switching (unchanged)
+// Tab switching code (unchanged)
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
