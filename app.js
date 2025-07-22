@@ -158,14 +158,14 @@ const planetTextures = {
 const scaleFactor = 0.3;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 10000 * scaleFactor, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 11111* scaleFactor, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 12121 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 13131 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 14141 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 15151 * scaleFactor, planetSize: 27 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 16161 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 17171 * scaleFactor, planetSize: 21 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 6289 * scaleFactor, planetSize: 9 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 6121* scaleFactor, planetSize: 15 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 6060 * scaleFactor, planetSize: 18 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 6111 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 6219 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 6393* scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 6426 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 6468 * scaleFactor, planetSize: 21 },
 ];
 
 // Create meshes with color and bump maps applied
