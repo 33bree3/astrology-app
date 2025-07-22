@@ -46,7 +46,7 @@ function drawHeliocentricChart(jd) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 // PLANET SIZE MAP 
-const sizeMap = {
+const sizeMap = 
   Mercury: 9,
   Venus: 15,
   Earth: 15,
