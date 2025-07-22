@@ -86,39 +86,6 @@ function drawHeliocentricChart(jd) {
     ctx.fill();
   }
 
-
-  // Draw Sun at center
-  ctx.fillStyle = 'yellow';
-  ctx.beginPath();
-  ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
-  ctx.fill();
-
-  // Draw each planet's orbit and position
-  for (const planet of planets) {
-    const lon = planet.data.position(jd).lon; // radians
-    const angle = lon;
-
-    // Orbit circle
-    ctx.strokeStyle = '#333';
-    ctx.beginPath();
-    ctx.arc(cx, cy, planet.radius, 0, 2 * Math.PI);
-    ctx.stroke();
-
-    // Planet position on orbit
-    const x = cx + planet.radius * Math.cos(angle);
-    const y = cy + planet.radius * Math.sin(angle);
-    ctx.fillStyle = planet.color;
-    ctx.beginPath();
-    ctx.arc(x, y, 6, 0, 2 * Math.PI);
-    ctx.fill();
-
-    // Label next to planet
-    ctx.fillStyle = 'white';
-    ctx.font = '12px sans-serif';
-    ctx.fillText(planet.name, x + 8, y);
-  }
-
-
 // Update solar info UI
 function updateSolarInfo(jd) {
   const T = base.J2000Century(jd);
