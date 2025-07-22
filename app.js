@@ -25,7 +25,7 @@ renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-const scene = new THREE.Scene();
+// SETTING DA SCENEE BACKGROUND SKY BOX CREATION 
 
 const scene = new THREE.Scene();
 
