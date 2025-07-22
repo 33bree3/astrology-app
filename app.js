@@ -104,7 +104,7 @@ function animate() {
 
   const helixX = helixRadius * Math.cos(t * helixFrequency);
   const helixY = helixRadius * Math.sin(t * helixFrequency);
-  const helixZ =  - (t * 1.2); // moving towards camera along negative Z axis
+  const helixZ =  (t * 1.2); // moving towards camera along negative Z axis
 
   solarSystem.position.set(helixX, helixY, helixZ);
 
