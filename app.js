@@ -1,5 +1,6 @@
 // app.js
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
+
 import julian from './astronomia/src/julian.js';
 import { Planet } from './astronomia/src/planetposition.js';
 
