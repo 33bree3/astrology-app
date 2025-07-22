@@ -27,7 +27,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(65, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
+const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
 const cameraOffset = new THREE.Vector3(300, 400, 500);
 
 const controls = new OrbitControls(camera, canvas);
