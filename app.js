@@ -27,6 +27,23 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 
+const scene = new THREE.Scene();
+
+//  Add space skybox as cube map background
+
+const cubeLoader = new THREE.CubeTextureLoader();
+const skyboxTexture = cubeLoader.load([
+  './images/skybox/posx.jpg', // right
+  './images/skybox/negx.jpg', // left
+  './images/skybox/posy.jpg', // top
+  './images/skybox/negy.jpg', // bottom
+  './images/skybox/posz.jpg', // front
+  './images/skybox/negz.jpg', // back
+]);
+scene.background = skyboxTexture;
+
+// camera set uppppppppppp
+
 const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
 const cameraOffset = new THREE.Vector3(300, 400, 500);
 
@@ -136,20 +153,21 @@ const planetTextures = {
   },
 };
 
-const scaleFactor = 0.5;
+const scaleFactor = 0.6;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 135 * scaleFactor, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 150 * scaleFactor, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 171 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 183 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 210 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 230 * scaleFactor, planetSize: 27 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 245 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 260 * scaleFactor, planetSize: 21 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 237 * scaleFactor, planetSize: 9 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 252 * scaleFactor, planetSize: 15 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 270 * scaleFactor, planetSize: 18 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 284 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 320 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 330 * scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 345 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 369 * scaleFactor, planetSize: 21 },
 ];
 
 // Create meshes with color and bump maps applied
+
 planets.forEach(p => {
   p.mesh = new THREE.Mesh(
     new THREE.SphereGeometry(p.planetSize, 32, 32),
