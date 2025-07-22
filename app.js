@@ -158,14 +158,14 @@ const planetTextures = {
 const scaleFactor = 0.3;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 537 * scaleFactor, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 552 * scaleFactor, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 570 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 666 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 777 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 888 * scaleFactor, planetSize: 27 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 999 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 1010 * scaleFactor, planetSize: 21 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 22222 * scaleFactor, planetSize: 9 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 33333* scaleFactor, planetSize: 15 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 44444 * scaleFactor, planetSize: 18 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 55555 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 66666 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 77777 * scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 88888 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 99999 * scaleFactor, planetSize: 21 },
 ];
 
 // Create meshes with color and bump maps applied
@@ -190,86 +190,118 @@ planets.forEach(p => solarSystem.add(p.mesh));
 scene.add(solarSystem);
 
 let t = 0;
-
+// ANIMATION FUNCTION ------------------------
 function animate() {
   
-  const jd = julian.DateToJD(new Date());
+  // Convert current date to Julian Date for accurate planet positions
   
-const tailDirection = new THREE.Vector3()
-  .subVectors(solarSystem.position, sun.position)
-  .normalize();
+  const jd = julian.DateToJD(new Date());
 
+  // Vector from sun to solar system for use in tail positioning
+  
+  const tailDirection = new THREE.Vector3()
+    .subVectors(solarSystem.position, sun.position)
+    .normalize();
 
+  // Update each planet's orbital position and self-rotation
+  
   planets.forEach((p, i) => {
+    
+    // Calculate orbital position using astronomy data
+    
     const pos = p.data.position(jd);
     const baseAngle = pos.lon;
-    const spin = t * 0.003 * (1.2 + i * 0.3);
-    const angle = baseAngle + spin;
+    const orbitalSpin = t * 0.003 * (1.2 + i * 0.3); // Vary orbital speed slightly
+    const angle = baseAngle + orbitalSpin;
 
+    // Convert polar coordinates to Cartesian
+    
     const r = p.radius;
     const x = r * Math.cos(angle);
     const y = r * Math.sin(angle);
     const z = 0;
 
+    // Set planet's orbital position
+    
     p.mesh.position.set(x, y, z);
 
-//  Make planet spin on its own axis
-  p.mesh.rotation.y += 0.03;
+    // ---- SPIN ON OWN AXIS WITH WOBBLE ----
     
+    // Y-axis rotation (normal spin)
+    
+    p.mesh.rotation.y += 0.01 + 0.001 * i;
+
+    // Simulate axial tilt wobble using sine wave oscillation on X-axis
+    
+    const wobbleAmplitude = 0.05 + 0.01 * i;     // Vary wobble amplitude by planet
+    const wobbleSpeed = 0.005 + 0.001 * i;       // Vary speed of wobble by planet
+    p.mesh.rotation.x = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
   });
 
-  // Helix motion for solar system group
+  // ---- HELICAL SYSTEM MOTION ----
   
-  const helixRadius = 21;
+  const helixRadius = 27;
   const helixFrequency = 0.03;
   const helixX = helixRadius * Math.cos(t * helixFrequency);
   const helixY = helixRadius * Math.sin(t * helixFrequency);
   const helixZ = t * 0.03;
 
+  // Move entire solar system in a helix path
+  
   solarSystem.position.set(helixX, helixY, helixZ);
-  sunLight.position.copy(solarSystem.position);
+  sunLight.position.copy(solarSystem.position); // Keep light centered on system
 
-  // Tail particles behind sun 
-
+  // ---- COMET TAIL PARTICLES ----
+  
   const velocity = new THREE.Vector3(
     -helixRadius * helixFrequency * Math.sin(t * helixFrequency),
     helixRadius * helixFrequency * Math.cos(t * helixFrequency),
-    0.8
+    0.8 // slight Z incline for 3D realism
   ).normalize();
 
-tailParticles.forEach((particle, idx) => {
-  const distanceBehind = (idx / tailParticlesCount) * tailLength;
+  tailParticles.forEach((particle, idx) => {
+    const distanceBehind = (idx / tailParticlesCount) * tailLength;
 
-  // Add slight curve/random variation
+    // Add jitter/curve to tail path
+    
+    const jitter = new THREE.Vector3(
+      (Math.random() - 0.5) * 2,
+      (Math.random() - 0.5) * 2,
+      (Math.random() - 0.5) * 2
+    ).multiplyScalar(0.3);
 
-  const jitter = new THREE.Vector3(
-    (Math.random() - 0.3) * 3,
-    (Math.random() - 0.3) * 3,
-    (Math.random() - 0.3) * 3
-  ).multiplyScalar(0.3);
+    // Position particle behind solar system center
+    
+    const pos = new THREE.Vector3()
+      .copy(solarSystem.position)
+      .addScaledVector(tailDirection, -distanceBehind)
+      .add(jitter);
 
-  const pos = new THREE.Vector3()
-    .copy(solarSystem.position)
-    .addScaledVector(tailDirection, -distanceBehind)
-    .add(jitter);
+    // Set particle visual properties
+    
+    particle.position.copy(pos);
+    particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
 
-  particle.position.copy(pos);
-  particle.material.opacity = 0.3 * (1.2 - idx / tailParticlesCount);
+    const scale = 100 * (1 - idx / tailParticlesCount);
+    particle.scale.set(scale, scale, scale);
+  });
+
+  // ---- CAMERA AUTO-FOLLOW ----
   
-  const scale = 25 * (1 - idx / tailParticlesCount);
-  particle.scale.set(scale, scale, scale);
-});
-
   if (!controls.userIsInteracting) {
     camera.position.copy(solarSystem.position).add(cameraOffset);
     controls.target.copy(solarSystem.position);
     controls.update();
   }
 
+  // ---- RENDER SCENE ----
+  
   renderer.render(scene, camera);
   t += 1;
   requestAnimationFrame(animate);
 }
+
+// ---- CAMERA CONTROL EVENT HOOKS ----
 
 controls.userIsInteracting = false;
 controls.addEventListener('start', () => { controls.userIsInteracting = true; });
@@ -278,6 +310,7 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 animate();
 
 // UI tab switching (unchanged)
+
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
