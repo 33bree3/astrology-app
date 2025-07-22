@@ -32,15 +32,15 @@ const cameraOffset = new THREE.Vector3(300, 400, 500);
 
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 200;
-controls.maxDistance = 2000;
+controls.minDistance = 100;
+controls.maxDistance = 1000;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
 
 function clampCameraDistance() {
-  const minDistance = 50;
-  const maxDistance = 1000;
+  const minDistance = 100;
+  const maxDistance = 500;
   const distance = camera.position.distanceTo(solarSystem.position);
   if (distance < minDistance) {
     const direction = camera.position.clone().sub(solarSystem.position).normalize();
