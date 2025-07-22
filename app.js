@@ -85,7 +85,7 @@ function drawHeliocentricChart(jd) {
     ctx.arc(x, y, size, 0, 2 * Math.PI);
     ctx.fill();
   }
-
+}
 // Update solar info UI
 function updateSolarInfo(jd) {
   const T = base.J2000Century(jd);
