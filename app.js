@@ -40,25 +40,29 @@ controls.maxPolarAngle = Math.PI / 2; // only above horizon
 controls.enablePan = true;
 controls.panSpeed = 0.5;
 
-// Override dolly function to prevent camera moving strictly along Z
-// This keeps zooming as moving closer/farther from target, but no Z-only shifts
 function clampCameraDistance() {
-  const distance = camera.position.distanceTo(controls.target);
-  if (distance < controls.minDistance) {
-    const dir = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
-    camera.position.copy(controls.target).add(dir.multiplyScalar(controls.minDistance));
-  } else if (distance > controls.maxDistance) {
-    const dir = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
-    camera.position.copy(controls.target).add(dir.multiplyScalar(controls.maxDistance));
+  const minDistance = 50;
+  const maxDistance = 1000;
+
+  // Calculate distance from solarSystem center to camera
+  const distance = camera.position.distanceTo(solarSystem.position);
+
+  if (distance < minDistance) {
+    // Move camera out to minDistance along current vector from solarSystem
+    const direction = camera.position.clone().sub(solarSystem.position).normalize();
+    camera.position.copy(solarSystem.position).add(direction.multiplyScalar(minDistance));
+    // No controls.update() here!
+  } else if (distance > maxDistance) {
+    const direction = camera.position.clone().sub(solarSystem.position).normalize();
+    camera.position.copy(solarSystem.position).add(direction.multiplyScalar(maxDistance));
+    // No controls.update() here!
   }
-  controls.update();
 }
 
-// Listen to control changes to clamp zoom/distance
+// Attach event listener without calling controls.update inside it
 controls.addEventListener('change', () => {
   clampCameraDistance();
 });
-
 
 // LIGHTS
 const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
