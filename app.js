@@ -26,14 +26,14 @@ const chartInfo = document.getElementById('chartInfo');
 
 // Planet setup with colors and orbit radii
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), color: '#c0c0c0', radius: 60 },   // Gray/Silver
-  { name: 'Venus',   data: new Planet(venusData),   color: '#f5deb3', radius: 80 },   // Wheat/Gold
-  { name: 'Earth',   data: new Planet(earthData),   color: '#1e90ff', radius: 100 },  // Blue
-  { name: 'Mars',    data: new Planet(marsData),    color: '#ff4500', radius: 120 },  // Red-Orange
-  { name: 'Jupiter', data: new Planet(jupiterData), color: '#f4e2d8', radius: 140 },  // Beige
-  { name: 'Saturn',  data: new Planet(saturnData),  color: '#deb887', radius: 160 },  // Light Brown
-  { name: 'Uranus',  data: new Planet(uranusData),  color: '#7fffd4', radius: 180 },  // Aqua
-  { name: 'Neptune', data: new Planet(neptuneData), color: '#4169e1', radius: 200 }   // Royal Blue
+  { name: 'Mercury', data: new Planet(mercuryData), color: '#c0c0c0', radius: 300 },   // Gray/Silver
+  { name: 'Venus',   data: new Planet(venusData),   color: '#f5deb3', radius: 357 },   // Wheat/Gold
+  { name: 'Earth',   data: new Planet(earthData),   color: '#1e90ff', radius: 363 },  // Blue
+  { name: 'Mars',    data: new Planet(marsData),    color: '#ff4500', radius: 315 },  // Red-Orange
+  { name: 'Jupiter', data: new Planet(jupiterData), color: '#f4e2d8', radius: 500 },  // Beige
+  { name: 'Saturn',  data: new Planet(saturnData),  color: '#deb887', radius: 486 },  // Light Brown
+  { name: 'Uranus',  data: new Planet(uranusData),  color: '#7fffd4', radius: 441 },  // Aqua
+  { name: 'Neptune', data: new Planet(neptuneData), color: '#4169e1', radius: 260 }   // Royal Blue
 ];
 
 // Get current Julian Day
