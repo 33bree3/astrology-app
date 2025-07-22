@@ -161,11 +161,11 @@ const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 537 * scaleFactor, planetSize: 9 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 552 * scaleFactor, planetSize: 15 },
   { name: 'Earth',   data: new Planet(earthData),   radius: 570 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 584 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 620 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 630 * scaleFactor, planetSize: 27 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 645 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 669 * scaleFactor, planetSize: 21 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 666 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 777 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 888 * scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 999 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 1010 * scaleFactor, planetSize: 21 },
 ];
 
 // Create meshes with color and bump maps applied
