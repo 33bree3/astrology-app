@@ -44,7 +44,7 @@ section.active {
 canvas {
   border: 2px transparent;
   margin-top: 20px;
-  displauy: block;
+  display: block;
 }
 
 /* Table styling */
