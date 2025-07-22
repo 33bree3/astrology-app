@@ -45,7 +45,7 @@ function getCurrentJD() {
 
 function drawHeliocentricChart(jd) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
+
   // Planet size map (for aesthetics)
   const sizeMap = {
     Mercury: 9,
@@ -117,7 +117,7 @@ function drawHeliocentricChart(jd) {
     ctx.font = '12px sans-serif';
     ctx.fillText(planet.name, x + 8, y);
   }
-}
+
 
 // Update solar info UI
 function updateSolarInfo(jd) {
