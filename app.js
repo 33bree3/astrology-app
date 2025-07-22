@@ -13,6 +13,10 @@ import saturnData from './astronomia/data/vsop87Bsaturn.js';
 import uranusData from './astronomia/data/vsop87Buranus.js';
 import neptuneData from './astronomia/data/vsop87Bneptune.js';
 
+// --- TEXTURE LOADER ---
+const textureLoader = new THREE.TextureLoader();
+
+
 
 const canvas = document.getElementById('chartCanvas');
 
@@ -95,8 +99,6 @@ for (let i = 0; i < tailParticlesCount; i++) {
   tailParticles.push(sprite);
 }
 
-// --- TEXTURE LOADER ---
-const textureLoader = new THREE.TextureLoader();
 
 // Map planet names to their color and bump map textures
 const planetTextures = {
