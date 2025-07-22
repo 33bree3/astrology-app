@@ -125,7 +125,7 @@ const planetTextures = {
   },
 };
 
-const scaleFactor = 4;
+const scaleFactor = 9;
 
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 35 * scaleFactor, planetSize: 3 },
