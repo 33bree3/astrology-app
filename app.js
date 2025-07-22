@@ -42,22 +42,9 @@ controls.panSpeed = 0.5;
 
 // Override dolly function to prevent camera moving strictly along Z
 // This keeps zooming as moving closer/farther from target, but no Z-only shifts
-const originalDollyIn = controls.dollyIn.bind(controls);
-const originalDollyOut = controls.dollyOut.bind(controls);
-
-controls.dollyIn = function (dollyScale) {
-  originalDollyIn(dollyScale);
-  clampCameraDistance();
-};
-controls.dollyOut = function (dollyScale) {
-  originalDollyOut(dollyScale);
-  clampCameraDistance();
-};
-
 function clampCameraDistance() {
   const distance = camera.position.distanceTo(controls.target);
   if (distance < controls.minDistance) {
-    // Move camera back along vector to target
     const dir = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
     camera.position.copy(controls.target).add(dir.multiplyScalar(controls.minDistance));
   } else if (distance > controls.maxDistance) {
@@ -66,6 +53,12 @@ function clampCameraDistance() {
   }
   controls.update();
 }
+
+// Listen to control changes to clamp zoom/distance
+controls.addEventListener('change', () => {
+  clampCameraDistance();
+});
+
 
 // LIGHTS
 const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
