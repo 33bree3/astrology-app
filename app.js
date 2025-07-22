@@ -24,17 +24,14 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 
-// Camera starting position — above and diagonal (X,Z positive, Y above)
-// This will follow solar system position + this offset
+// Perspective camera
 const camera = new THREE.PerspectiveCamera(65, canvas.clientWidth / canvas.clientHeight, 0.1, 3000);
 
 const controls = new OrbitControls(camera, canvas);
-// Set some limits to prevent going under the plane or too far away
 controls.minDistance = 50;
 controls.maxDistance = 1000;
-controls.maxPolarAngle = Math.PI / 2; // restrict to above or at horizon
+controls.maxPolarAngle = Math.PI / 2;
 
-// Initial camera offset from solar system center to see it from above & diagonal
 const cameraOffset = new THREE.Vector3(100, 150, 200);
 
 // Lighting
@@ -47,6 +44,7 @@ sunLight.shadow.mapSize.width = 1024;
 sunLight.shadow.mapSize.height = 1024;
 scene.add(sunLight);
 
+// Sun mesh
 const sunRadius = 15;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
@@ -54,7 +52,20 @@ const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.castShadow = false;
 sun.receiveShadow = false;
 
-// Planets data
+// Add comet-like tail to sun
+const tailGeometry = new THREE.ConeGeometry(10, 60, 16, 1, true);
+const tailMaterial = new THREE.MeshBasicMaterial({
+  color: 0xffcc00,
+  transparent: true,
+  opacity: 0.3,
+  side: THREE.BackSide
+});
+const tail = new THREE.Mesh(tailGeometry, tailMaterial);
+tail.position.set(0, 0, -35);  // place it behind the sun
+tail.rotation.x = Math.PI;    // point it backwards
+sun.add(tail);                // attach to sun so it follows motion
+
+// Planet data
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), color: 0xc0c0c0, radius: 35 },
   { name: 'Venus',   data: new Planet(venusData),   color: 0xf5deb3, radius: 50 },
@@ -66,7 +77,7 @@ const planets = [
   { name: 'Neptune', data: new Planet(neptuneData), color: 0x4169e1, radius: 160 },
 ];
 
-// Create planet meshes and add to solar system group
+// Create meshes
 planets.forEach(p => {
   p.mesh = new THREE.Mesh(
     new THREE.SphereGeometry(3.5, 16, 16),
@@ -81,17 +92,21 @@ solarSystem.add(sun);
 planets.forEach(p => solarSystem.add(p.mesh));
 scene.add(solarSystem);
 
-let t = 0; // time
+let t = 0; // animation time counter
 
 function animate() {
   const jd = julian.DateToJD(new Date());
 
-  // Update planets' orbital positions relative to Sun (solarSystem origin)
-  planets.forEach(p => {
+  // Update each planet's position with simulated orbital rotation
+  planets.forEach((p, i) => {
     const pos = p.data.position(jd);
-    const angle = pos.lon;
-    const r = p.radius;
+    const baseAngle = pos.lon;
 
+    // Simulated orbital animation speed (custom per planet)
+    const spin = t * 0.0005 * (1 + i * 0.1);
+    const angle = baseAngle + spin;
+
+    const r = p.radius;
     const x = r * Math.cos(angle);
     const y = r * Math.sin(angle);
     const z = 0;
@@ -99,35 +114,32 @@ function animate() {
     p.mesh.position.set(x, y, z);
   });
 
-  // Helix path for solar system movement
+  // Solar system follows a helix path
   const helixRadius = 5;
   const helixFrequency = 0.02;
-
   const helixX = helixRadius * Math.cos(t * helixFrequency);
   const helixY = helixRadius * Math.sin(t * helixFrequency);
   const helixZ = t * 1.2;
 
   solarSystem.position.set(helixX, helixY, helixZ);
 
-  // Update sun light position to follow solar system center
+  // Update light to follow solar system
   sunLight.position.copy(solarSystem.position);
 
-  // Update camera position to follow solar system + offset
+  // Camera auto-tracking
   if (!controls.userIsInteracting) {
-    // Only auto-update camera if user is NOT interacting
     camera.position.copy(solarSystem.position).add(cameraOffset);
     controls.target.copy(solarSystem.position);
     controls.update();
   }
 
   renderer.render(scene, camera);
-
   t += 1;
 
   requestAnimationFrame(animate);
 }
 
-// Flag to detect if user is interacting with controls
+// Detect user interaction to pause camera tracking
 controls.userIsInteracting = false;
 controls.addEventListener('start', () => {
   controls.userIsInteracting = true;
@@ -138,7 +150,7 @@ controls.addEventListener('end', () => {
 
 animate();
 
-// Tab switching code (unchanged)
+// Tab switching logic
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
