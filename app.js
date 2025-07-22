@@ -64,7 +64,7 @@ scene.add(sunLight);
 
 // SUN SET UPPPPP 
 
-const sunRadius = 45; // increased sun size for better scale
+const sunRadius = 54; // increased sun size for better scale
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
@@ -139,14 +139,14 @@ const planetTextures = {
 const scaleFactor = 1;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 35 * scaleFactor, planetSize: 3 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 50 * scaleFactor, planetSize: 5 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 70 * scaleFactor, planetSize: 6 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 85 * scaleFactor, planetSize: 4 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 110 * scaleFactor, planetSize: 10 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 130 * scaleFactor, planetSize: 9 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 145 * scaleFactor, planetSize: 8 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 160 * scaleFactor, planetSize: 7 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 35 * scaleFactor, planetSize: 9 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 50 * scaleFactor, planetSize: 15 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 70 * scaleFactor, planetSize: 18 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 85 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 110 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 130 * scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 145 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 160 * scaleFactor, planetSize: 21 },
 ];
 
 // Create meshes with color and bump maps applied
