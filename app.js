@@ -54,13 +54,13 @@ scene.add(sun);
 // Array holding planet data and properties
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), color: 0xc0c0c0, radius: 30 },
-  { name: 'Venus',   data: new Planet(venusData),   color: 0xf5deb3, radius: 45 },
-  { name: 'Earth',   data: new Planet(earthData),   color: 0x1e90ff, radius: 60 },
-  { name: 'Mars',    data: new Planet(marsData),    color: 0xff4500, radius: 75 },
-  { name: 'Jupiter', data: new Planet(jupiterData), color: 0xf4e2d8, radius: 100 },
-  { name: 'Saturn',  data: new Planet(saturnData),  color: 0xdeb887, radius: 120 },
-  { name: 'Uranus',  data: new Planet(uranusData),  color: 0x7fffd4, radius: 135 },
-  { name: 'Neptune', data: new Planet(neptuneData), color: 0x4169e1, radius: 150 },
+  { name: 'Venus',   data: new Planet(venusData),   color: 0xf5deb3, radius: 39 },
+  { name: 'Earth',   data: new Planet(earthData),   color: 0x1e90ff, radius: 42 },
+  { name: 'Mars',    data: new Planet(marsData),    color: 0xff4500, radius: 54 },
+  { name: 'Jupiter', data: new Planet(jupiterData), color: 0xf4e2d8, radius: 66 },
+  { name: 'Saturn',  data: new Planet(saturnData),  color: 0xdeb887, radius: 72 },
+  { name: 'Uranus',  data: new Planet(uranusData),  color: 0x7fffd4, radius: 81 },
+  { name: 'Neptune', data: new Planet(neptuneData), color: 0x4169e1, radius: 102 },
 ];
 
 // Create a Three.js Mesh for each planet and add to the scene
