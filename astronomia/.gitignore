@@ -1,0 +1,13 @@
+node_modules/
+coverage/
+output/
+attic/
+tmp/
+lib/
+es/
+*.log
+*.tgz
+.eslintcache
+.nyc_output
+yarn.lock
+.DS_Store

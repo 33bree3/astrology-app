@@ -1,0 +1,4 @@
+{
+  "checkLeaks": true,
+  "reporter": "dot"
+}
