@@ -158,7 +158,7 @@ const planetTextures = {
 const scaleFactor = 0.3;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 903 scaleFactor, planetSize: 9 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 903 *scaleFactor, planetSize: 9 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 639* scaleFactor, planetSize: 15 },
   { name: 'Earth',   data: new Planet(earthData),   radius: 801 * scaleFactor, planetSize: 18 },
   { name: 'Mars',    data: new Planet(marsData),    radius: 702 * scaleFactor, planetSize: 12 },
