@@ -33,12 +33,12 @@ const scene = new THREE.Scene();
 
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxTexture = cubeLoader.load([
-  './images/skybox/posx.jpg', // right
-  './images/skybox/negx.jpg', // left
-  './images/skybox/posy.jpg', // top
-  './images/skybox/negy.jpg', // bottom
-  './images/skybox/posz.jpg', // front
-  './images/skybox/negz.jpg', // back
+  './images/space.right.jpg', // right
+  './images/space.left.jpg', // left
+  './images/space.up.jpg', // top
+  './images/space.down.avif', // bottom
+  './images/space2.avif', // front
+  './images/space.avif', // back
 ]);
 scene.background = skyboxTexture;
 
@@ -81,7 +81,7 @@ scene.add(sunLight);
 
 // SUN SET UPPPPP 
 
-const sunRadius = 69; // increased sun size for better scale
+const sunRadius = 171; // increased sun size for better scale
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
@@ -153,17 +153,17 @@ const planetTextures = {
   },
 };
 
-const scaleFactor = 0.6;
+const scaleFactor = 0.3;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 237 * scaleFactor, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 252 * scaleFactor, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 270 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 284 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 320 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 330 * scaleFactor, planetSize: 27 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 345 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 369 * scaleFactor, planetSize: 21 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 537 * scaleFactor, planetSize: 9 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 552 * scaleFactor, planetSize: 15 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 570 * scaleFactor, planetSize: 18 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 584 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 620 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 630 * scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 645 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 669 * scaleFactor, planetSize: 21 },
 ];
 
 // Create meshes with color and bump maps applied
@@ -204,6 +204,10 @@ function animate() {
     const z = 0;
 
     p.mesh.position.set(x, y, z);
+
+//  Make planet spin on its own axis
+  p.mesh.rotation.y += 0.03;
+    
   });
 
   // Helix motion for solar system group
@@ -216,21 +220,36 @@ function animate() {
   solarSystem.position.set(helixX, helixY, helixZ);
   sunLight.position.copy(solarSystem.position);
 
-  // Tail particles behind sun (same as your original)
+  // Tail particles behind sun 
+
   const velocity = new THREE.Vector3(
     -helixRadius * helixFrequency * Math.sin(t * helixFrequency),
     helixRadius * helixFrequency * Math.cos(t * helixFrequency),
     0.8
   ).normalize();
 
-  tailParticles.forEach((particle, idx) => {
-    const distanceBehind = (idx / tailParticlesCount) * tailLength;
-    const pos = new THREE.Vector3().copy(solarSystem.position).addScaledVector(velocity, -distanceBehind);
-    particle.position.copy(pos);
-    particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
-    const scale = 30 * (1 - idx / tailParticlesCount);
-    particle.scale.set(scale, scale, scale);
-  });
+tailParticles.forEach((particle, idx) => {
+  const distanceBehind = (idx / tailParticlesCount) * tailLength;
+
+  // Add slight curve/random variation
+
+  const jitter = new THREE.Vector3(
+    (Math.random() - 0.3) * 3,
+    (Math.random() - 0.3) * 3,
+    (Math.random() - 0.3) * 3
+  ).multiplyScalar(0.3);
+
+  const pos = new THREE.Vector3()
+    .copy(solarSystem.position)
+    .addScaledVector(tailDirection, -distanceBehind)
+    .add(jitter);
+
+  particle.position.copy(pos);
+  particle.material.opacity = 0.3 * (1.2 - idx / tailParticlesCount);
+  
+  const scale = 25 * (1 - idx / tailParticlesCount);
+  particle.scale.set(scale, scale, scale);
+});
 
   if (!controls.userIsInteracting) {
     camera.position.copy(solarSystem.position).add(cameraOffset);
