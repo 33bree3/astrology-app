@@ -26,14 +26,14 @@ const chartInfo = document.getElementById('chartInfo');
 
 // Planet setup with colors and orbit radii
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), color: '#c0c0c0', radius: 300 },   // Gray/Silver
-  { name: 'Venus',   data: new Planet(venusData),   color: '#f5deb3', radius: 357 },   // Wheat/Gold
-  { name: 'Earth',   data: new Planet(earthData),   color: '#1e90ff', radius: 363 },  // Blue
-  { name: 'Mars',    data: new Planet(marsData),    color: '#ff4500', radius: 315 },  // Red-Orange
-  { name: 'Jupiter', data: new Planet(jupiterData), color: '#f4e2d8', radius: 500 },  // Beige
-  { name: 'Saturn',  data: new Planet(saturnData),  color: '#deb887', radius: 486 },  // Light Brown
-  { name: 'Uranus',  data: new Planet(uranusData),  color: '#7fffd4', radius: 441 },  // Aqua
-  { name: 'Neptune', data: new Planet(neptuneData), color: '#4169e1', radius: 260 }   // Royal Blue
+  { name: 'Mercury', data: new Planet(mercuryData), color: '#c0c0c0', radius: 200 },   // Gray/Silver
+  { name: 'Venus',   data: new Planet(venusData),   color: '#f5deb3', radius: 234 },   // Wheat/Gold
+  { name: 'Earth',   data: new Planet(earthData),   color: '#1e90ff', radius: 246 },  // Blue
+  { name: 'Mars',    data: new Planet(marsData),    color: '#ff4500', radius: 279 },  // Red-Orange
+  { name: 'Jupiter', data: new Planet(jupiterData), color: '#f4e2d8', radius: 355 },  // Beige
+  { name: 'Saturn',  data: new Planet(saturnData),  color: '#deb887', radius: 387 },  // Light Brown
+  { name: 'Uranus',  data: new Planet(uranusData),  color: '#7fffd4', radius: 393 },  // Aqua
+  { name: 'Neptune', data: new Planet(neptuneData), color: '#4169e1', radius: 400 }   // Royal Blue
 ];
 
 // Get current Julian Day
@@ -44,6 +44,24 @@ function getCurrentJD() {
 // Draw heliocentric chart with orbits and planets
 function drawHeliocentricChart(jd) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+// PLANET SIZE MAP 
+const sizeMap = {
+  Mercury: 9,
+  Venus: 15,
+  Earth: 15,
+  Mars: 12,
+  Jupiter: 24,
+  Saturn: 21,
+  Uranus: 18,
+  Neptune: 18,
+};
+
+const size = sizeMap[planet.name] || 6;
+ctx.beginPath();
+ctx.arc(x, y, size, 0, 2 * Math.PI);
+ctx.fill();
+
 
   // Draw Sun at center
   ctx.fillStyle = 'yellow';
