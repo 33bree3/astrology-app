@@ -100,7 +100,7 @@ for (let i = 0; i < tailParticlesCount; i++) {
     blending: THREE.AdditiveBlending,
   });
   const sprite = new THREE.Sprite(tailMaterial);
-  sprite.scale.set(30, 30, 1);
+  sprite.scale.set(21, 30, 1);
   scene.add(sprite);
   tailParticles.push(sprite);
 }
