@@ -42,8 +42,9 @@ section.active {
 
 /* Canvas styling */
 canvas {
-  border: 2px solid white;
+  border: 2px transparent;
   margin-top: 20px;
+  displauy: block;
 }
 
 /* Table styling */
