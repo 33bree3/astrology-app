@@ -13,7 +13,6 @@ import saturnData from './astronomia/data/vsop87Bsaturn.js';
 import uranusData from './astronomia/data/vsop87Buranus.js';
 import neptuneData from './astronomia/data/vsop87Bneptune.js';
 
-const textureLoader = new THREE.TextureLoader();
 
 const canvas = document.getElementById('chartCanvas');
 
