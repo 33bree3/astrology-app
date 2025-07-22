@@ -64,7 +64,7 @@ scene.add(sunLight);
 
 // SUN SET UPPPPP 
 
-const sunRadius = 69; // increased sun size for better scale
+const sunRadius = 45; // increased sun size for better scale
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
@@ -79,7 +79,7 @@ sun.receiveShadow = false;
 
 // Comet tail setup omitted here for brevity (same as your original code)
 
-const tailLength = 123;
+const tailLength = 333;
 const tailParticlesCount = 333;
 const tailParticles = [];
 const tailTexture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/sprites/disc.png');
@@ -136,7 +136,7 @@ const planetTextures = {
   },
 };
 
-const scaleFactor = 21;
+const scaleFactor = 1;
 
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 35 * scaleFactor, planetSize: 3 },
