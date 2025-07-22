@@ -13,6 +13,8 @@ import saturnData from './astronomia/data/vsop87Bsaturn.js';
 import uranusData from './astronomia/data/vsop87Buranus.js';
 import neptuneData from './astronomia/data/vsop87Bneptune.js';
 
+const textureLoader = new THREE.TextureLoader();
+
 const canvas = document.getElementById('chartCanvas');
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -53,13 +55,21 @@ scene.add(ambientLight);
 
 const sunLight = new THREE.PointLight(0xffffff, 1.5);
 sunLight.castShadow = true;
-sunLight.shadow.mapSize.width = 1024;
-sunLight.shadow.mapSize.height = 1024;
+sunLight.shadow.mapSize.width = 639 ;
+sunLight.shadow.mapSize.height = 639  ;
 scene.add(sunLight);
 
-const sunRadius = 69;
+// SUN SET UPPPPP 
+
+const sunRadius = 69; // increased sun size for better scale
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
-const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+
+const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
+
+const sunMaterial = new THREE.MeshBasicMaterial({
+  map: sunTexture,
+});
+
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.castShadow = false;
 sun.receiveShadow = false;
