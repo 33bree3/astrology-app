@@ -156,23 +156,16 @@ let t = 0;
 // Each planet now orbits the Sun elliptically using real orbital eccentricity values,
 // preserving accurate Z-offset positions while the entire system moves in a helix.
 
+// Updated Solar System Simulation with Realistic Orbital Eccentricity
+// --------------------------------------------------
+// Each planet now orbits the Sun elliptically using real orbital eccentricity values,
+// preserving accurate Z-offset positions. Helix motion has been removed.
+
 function animate() {
   const jd = julian.DateToJD(new Date());
 
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
-
-  // Parameters for group helix motion (solarSystem group)
-  const helixRadius = 39;
-  const helixFrequency = 3;
-  const helixZSpeed = 0.9;
-
-  // Compute position of the solarSystem group along a helix
-  const helixX = helixRadius * Math.cos(t * helixFrequency);
-  const helixY = helixRadius * Math.sin(t * helixFrequency);
-  const helixZ = t * helixZSpeed;
-  solarSystem.position.set(helixX, helixY, helixZ);
-  sunLight.position.copy(solarSystem.position);
 
   // Orbital eccentricity values (approximate)
   const eccentricities = [
@@ -186,9 +179,13 @@ function animate() {
     0.0086  // Neptune
   ];
 
-  const baseOrbitA = 69; // Base semi-major axis for Mercury
-  const orbitSpeed = 0.09;
-  const helixZSpacing = -111;
+  const baseOrbitA = 69 // Base semi-major axis for Mercury
+  const orbitSpeed = 0.015;
+  const zSpacing = -123;
+
+  // Position the sun and solarSystem group at the origin
+  solarSystem.position.set(0, 0, 0);
+  sunLight.position.copy(solarSystem.position);
 
   planets.forEach((p, i) => {
     const e = eccentricities[i] || 0;
@@ -197,8 +194,8 @@ function animate() {
 
     const angle = t * orbitSpeed + i * 0.5; // angular offset per planet
     const orbitX = a * Math.cos(angle);
-    const orbitY = b * Math.sin(angle);
-    const orbitZ = (i + 1) * helixZSpacing;
+    const orbitY = 0; // Keep all orbits on the XZ plane
+    const orbitZ = b * Math.sin(angle) + (i + 1) * zSpacing;
 
     // Position each planet in elliptical orbit
     p.mesh.position.set(orbitX, orbitY, orbitZ);
@@ -207,7 +204,7 @@ function animate() {
     p.mesh.rotation.x += 0.1 + 0.03 * i;
 
     // Optional wobble
-    const wobbleAmplitude = 0.5 + 0.01 * i;
+    const wobbleAmplitude = 0.05 + 0.01 * i;
     const wobbleSpeed = 0.005 + 0.002 * i;
     p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
 
@@ -250,7 +247,13 @@ function animate() {
 
 
 
+
+
+
 //----------------------------------------------------------------------------------------------
+
+
+
 
 
 
