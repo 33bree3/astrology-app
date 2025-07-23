@@ -263,7 +263,7 @@ if (p.name === 'Neptune') {
   renderer.render(scene, camera);
   t += 1;
   requestAnimationFrame(animate);
-}
+})
 
 
 
