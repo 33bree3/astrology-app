@@ -121,7 +121,7 @@ for (let i = 0; i < tailParticlesCount; i++) {
     map: tailTexture,
     color: 0xffcc00,
     transparent: true,
-    opacity: 3 * (1 - i / tailParticlesCount),
+    opacity: 3 * (3 - i / tailParticlesCount),
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });
@@ -224,7 +224,7 @@ function animate() {
  planets.forEach((p, i) => {
   const pos = p.data.position(julian.DateToJD(new Date()));
   const baseAngle = pos.lon;
-  const orbitalSpin = t * 0.9 * (1.2 + i * 0.3);
+ const orbitalSpin = t * 0.0003 * (1 / (i + 1));
   const angleOffset = i * 3;
   const angle = baseAngle + orbitalSpin + angleOffset;
 
