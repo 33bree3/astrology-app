@@ -88,9 +88,12 @@ const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 
-const sunMaterial = new THREE.MeshBasicMaterial({
+const sunMaterial = new THREE.MeshStandardMaterial({
   map: sunTexture,
+  emissive: new THREE.Color(0xffffaa),
+  emissiveIntensity: 2,
 });
+
 
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.castShadow = false;
@@ -230,10 +233,12 @@ const angle = baseAngle + spin + angleOffset;
 const x = r * Math.cos(angle);
 const y = r * Math.sin(angle);
 
- Give each planet a z-offset so it sits slightly above/below the orbital plane
+ // Give each planet a z-offset so it sits slightly above/below the orbital plane
     
-const zOffset = Math.sin(t * 0.01 + i) * (i * 0.5); // You can tweak this pattern
-const z = zOffset;
+const x = r * Math.cos(angle);
+const y = r * Math.sin(angle);
+const z = i * 5 + Math.sin(t * 0.01 + i) * 3; // stagger z by index and time
+
 
 p.mesh.position.set(x, y, z);
 
