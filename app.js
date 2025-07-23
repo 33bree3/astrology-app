@@ -187,7 +187,7 @@ function animate() {
 
   // Move entire solar system in helix pattern
   const helixRadius = 3;
-  const helixFrequency = 0.03;
+  const helixFrequency = 3;
   const helixX = helixRadius * Math.cos(t * helixFrequency);
   const helixY = helixRadius * Math.sin(t * helixFrequency);
   const helixZ = t * 0.03;
