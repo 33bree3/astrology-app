@@ -83,7 +83,7 @@ scene.add(sunLight);
 
 // SUN SET UPPPPP ------------------------------------------------------------------------
 
-const sunRadius = 81; // increased sun size for better scale
+const sunRadius = 69; // increased sun size for better scale
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
@@ -158,14 +158,14 @@ const planetTextures = {
 const scaleFactor = 0.1;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 903 *scaleFactor, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 639* scaleFactor, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 801 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 702 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 993 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 1212* scaleFactor, planetSize: 27 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 1313 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 1111 * scaleFactor, planetSize: 21 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 9033 *scaleFactor, planetSize: 9 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 6393* scaleFactor, planetSize: 15 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 8013 * scaleFactor, planetSize: 18 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 7023 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 9933 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 12123* scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 13133 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 11113 * scaleFactor, planetSize: 21 },
 ];
 
 // Create PLANET meshes with color and bump maps applied
