@@ -162,7 +162,7 @@ function animate() {
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
   const orbitSpeed = 0.0015;
-  const zSpacing = -69;
+  const zSpacing = -21;
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
