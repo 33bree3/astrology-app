@@ -8,10 +8,10 @@ import mercuryData from './astronomia/data/vsop87Bmercury.js';
 import venusData from './astronomia/data/vsop87Bvenus.js';
 import earthData from './astronomia/data/vsop87Bearth.js';
 import marsData from './astronomia/data/vsop87Bmars.js';
-import jupiterData from './astronomia/data/vsop87Bjupiter.js';
-import saturnData from './astronomia/data/vsop87Bsaturn.js';
-import uranusData from './astronomia/data/vsop87Buranus.js';
-import neptuneData from './astronomia/data/vsop87Bneptune.js';
+import jupiterData from './astronomia/data/vsop87Djupiter.js';
+import saturnData from './astronomia/data/vsop87Dsaturn.js';
+import uranusData from './astronomia/data/vsop87Duranus.js';
+import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
 // --- TEXTURE LOADER ----------------------------------------------
 
@@ -77,8 +77,8 @@ scene.add(ambientLight);
 
 const sunLight = new THREE.PointLight(0xffffff, 1.5);
 sunLight.castShadow = true;
-sunLight.shadow.mapSize.width = 639 ;
-sunLight.shadow.mapSize.height = 639  ;
+sunLight.shadow.mapSize.width = 1000 ;
+sunLight.shadow.mapSize.height = 1000  ;
 scene.add(sunLight);
 
 // SUN SET UPPPPP ------------------------------------------------------------------------
@@ -168,7 +168,7 @@ const planets = [
   { name: 'Neptune', data: new Planet(neptuneData), radius: 1111 * scaleFactor, planetSize: 21 },
 ];
 
-// Create meshes with color and bump maps applied
+// Create PLANET meshes with color and bump maps applied
 
 planets.forEach(p => {
   p.mesh = new THREE.Mesh(
@@ -176,7 +176,9 @@ planets.forEach(p => {
     new THREE.MeshStandardMaterial({
       map: planetTextures[p.name].color,  // Color texture
       bumpMap: planetTextures[p.name].bump, // Bump texture
-      bumpScale: 0.05,                      // Bump effect strength (tweak if needed)
+      bumpScale: 0.3,                      // Bump effect strength (tweak if needed) - hEIGHT MAP  // soft glow
+      shininess: 10,                        // specular highlight sharpness
+
     })
   );
   p.mesh.castShadow = true;
@@ -233,14 +235,14 @@ function animate() {
 
     // Simulate axial tilt wobble using sine wave oscillation on X-axis
     
-    const wobbleAmplitude = 0.05 + 0.01 * i;     // Vary wobble amplitude by planet
-    const wobbleSpeed = 0.005 + 0.001 * i;       // Vary speed of wobble by planet
+    const wobbleAmplitude = 0.0005 + 0.01 * i;     // Vary wobble amplitude by planet
+    const wobbleSpeed = 0.00005 + 0.001 * i;       // Vary speed of wobble by planet
     p.mesh.rotation.x = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
   });
 
   // ---- HELICAL SYSTEM MOTION ----
   
-  const helixRadius = 27;
+  const helixRadius = 36;
   const helixFrequency = 0.03;
   const helixX = helixRadius * Math.cos(t * helixFrequency);
   const helixY = helixRadius * Math.sin(t * helixFrequency);
