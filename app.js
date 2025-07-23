@@ -153,7 +153,7 @@ let t = 1;
 
 
 
-/    // Updated Solar System Simulation with Individual Helix Motion for Planets
+/// Updated Solar System Simulation with Individual Helix Motion for Planets
 // --------------------------------------------------
 // Note: This version makes each planet follow its own helix pattern
 // around the Sun, while maintaining current Z-axis spacing.
