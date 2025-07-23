@@ -27,12 +27,12 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxTexture = cubeLoader.load([
-  'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg',
+  '/images/space.jpg',
+  './images/space.left.jpg',
+  './images/space.right.jpg',
+  './images/space.up.jpg',
+  './images/space.down.jpg',
+  './images/space2.jpg'
 ]);
 scene.background = skyboxTexture;
 
