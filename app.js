@@ -230,7 +230,6 @@ if (p.name === 'Neptune') {
   // Axial tilt toward the Sun
   p.mesh.lookAt(sun.position);
   p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
-};
 
 
   // Animate comet tail
@@ -263,7 +262,7 @@ if (p.name === 'Neptune') {
   renderer.render(scene, camera);
   t += 1;
   requestAnimationFrame(animate);
-}
+})
 
 
 
