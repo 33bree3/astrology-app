@@ -181,7 +181,6 @@ function animate() {
 
    // Get accurate heliocentric 3D coordinates
     
-const planetPos = p.data.position2000(jd);
     
 const scale = 100; // adjust this value to fit your scene scale
 
