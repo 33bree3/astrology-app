@@ -13,17 +13,17 @@ import saturnData from './astronomia/data/vsop87Dsaturn.js';
 import uranusData from './astronomia/data/vsop87Duranus.js';
 import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
-// --- TEXTURE LOADER ----------------------------------------------
+// Texture loader for planet and background images
 const textureLoader = new THREE.TextureLoader();
 
-// --- SET UP RENDERER ---------------------------------------------
+// Renderer setup
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-// --- SCENE BACKGROUND SETUP --------------------------------------
+// Scene background (skybox)
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxTexture = cubeLoader.load([
@@ -36,10 +36,11 @@ const skyboxTexture = cubeLoader.load([
 ]);
 scene.background = skyboxTexture;
 
-// --- CAMERA AND CONTROLS -----------------------------------------
+// Camera setup
 const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
 const cameraOffset = new THREE.Vector3(300, 400, 500);
 
+// OrbitControls to move around the scene
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
 controls.minDistance = 100;
@@ -48,6 +49,7 @@ controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
 
+// Clamp camera distance around solar system center
 function clampCameraDistance() {
   const minDistance = 100;
   const maxDistance = 500;
@@ -58,7 +60,7 @@ function clampCameraDistance() {
 }
 controls.addEventListener('change', clampCameraDistance);
 
-// --- LIGHTING ----------------------------------------------------
+// Lighting setup
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
 const sunLight = new THREE.PointLight(0xffffff, 1.5);
 sunLight.castShadow = true;
@@ -66,7 +68,7 @@ sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
 
-// --- SUN ---------------------------------------------------------
+// Sun mesh setup
 const sunRadius = 69;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
@@ -79,7 +81,7 @@ const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.castShadow = false;
 sun.receiveShadow = false;
 
-// --- COMET TAIL --------------------------------------------------
+// Comet tail particles
 const tailLength = 333;
 const tailParticlesCount = 21;
 const tailParticles = [];
@@ -100,7 +102,7 @@ for (let i = 0; i < tailParticlesCount; i++) {
   tailParticles.push(sprite);
 }
 
-// --- PLANET TEXTURES ---------------------------------------------
+// Planet texture loading
 const planetTextures = {
   Mercury: { color: textureLoader.load('./images/merc.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
   Venus:   { color: textureLoader.load('./images/venus.cmap.jpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
@@ -112,7 +114,7 @@ const planetTextures = {
   Neptune: { color: textureLoader.load('./images/neptune.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
 };
 
-// --- PLANET CONFIGURATION ----------------------------------------
+// Planet configuration: orbital radius and size
 const scaleFactor = 0.1;
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 121.2, planetSize: 12 },
@@ -125,7 +127,7 @@ const planets = [
   { name: 'Neptune', data: new Planet(neptuneData), radius: 222.2, planetSize: 24 },
 ];
 
-// --- CREATE PLANET MESHES ----------------------------------------
+// Create planet mesh objects with material
 planets.forEach(p => {
   p.mesh = new THREE.Mesh(
     new THREE.SphereGeometry(p.planetSize, 32, 32),
@@ -139,14 +141,16 @@ planets.forEach(p => {
   p.mesh.receiveShadow = true;
 });
 
-// --- SOLAR SYSTEM GROUP ------------------------------------------
+// Add sun and planets to solarSystem group
 const solarSystem = new THREE.Group();
 solarSystem.add(sun);
 planets.forEach(p => solarSystem.add(p.mesh));
 scene.add(solarSystem);
 
-// --- ANIMATION LOOP ----------------------------------------------
+// Animation variables
 let t = 0;
+
+// Animate loop - drives all motion
 function animate() {
   const jd = julian.DateToJD(new Date());
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
@@ -162,23 +166,26 @@ function animate() {
     const x = r * Math.cos(angle);
     const y = r * Math.sin(angle);
     const zOffset = -r * 1.8;
- 
-///// rotTION AROUNG THE SUN 
-    
-    p.mesh.position.set(    
-  solarSystem.position.x + x,
-  solarSystem.position.y + y,
-  solarSystem.position.z + zOffset
-);
 
+    // Set planet orbit position around the Sun
+    p.mesh.position.set(
+      solarSystem.position.x + x,
+      solarSystem.position.y + y,
+      solarSystem.position.z + zOffset
+    );
 
-    p.mesh.rotation.x += 0.1 + 0.03 * i;
-    const wobbleAmplitude = 1 + 0.003 * i;
-    const wobbleSpeed = 1 + 0.03 * i;
-  p.mesh.rotation.y += 0.01 + 0.005 * i; // gentle self-rotation
+    // Self-rotation: X-axis spin and Y-axis wobble
+    p.mesh.rotation.x += 0.1 + 0.03 * i; // Main rotation
+    const wobbleAmplitude = 0.05 + 0.01 * i; // Adjust for more/less wobble
+    const wobbleSpeed = 0.005 + 0.002 * i; // Adjust for faster/slower wobble
+    p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude; // Y-axis wobble
 
+    // Tilt planet axis slightly toward sun
+    p.mesh.lookAt(solarSystem.position);
+    p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5)); // Approx Earth-like axial tilt
   });
 
+  // Move entire solar system in helix pattern
   const helixRadius = 3;
   const helixFrequency = 0.03;
   const helixX = helixRadius * Math.cos(t * helixFrequency);
@@ -187,6 +194,7 @@ function animate() {
   solarSystem.position.set(helixX, helixY, helixZ);
   sunLight.position.copy(solarSystem.position);
 
+  // Animate comet tail
   tailParticles.forEach((particle, idx) => {
     const distanceBehind = (idx / tailParticlesCount) * tailLength;
     const jitter = new THREE.Vector3(
@@ -206,6 +214,7 @@ function animate() {
     particle.scale.set(scale, scale, scale);
   });
 
+  // Auto-follow solar system with camera unless user is interacting
   if (!controls.userIsInteracting) {
     camera.position.copy(solarSystem.position).add(cameraOffset);
     controls.target.copy(solarSystem.position);
@@ -223,7 +232,7 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 animate();
 
-// --- UI TAB SWITCHING --------------------------------------------
+// Tab switching UI logic
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
@@ -232,4 +241,3 @@ document.querySelectorAll('.tab').forEach(btn => {
     document.getElementById(btn.dataset.tab).classList.add('active');
   });
 });
-
