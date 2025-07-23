@@ -117,14 +117,14 @@ const planetTextures = {
 // Planet configuration: orbital radius and size
 const scaleFactor = 0.1;
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 444, planetSize: 12 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 497, planetSize: 18 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 504, planetSize: 21 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 534, planetSize: 15 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 564, planetSize: 36 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 594, planetSize: 30 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 621, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 693, planetSize: 24 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 300, planetSize: 12 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 303, planetSize: 18 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 309, planetSize: 21 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 312, planetSize: 15 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 315, planetSize: 36 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 318, planetSize: 30 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 321, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 327, planetSize: 24 },
 ];
 
 // Create planet mesh objects with material
@@ -165,7 +165,7 @@ function animate() {
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
-  const scale = 100; // Scene scale multiplier for AU values
+  const scale = 300; // Scene scale multiplier for AU values
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
