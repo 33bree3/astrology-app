@@ -214,31 +214,23 @@ function animate() {
   planets.forEach((p, i) => {
     
     // Calculate orbital position using astronomy data
-    
-    const pos = p.data.position(jd);
-   const baseAngle = pos.lon;
+    // Calculate orbital position using astronomy data
+const pos = p.data.position(jd);
+const baseAngle = pos.lon;
 const orbitalSpin = t * 0.003 * (1.2 + i * 0.3);
-const angleOffset = i * 0.5;
+
+// Apply phase offset so each planet is staggered differently
+const angleOffset = i * 0.5; // Controls how much each planet is offset
 const angle = baseAngle + orbitalSpin + angleOffset;
 
-
- const r = p.radius;
-
-// Use angle + phase offset so each planet is staggered differently
-    
-const angleOffset = i * 0.5; // Adjust this factor to control spread
-const angle = baseAngle + spin + angleOffset;
+const r = p.radius;
 
 // Circular orbit around the sun
 const x = r * Math.cos(angle);
 const y = r * Math.sin(angle);
 
- // Give each planet a z-offset so it sits slightly above/below the orbital plane
-    
-const x = r * Math.cos(angle);
-const y = r * Math.sin(angle);
-const z = i * 5 + Math.sin(t * 0.01 + i) * 3; // stagger z by index and time
-
+//  Z-offset to lift planets out of the flat plane
+const z = Math.sin(t * 0.001 + i) * (i * 0.5); // tweak as needed
 
 p.mesh.position.set(x, y, z);
 
