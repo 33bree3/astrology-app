@@ -51,8 +51,8 @@ controls.panSpeed = 0.5;
 
 // Clamp camera distance around solar system center
 function clampCameraDistance() {
-  const minDistance = 100;
-  const maxDistance = 500;
+  const minDistance = 333;
+  const maxDistance = 3333;
   const distance = camera.position.distanceTo(solarSystem.position);
   const direction = camera.position.clone().sub(solarSystem.position).normalize();
   if (distance < minDistance) camera.position.copy(solarSystem.position).add(direction.multiplyScalar(minDistance));
@@ -183,7 +183,7 @@ function animate() {
   const lat = planetPos.lat;
 
 function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 2222; // Compresses outer distances
+  return Math.log(au + 1) * 5555; // Compresses outer distances
 }
 
 const scaledR = scaleOrbitDistance(r);
