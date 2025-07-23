@@ -115,7 +115,7 @@ const planetTextures = {
 };
 
 // Planet configuration: orbital radius and size
-const scaleFactor = 10;
+const scaleFactor = 3;
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 99 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 111 },
