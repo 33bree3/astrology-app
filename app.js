@@ -155,41 +155,32 @@ let t = 0;
 // --------------------------------------------------
 // Planets move around the Sun on the X-axis only, with Z displacement determined by their orbital eccentricity.
 
+// Updated Solar System Simulation with Real 3D Planet Positions Using Astronomia Data
+// -----------------------------------------------------------------------------------
+// Each planet uses true heliocentric 3D coordinates (x, y, z) from Astronomia.
+
 function animate() {
   const jd = julian.DateToJD(new Date());
 
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
-  const orbitSpeed = 0.0015;
-  const zSpacing = -9;
+  const scale = 100; // Scene scale multiplier for AU values
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(solarSystem.position);
 
   planets.forEach((p, i) => {
-    // Use astronomia library to get heliocentric coordinates
-    const planetPos = p.data.position2000(jd);
-    const x = planetPos.range * Math.cos(planetPos.lon);
-    const z = planetPos.range * Math.sin(planetPos.lon);
+    // Get accurate 3D heliocentric position (x, y, z in AU)
+    const planetPos = p.data.position2000(jd); // Returns { x, y, z }
 
-    // Elliptical motion: stretch X axis, compress Z axis using eccentricity
-    const e = p.data.orbitalElements ? p.data.orbitalElements.eccentricity : 0;
-    const a = p.radius; // Using radius from initial setup as semi-major axis
-    const b = a * Math.sqrt(1 - e * e); // Semi-minor axis
+    const orbitX = planetPos.x * scale;
+    const orbitY = planetPos.y * scale;
+    const orbitZ = planetPos.z * scale;
 
-   // Get accurate heliocentric 3D coordinates
-    
-    
-const scale = 9; // adjust this value to fit your scene scale
-
-const orbitX = planetPos.x * scale;
-const orbitY = planetPos.y * scale;
-const orbitZ = planetPos.z * scale;
-
-p.mesh.position.set(orbitX, orbitY, orbitZ);
-
+    // Set planet mesh position directly using true coordinates
+    p.mesh.position.set(orbitX, orbitY, orbitZ);
 
     // Spin on X-axis
     p.mesh.rotation.x += 0.1 + 0.03 * i;
@@ -235,7 +226,6 @@ p.mesh.position.set(orbitX, orbitY, orbitZ);
   t += 1;
   requestAnimationFrame(animate);
 }
-
 
 
 
