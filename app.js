@@ -192,6 +192,7 @@ planets.forEach(p => solarSystem.add(p.mesh));
 scene.add(solarSystem);
 
 let t = 0;
+
 // ANIMATION FUNCTION ------------------------
 function animate() {
   
@@ -216,16 +217,24 @@ function animate() {
     const orbitalSpin = t * 0.003 * (1.2 + i * 0.3); // Vary orbital speed slightly
     const angle = baseAngle + orbitalSpin;
 
-    // Convert polar coordinates to Cartesian
-    
-    const r = p.radius;
-    const x = r * Math.cos(angle);
-    const y = r * Math.sin(angle);
-    const z = 0;
+ const r = p.radius;
 
-    // Set planet's orbital position
+// Use angle + phase offset so each planet is staggered differently
     
-    p.mesh.position.set(x, y, z);
+const angleOffset = i * 0.5; // Adjust this factor to control spread
+const angle = baseAngle + spin + angleOffset;
+
+// Circular orbit around the sun
+const x = r * Math.cos(angle);
+const y = r * Math.sin(angle);
+
+ Give each planet a z-offset so it sits slightly above/below the orbital plane
+    
+const zOffset = Math.sin(t * 0.01 + i) * (i * 0.5); // You can tweak this pattern
+const z = zOffset;
+
+p.mesh.position.set(x, y, z);
+
 
     // ---- SPIN ON OWN AXIS WITH WOBBLE ----
     
