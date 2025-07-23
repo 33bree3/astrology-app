@@ -109,22 +109,22 @@ const planetTextures = {
   Earth:   { color: textureLoader.load('./images/earth.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
   Mars:    { color: textureLoader.load('./images/mars.cmap.jpg'), bump: textureLoader.load('./images/mars.bump.jpg') },
   Jupiter: { color: textureLoader.load('./images/jupiter.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Saturn:  { color: textureLoader.load('./images/saturn.cmap.jpg'), bump: textureLoader.load('./images/saturn.ring.jpg') },
-  Uranus:  { color: textureLoader.load('./images/uranus.cmap.jpg'), bump: textureLoader.load('./images/uranus.ring.bump.jpg') },
+  Saturn:  { color: textureLoader.load('./images/saturn.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Uranus:  { color: textureLoader.load('./images/uranus.cmap.jpg'), bump: textureLoader.load('./images/pluto.bump.jpg') },
   Neptune: { color: textureLoader.load('./images/neptune.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
 };
 
 // Planet configuration: orbital radius and size
 const scaleFactor = 0.1;
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 999, planetSize: 12 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 1212, planetSize: 18 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 1515, planetSize: 21 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 1717, planetSize: 15 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 2020, planetSize: 36 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 2222, planetSize: 30 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 2525, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 3333, planetSize: 24 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 1818, planetSize: 12 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 1919, planetSize: 18 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 2121, planetSize: 21 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 2222, planetSize: 15 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 2323, planetSize: 36 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 2525, planetSize: 30 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 2626, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 2828, planetSize: 24 },
 ];
 
 // Create planet mesh objects with material
