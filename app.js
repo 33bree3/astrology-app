@@ -161,14 +161,14 @@ const planetTextures = {
 const scaleFactor = 0.1;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 6033 *scaleFactor, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 6993* scaleFactor, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 7932 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 8729 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 9393 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 12121* scaleFactor, planetSize: 27 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 13131 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 14141 * scaleFactor, planetSize: 21 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 603 *scaleFactor, planetSize: 9 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 699* scaleFactor, planetSize: 15 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 793 * scaleFactor, planetSize: 18 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 872 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 939 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 1212* scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 1313 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 1414 * scaleFactor, planetSize: 21 },
 ];
 
 // Create PLANET meshes with color and bump maps applied
@@ -211,43 +211,30 @@ function animate() {
 
   // Update each planet's orbital position and self-rotation
   
-  planets.forEach((p, i) => {
-    
-    // Calculate orbital position using astronomy data
-    // Calculate orbital position using astronomy data
-const pos = p.data.position(jd);
-const baseAngle = pos.lon;
-const orbitalSpin = t * 0.003 * (1.2 + i * 0.3);
+ planets.forEach((p, i) => {
+  const pos = p.data.position(julian.DateToJD(new Date()));
+  const baseAngle = pos.lon;
+  const orbitalSpin = t * 0.003 * (1.2 + i * 0.3);
+  const angleOffset = i * 0.5;
+  const angle = baseAngle + orbitalSpin + angleOffset;
 
-// Apply phase offset so each planet is staggered differently
-const angleOffset = i * 0.5; // Controls how much each planet is offset
-const angle = baseAngle + orbitalSpin + angleOffset;
+  const r = p.radius;
+  const x = r * Math.cos(angle);
+  const y = r * Math.sin(angle);
 
-const r = p.radius;
+  // Depth stagger: farther planets trail more in Z-axis
+  const zOffset = -r * 0.05;
+  p.mesh.position.set(x, y, solarSystem.position.z + zOffset);
 
-// Circular orbit around the sun
-const x = r * Math.cos(angle);
-const y = r * Math.sin(angle);
+  // Planet self-spin
+  p.mesh.rotation.x += 0.01 + 0.001 * i;
 
-//  Z-offset to lift planets out of the flat plane
-const z = Math.sin(t * 0.001 + i) * (i * 0.5); // tweak as needed
+  const wobbleAmplitude = 1 + 0.01 * i;
+  const wobbleSpeed = 1 + 0.001 * i;
+  p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
+});
 
-p.mesh.position.set(x, y, z);
-
-
-    // ---- SPIN ON OWN AXIS WITH WOBBLE ----
-    
-    // X-axis rotation (normal spin)
-    
-    p.mesh.rotation.X += 0.01 + 0.001 * i;
-
-    // Simulate axial tilt wobble using sine wave oscillation on X-axis
-    
-    const wobbleAmplitude = 1 + 0.01 * i;     // Vary wobble amplitude by planet
-    const wobbleSpeed = 1 + 0.001 * i;       // Vary speed of wobble by planet
-    p.mesh.rotation.Y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
-  });
-
+  
   // ---- HELICAL SYSTEM MOTION ----
   
   const helixRadius = 3;
