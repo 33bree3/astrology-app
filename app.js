@@ -148,7 +148,7 @@ planets.forEach(p => solarSystem.add(p.mesh));
 scene.add(solarSystem);
 
 // Animation variables
-let t = 1;
+let t = 0;
 
 
 
@@ -169,9 +169,9 @@ function animate() {
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
   // Parameters for helix movement
-  const helixRadius = 20;             // Radius of each planet's helix path
-  const helixFrequency = 0.01;        // Frequency of revolution
-  const helixZSpacing = -50;          // Distance between planets along Z
+  const helixRadius = 39;             // Radius of each planet's helix path
+  const helixFrequency = 0.001;        // Frequency of revolution
+  const helixZSpacing = -69;          // Distance between planets along Z
 
   planets.forEach((p, i) => {
     const r = p.radius;
@@ -182,7 +182,7 @@ function animate() {
     // Compute circular XY path per helix
     const x = helixRadius * Math.cos(helixAngle);
     const y = helixRadius * Math.sin(helixAngle);
-    const z = i * helixZSpacing; // stagger planets in Z (keep their order)
+    const z = (i + 1) * helixZSpacing; // stagger planets in Z behind the sun (keep their order)
 
     p.mesh.position.set(
       solarSystem.position.x + x,
