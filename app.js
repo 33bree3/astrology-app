@@ -235,14 +235,14 @@ function animate() {
 
     // Simulate axial tilt wobble using sine wave oscillation on X-axis
     
-    const wobbleAmplitude = 0.0005 + 0.01 * i;     // Vary wobble amplitude by planet
-    const wobbleSpeed = 0.00005 + 0.001 * i;       // Vary speed of wobble by planet
+    const wobbleAmplitude = 1 + 0.01 * i;     // Vary wobble amplitude by planet
+    const wobbleSpeed = 1 + 0.001 * i;       // Vary speed of wobble by planet
     p.mesh.rotation.Y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
   });
 
   // ---- HELICAL SYSTEM MOTION ----
   
-  const helixRadius = 36;
+  const helixRadius = 3;
   const helixFrequency = 0.03;
   const helixX = helixRadius * Math.cos(t * helixFrequency);
   const helixY = helixRadius * Math.sin(t * helixFrequency);
