@@ -151,15 +151,9 @@ scene.add(solarSystem);
 let t = 0;
 
 
-// Updated Solar System Simulation with Realistic Orbital Eccentricity
+// Solar System Simulation with Elliptical Orbits Along X-Axis
 // --------------------------------------------------
-// Each planet now orbits the Sun elliptically using real orbital eccentricity values,
-// preserving accurate Z-offset positions while the entire system moves in a helix.
-
-// Updated Solar System Simulation with Realistic Orbital Eccentricity
-// --------------------------------------------------
-// Each planet now orbits the Sun elliptically using real orbital eccentricity values,
-// preserving accurate Z-offset positions. Helix motion has been removed.
+// Planets move around the Sun on the X-axis only, with Z displacement determined by their orbital eccentricity.
 
 function animate() {
   const jd = julian.DateToJD(new Date());
@@ -179,9 +173,9 @@ function animate() {
     0.0086  // Neptune
   ];
 
-  const baseOrbitA = 69 // Base semi-major axis for Mercury
-  const orbitSpeed = 0.015;
-  const zSpacing = -123;
+  const baseOrbitA = 69; // Base semi-major axis for Mercury
+  const orbitSpeed = 0.0015;
+  const zSpacing = -222;
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
@@ -194,10 +188,10 @@ function animate() {
 
     const angle = t * orbitSpeed + i * 0.5; // angular offset per planet
     const orbitX = a * Math.cos(angle);
-    const orbitY = 0; // Keep all orbits on the XZ plane
-    const orbitZ = b * Math.sin(angle) + (i + 1) * zSpacing;
+    const orbitY = 0; // Orbits remain in XZ plane
+    const orbitZ = (i + 1) * zSpacing + b * Math.sin(angle);
 
-    // Position each planet in elliptical orbit
+    // Position each planet in elliptical orbit along X-axis
     p.mesh.position.set(orbitX, orbitY, orbitZ);
 
     // Spin on X-axis
@@ -244,7 +238,6 @@ function animate() {
   t += 1;
   requestAnimationFrame(animate);
 }
-
 
 
 
