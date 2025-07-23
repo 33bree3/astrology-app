@@ -176,7 +176,7 @@ function animate() {
   sunLight.position.copy(solarSystem.position);
 
   // Parameters for elliptical orbits
-  const orbitA = 333; // semi-major axis (X)
+  const orbitA = 69; // semi-major axis (X)
   const orbitB = 111; // semi-minor axis (Y)
   const orbitSpeed = 0.05;
   const helixZSpacing = -111;
