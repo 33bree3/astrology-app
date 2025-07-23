@@ -120,11 +120,11 @@ const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 444, planetSize: 12 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 497, planetSize: 18 },
   { name: 'Earth',   data: new Planet(earthData),   radius: 504, planetSize: 21 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 555, planetSize: 15 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 603, planetSize: 36 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 666, planetSize: 30 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 702, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 777, planetSize: 24 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 534, planetSize: 15 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 564, planetSize: 36 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 594, planetSize: 30 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 621, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 693, planetSize: 24 },
 ];
 
 // Create planet mesh objects with material
