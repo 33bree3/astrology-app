@@ -43,8 +43,8 @@ const cameraOffset = new THREE.Vector3(300, 400, 500);
 // OrbitControls to move around the scene
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 100;
-controls.maxDistance = 1000;
+controls.minDistance = 1000;
+controls.maxDistance = 2000;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
@@ -117,14 +117,14 @@ const planetTextures = {
 // Planet configuration: orbital radius and size
 const scaleFactor = 10;
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 1, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 1, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 1, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 2, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 3, planetSize: 25 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 4, planetSize: 21 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 1, planetSize: 23 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 20 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 1, planetSize: 30 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 1, planetSize: 36 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 1, planetSize: 26 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 2, planetSize: 72 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 3, planetSize: 60 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 4, planetSize: 50 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 1, planetSize: 52 },
 ];
 
 // Create planet mesh objects with material
@@ -165,25 +165,38 @@ function animate() {
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
-  const scale = 222; // Scene scale multiplier for AU values
+
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(solarSystem.position);
 
  planets.forEach((p, i) => {
-  // Get accurate spherical coordinates from astronomia
+
+   // Get accurate spherical coordinates from astronomia
+
+
   const planetPos = p.data.position2000(jd); // { lon, lat, range }
 
   const r = planetPos.range;
   const lon = planetPos.lon;
   const lat = planetPos.lat;
 
-  const orbitX = r * Math.cos(lat) * Math.cos(lon) * scale;
-  const orbitY = r * Math.sin(lat) * scale;
-  const orbitZ = r * Math.cos(lat) * Math.sin(lon) * scale;
+function scaleOrbitDistance(au) {
+  return Math.log(au + 1) * 400; // Compresses outer distances
+}
 
+const scaledR = scaleOrbitDistance(r);
+
+const orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
+const orbitY = scaledR * Math.sin(lat);
+const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
+
+   
   // Set planet mesh position using converted Cartesian coords
+
+
+   
   p.mesh.position.set(orbitX, orbitY, orbitZ);
 
   // Spin on X-axis
