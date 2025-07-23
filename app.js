@@ -43,8 +43,8 @@ const cameraOffset = new THREE.Vector3(300, 400, 500);
 // OrbitControls to move around the scene
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 2222;
-controls.maxDistance = 3333;
+controls.minDistance = 333;
+controls.maxDistance = 5555;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
@@ -69,7 +69,7 @@ sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
 
 // Sun mesh setup
-const sunRadius = 69;
+const sunRadius = 93;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 const sunMaterial = new THREE.MeshStandardMaterial({
@@ -183,7 +183,7 @@ function animate() {
   const lat = planetPos.lat;
 
 function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 3333; // Compresses outer distances
+  return Math.log(au + 1) * 2222; // Compresses outer distances
 }
 
 const scaledR = scaleOrbitDistance(r);
