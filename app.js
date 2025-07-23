@@ -183,11 +183,10 @@ function animate() {
   const lat = planetPos.lat;
 
 function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 1111; // Compresses outer distances
+  return Math.log(au + 1) * 333; // Compresses outer distances
 }
 
 const scaledR = scaleOrbitDistance(r);
-
 const orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
 const orbitY = scaledR * Math.sin(lat);
 const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
