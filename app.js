@@ -182,7 +182,9 @@ function animate() {
     const angle = t * orbitSpeed + i * 0.5;
     const orbitX = a * Math.cos(angle);
     const orbitY = 0;
-    const orbitZ = (i + 1) * zSpacing + b * Math.sin(angle);
+ const range = planetPos.range * scaleFactor; // scale distance to match scene units
+const orbitZ = b * Math.sin(angle) - range;
+
 
     // Set planet position based on elliptical orbit
     p.mesh.position.set(orbitX, orbitY, orbitZ);
