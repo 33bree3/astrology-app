@@ -179,15 +179,18 @@ function animate() {
     const a = p.radius; // Using radius from initial setup as semi-major axis
     const b = a * Math.sqrt(1 - e * e); // Semi-minor axis
 
-    const angle = t * orbitSpeed + i * 0.5;
-    const orbitX = a * Math.cos(angle);
-    const orbitY = 0;
- const range = planetPos.range * scaleFactor; // scale distance to match scene units
-const orbitZ = b * Math.sin(angle) - range;
+   // Get accurate heliocentric 3D coordinates
+    
+const planetPos = p.data.position2000(jd);
+    
+const scale = 100; // adjust this value to fit your scene scale
 
+const orbitX = planetPos.x * scale;
+const orbitY = planetPos.y * scale;
+const orbitZ = planetPos.z * scale;
 
-    // Set planet position based on elliptical orbit
-    p.mesh.position.set(orbitX, orbitY, orbitZ);
+p.mesh.position.set(orbitX, orbitY, orbitZ);
+
 
     // Spin on X-axis
     p.mesh.rotation.x += 0.1 + 0.03 * i;
