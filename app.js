@@ -162,7 +162,7 @@ planets.forEach(p => {
 });
 
 
-
+const solarSystem = new THREE.Group();
 
 
 
