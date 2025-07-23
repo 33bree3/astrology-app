@@ -43,7 +43,7 @@ const cameraOffset = new THREE.Vector3(300, 400, 500);
 // OrbitControls to move around the scene
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 333;
+controls.minDistance = 3333;
 controls.maxDistance = 5555;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
@@ -51,7 +51,7 @@ controls.panSpeed = 0.5;
 
 // Clamp camera distance around solar system center
 function clampCameraDistance() {
-  const minDistance = 333;
+  const minDistance = 3333;
   const maxDistance = 7777;
   const distance = camera.position.distanceTo(solarSystem.position);
   const direction = camera.position.clone().sub(solarSystem.position).normalize();
