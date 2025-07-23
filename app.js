@@ -164,9 +164,9 @@ function animate() {
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
   // Parameters for group helix motion (solarSystem group)
-  const helixRadius = 3333;
-  const helixFrequency = 9;
-  const helixZSpeed = 9;
+  const helixRadius = 333333;
+  const helixFrequency = 3;
+  const helixZSpeed = 3;
 
   // Compute position of the solarSystem group along a helix
   const helixX = helixRadius * Math.cos(t * helixFrequency);
