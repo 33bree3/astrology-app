@@ -150,48 +150,60 @@ scene.add(solarSystem);
 // Animation variables
 let t = 1;
 
-// Animate loop - drives all motion
+
+
+
+/    // Updated Solar System Simulation with Individual Helix Motion for Planets
+// --------------------------------------------------
+// Note: This version makes each planet follow its own helix pattern
+// around the Sun, while maintaining current Z-axis spacing.
+
+// Your imports and setup code remains unchanged (see original code above)
+// This update targets the animate loop logic only
+
+// Start of updated animate loop
 function animate() {
   const jd = julian.DateToJD(new Date());
+
+  // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
+  // Parameters for helix movement
+  const helixRadius = 20;             // Radius of each planet's helix path
+  const helixFrequency = 0.01;        // Frequency of revolution
+  const helixZSpacing = -50;          // Distance between planets along Z
+
   planets.forEach((p, i) => {
-    const pos = p.data.position(jd);
-    const baseAngle = pos.lon;
-    const orbitalSpin = t * 0.0003 * (1 / (i + 1));
-    const angleOffset = i * 3;
-    const angle = baseAngle + orbitalSpin + angleOffset;
-
     const r = p.radius;
-    const x = r * Math.cos(angle);
-    const y = r * Math.sin(angle);
-    const zOffset = -r * 1.8;
 
-    // Set planet orbit position around the Sun
+    // Each planet gets a unique angular phase offset
+    const helixAngle = t * helixFrequency + i * 0.5;
+
+    // Compute circular XY path per helix
+    const x = helixRadius * Math.cos(helixAngle);
+    const y = helixRadius * Math.sin(helixAngle);
+    const z = i * helixZSpacing; // stagger planets in Z (keep their order)
+
     p.mesh.position.set(
       solarSystem.position.x + x,
       solarSystem.position.y + y,
-      solarSystem.position.z + zOffset
+      solarSystem.position.z + z
     );
 
-    // Self-rotation: X-axis spin and Y-axis wobble
-    p.mesh.rotation.x += 0.1 + 0.03 * i; // Main rotation
-    const wobbleAmplitude = 0.05 + 0.01 * i; // Adjust for more/less wobble
-    const wobbleSpeed = 0.005 + 0.002 * i; // Adjust for faster/slower wobble
+    // Self-rotation and wobble
+    p.mesh.rotation.x += 0.1 + 0.03 * i; // Main X-axis spin
+    const wobbleAmplitude = 0.05 + 0.01 * i;
+    const wobbleSpeed = 0.005 + 0.002 * i;
     p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude; // Y-axis wobble
 
-    // Tilt planet axis slightly toward sun
+    // Face slightly toward the solarSystem center with tilt
     p.mesh.lookAt(solarSystem.position);
-    p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5)); // Approx Earth-like axial tilt
+    p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
   });
 
-  // Move entire solar system in helix pattern
-  const helixRadius = 0.01;
-  const helixFrequency = 0.001;
-  const helixX = helixRadius * Math.cos(t * helixFrequency);
-  const helixY = helixRadius * Math.sin(t * helixFrequency);
-  const helixZ = t * 0.001;
-  solarSystem.position.set(helixX, helixY, helixZ);
+  // Move the entire solar system slowly forward on Z (optional - for comet tail feel)
+  const forwardSpeed = 0.05;
+  solarSystem.position.z += forwardSpeed;
   sunLight.position.copy(solarSystem.position);
 
   // Animate comet tail
@@ -214,7 +226,7 @@ function animate() {
     particle.scale.set(scale, scale, scale);
   });
 
-  // Auto-follow solar system with camera unless user is interacting
+  // Auto-follow camera unless user is interacting
   if (!controls.userIsInteracting) {
     camera.position.copy(solarSystem.position).add(cameraOffset);
     controls.target.copy(solarSystem.position);
@@ -225,6 +237,13 @@ function animate() {
   t += 1;
   requestAnimationFrame(animate);
 }
+
+
+
+
+
+
+
 
 controls.userIsInteracting = false;
 controls.addEventListener('start', () => { controls.userIsInteracting = true; });
