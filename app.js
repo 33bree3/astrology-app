@@ -161,14 +161,14 @@ const planetTextures = {
 const scaleFactor = 0.1;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 603 *scaleFactor, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 699* scaleFactor, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 793 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 872 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 939 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 1212* scaleFactor, planetSize: 27 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 1313 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 1414 * scaleFactor, planetSize: 21 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 1414 *scaleFactor, planetSize: 9 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 1515* scaleFactor, planetSize: 15 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 1626 * scaleFactor, planetSize: 18 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 1737 * scaleFactor, planetSize: 12 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 1818 * scaleFactor, planetSize: 30 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 1929* scaleFactor, planetSize: 27 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 2121 * scaleFactor, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 2349 * scaleFactor, planetSize: 21 },
 ];
 
 // Create PLANET meshes with color and bump maps applied
@@ -215,7 +215,7 @@ function animate() {
   const pos = p.data.position(julian.DateToJD(new Date()));
   const baseAngle = pos.lon;
   const orbitalSpin = t * 0.003 * (1.2 + i * 0.3);
-  const angleOffset = i * 0.5;
+  const angleOffset = i * 3;
   const angle = baseAngle + orbitalSpin + angleOffset;
 
   const r = p.radius;
@@ -223,7 +223,7 @@ function animate() {
   const y = r * Math.sin(angle);
 
   // Depth stagger: farther planets trail more in Z-axis
-  const zOffset = -r * 0.05;
+  const zOffset = r * 0.93;
   p.mesh.position.set(x, y, solarSystem.position.z + zOffset);
 
   // Planet self-spin
