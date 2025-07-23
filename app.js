@@ -117,13 +117,13 @@ const planetTextures = {
 // Planet configuration: orbital radius and size
 const scaleFactor = 0.1;
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 1212, planetSize: 12 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 1313, planetSize: 18 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 1515.4, planetSize: 21 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 1616, planetSize: 15 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 1818, planetSize: 36 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 2121, planetSize: 30 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 2222, planetSize: 24 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 999, planetSize: 12 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 1212, planetSize: 18 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 1515, planetSize: 21 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 1717, planetSize: 15 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 2020, planetSize: 36 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 2222, planetSize: 30 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 2525, planetSize: 24 },
   { name: 'Neptune', data: new Planet(neptuneData), radius: 3333, planetSize: 24 },
 ];
 
@@ -176,10 +176,10 @@ function animate() {
   sunLight.position.copy(solarSystem.position);
 
   // Parameters for elliptical orbits
-  const orbitA = 50; // semi-major axis (X)
-  const orbitB = 30; // semi-minor axis (Y)
+  const orbitA = 100; // semi-major axis (X)
+  const orbitB = 100; // semi-minor axis (Y)
   const orbitSpeed = 0.05;
-  const helixZSpacing = -222;
+  const helixZSpacing = -111;
 
   planets.forEach((p, i) => {
     const angle = t * orbitSpeed + i * 0.5; // phase shift by index
