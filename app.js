@@ -124,7 +124,7 @@ const planets = [
   { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 369 },
   { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 297 },
   { name: 'Uranus',  data: new Planet(uranusData),  radius: 7, planetSize: 234 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 222 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 201 },
 ];
 
 // Create planet mesh objects with material
