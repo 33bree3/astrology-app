@@ -148,7 +148,7 @@ planets.forEach(p => solarSystem.add(p.mesh));
 scene.add(solarSystem);
 
 // Animation variables
-let t = 0;
+let t = 1;
 
 // Animate loop - drives all motion
 function animate() {
@@ -186,11 +186,11 @@ function animate() {
   });
 
   // Move entire solar system in helix pattern
-  const helixRadius = 0.9;
-  const helixFrequency = 0.01;
+  const helixRadius = 0.01;
+  const helixFrequency = 0.001;
   const helixX = helixRadius * Math.cos(t * helixFrequency);
   const helixY = helixRadius * Math.sin(t * helixFrequency);
-  const helixZ = t * 0.01;
+  const helixZ = t * 0.001;
   solarSystem.position.set(helixX, helixY, helixZ);
   sunLight.position.copy(solarSystem.position);
 
