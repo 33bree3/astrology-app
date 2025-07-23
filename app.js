@@ -37,8 +37,18 @@ const skyboxTexture = cubeLoader.load([
 scene.background = skyboxTexture;
 
 // Camera setup
-const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
+const camera = new THREE.PerspectiveCamera(
+  123,
+  canvas.clientWidth / canvas.clientHeight,
+  0.1,
+  5000
+);
+
+// Initial camera offset (your original position relative to solar system)
 const cameraOffset = new THREE.Vector3(300, 400, 500);
+
+// Position the camera initially at solarSystem.position + cameraOffset
+camera.position.copy(solarSystem.position).add(cameraOffset);
 
 // OrbitControls to move around the scene
 const controls = new OrbitControls(camera, canvas);
@@ -49,16 +59,42 @@ controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
 
-// Clamp camera distance around solar system center
+// Function to clamp camera distance between min and max from solar system center
 function clampCameraDistance() {
   const minDistance = 1111;
   const maxDistance = 7777;
   const distance = camera.position.distanceTo(solarSystem.position);
   const direction = camera.position.clone().sub(solarSystem.position).normalize();
-  if (distance < minDistance) camera.position.copy(solarSystem.position).add(direction.multiplyScalar(minDistance));
-  else if (distance > maxDistance) camera.position.copy(solarSystem.position).add(direction.multiplyScalar(maxDistance));
+  if (distance < minDistance) {
+    camera.position.copy(solarSystem.position).add(direction.multiplyScalar(minDistance));
+  } else if (distance > maxDistance) {
+    camera.position.copy(solarSystem.position).add(direction.multiplyScalar(maxDistance));
+  }
 }
 controls.addEventListener('change', clampCameraDistance);
+
+// ----------- MIRROR CAMERA POSITION -------------
+// Mirror the camera position relative to solarSystem.position
+
+function mirrorCameraPosition() {
+  // Get current vector from solarSystem center to camera
+  const offset = camera.position.clone().sub(solarSystem.position);
+  
+  // Mirror the offset by negating all components
+  const mirroredOffset = offset.multiplyScalar(-1);
+  
+  // Set camera to mirrored position relative to solar system center
+  camera.position.copy(solarSystem.position).add(mirroredOffset);
+  
+  // Make sure controls target stays on the solar system center
+  controls.target.copy(solarSystem.position);
+  
+  // Update controls to apply changes
+  controls.update();
+}
+
+// Cmirror initial camera position
+mirrorCameraPosition();
 
 // Lighting setup
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
