@@ -115,7 +115,7 @@ const planetTextures = {
 };
 
 // Planet configuration: orbital radius and size
-const scaleFactor = 0.72;
+const scaleFactor = 3;
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 9 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 1, planetSize: 15 },
@@ -165,7 +165,7 @@ function animate() {
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
-  const scale = 555; // Scene scale multiplier for AU values
+  const scale = 100; // Scene scale multiplier for AU values
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
