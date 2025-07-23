@@ -213,9 +213,11 @@ function animate() {
     // Calculate orbital position using astronomy data
     
     const pos = p.data.position(jd);
-    const baseAngle = pos.lon;
-    const orbitalSpin = t * 0.003 * (1.2 + i * 0.3); // Vary orbital speed slightly
-    const angle = baseAngle + orbitalSpin;
+   const baseAngle = pos.lon;
+const orbitalSpin = t * 0.003 * (1.2 + i * 0.3);
+const angleOffset = i * 0.5;
+const angle = baseAngle + orbitalSpin + angleOffset;
+
 
  const r = p.radius;
 
