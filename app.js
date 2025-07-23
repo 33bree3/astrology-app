@@ -91,7 +91,7 @@ const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 const sunMaterial = new THREE.MeshStandardMaterial({
   map: sunTexture,
   emissive: new THREE.Color(0xffffaa),
-  emissiveIntensity: 2,
+  emissiveIntensity: 7,
 });
 
 
@@ -102,7 +102,7 @@ sun.receiveShadow = false;
 // Comet tail setup omitted here for brevity (----------------------------------
 
 const tailLength = 333;
-const tailParticlesCount = 333;
+const tailParticlesCount = 21;
 const tailParticles = [];
 const tailTexture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/sprites/disc.png');
 
@@ -161,14 +161,14 @@ const planetTextures = {
 const scaleFactor = 0.1;
 
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 1414 *scaleFactor, planetSize: 9 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 1515* scaleFactor, planetSize: 15 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 1626 * scaleFactor, planetSize: 18 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 1737 * scaleFactor, planetSize: 12 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 1818 * scaleFactor, planetSize: 30 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 1929* scaleFactor, planetSize: 27 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 1212 *scaleFactor, planetSize: 12 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 1392* scaleFactor, planetSize: 18 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 1524 * scaleFactor, planetSize: 21 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 1692 * scaleFactor, planetSize: 15 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 1919 * scaleFactor, planetSize: 36 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 2020* scaleFactor, planetSize: 30 },
   { name: 'Uranus',  data: new Planet(uranusData),  radius: 2121 * scaleFactor, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 2349 * scaleFactor, planetSize: 21 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 2222 * scaleFactor, planetSize: 24 },
 ];
 
 // Create PLANET meshes with color and bump maps applied
@@ -214,7 +214,7 @@ function animate() {
  planets.forEach((p, i) => {
   const pos = p.data.position(julian.DateToJD(new Date()));
   const baseAngle = pos.lon;
-  const orbitalSpin = t * 0.003 * (1.2 + i * 0.3);
+  const orbitalSpin = t * 0.03 * (1.2 + i * 0.3);
   const angleOffset = i * 3;
   const angle = baseAngle + orbitalSpin + angleOffset;
 
@@ -223,11 +223,11 @@ function animate() {
   const y = r * Math.sin(angle);
 
   // Depth stagger: farther planets trail more in Z-axis
-  const zOffset = r * 0.93;
+  const zOffset = -r * 5;
   p.mesh.position.set(x, y, solarSystem.position.z + zOffset);
 
   // Planet self-spin
-  p.mesh.rotation.x += 0.01 + 0.001 * i;
+  p.mesh.rotation.x += 0.01 + 0.01 * i;
 
   const wobbleAmplitude = 1 + 0.01 * i;
   const wobbleSpeed = 1 + 0.001 * i;
