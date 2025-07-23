@@ -162,6 +162,19 @@ let t = 0;
 function animate() {
   const jd = julian.DateToJD(new Date());
 
+// PRINT LOCATIONS TO LOG FOR TEST 
+
+console.log("JD:", jd);
+planets.forEach(p => {
+  const pos = p.data.position2000(jd);
+  console.log(p.name, {
+    lon: (pos.lon * 180 / Math.PI).toFixed(2),
+    lat: (pos.lat * 180 / Math.PI).toFixed(2),
+    range: pos.range.toFixed(2)
+  });
+});
+
+
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
@@ -183,7 +196,7 @@ function animate() {
   const lat = planetPos.lat;
 
 function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 333; // Compresses outer distances
+  return Math.log(au + 1) * 1800; // Compresses outer distances
 }
 
 const scaledR = scaleOrbitDistance(r);
