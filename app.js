@@ -69,7 +69,7 @@ sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
 
 // Sun mesh setup
-const sunRadius = 39;
+const sunRadius = 69;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 const sunMaterial = new THREE.MeshStandardMaterial({
@@ -83,7 +83,7 @@ sun.receiveShadow = false;
 
 // Comet tail particles
 const tailLength = 333;
-const tailParticlesCount = 21;
+const tailParticlesCount = 93;
 const tailParticles = [];
 const tailTexture = textureLoader.load('https://threejs.org/examples/textures/sprites/disc.png');
 
@@ -115,7 +115,7 @@ const planetTextures = {
 };
 
 // Planet configuration: orbital radius and size
-const scaleFactor = 0.1;
+const scaleFactor = 0.72;
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 9 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 1, planetSize: 15 },
@@ -165,7 +165,7 @@ function animate() {
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
-  const scale = 100; // Scene scale multiplier for AU values
+  const scale = 555; // Scene scale multiplier for AU values
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
