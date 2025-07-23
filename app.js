@@ -164,8 +164,8 @@ function animate() {
 
   // Parameters for group helix motion (solarSystem group)
   const helixRadius = 39;
-  const helixFrequency = 0.005;
-  const helixZSpeed = 0.7;
+  const helixFrequency = 3;
+  const helixZSpeed = 0.9;
 
   // Compute position of the solarSystem group along a helix
   const helixX = helixRadius * Math.cos(t * helixFrequency);
@@ -186,9 +186,9 @@ function animate() {
     0.0086  // Neptune
   ];
 
-  const baseOrbitA = 50; // Base semi-major axis for Mercury
-  const orbitSpeed = 0.0015;
-  const helixZSpacing = -69;
+  const baseOrbitA = 69; // Base semi-major axis for Mercury
+  const orbitSpeed = 0.09;
+  const helixZSpacing = -111;
 
   planets.forEach((p, i) => {
     const e = eccentricities[i] || 0;
@@ -207,7 +207,7 @@ function animate() {
     p.mesh.rotation.x += 0.1 + 0.03 * i;
 
     // Optional wobble
-    const wobbleAmplitude = 0.05 + 0.01 * i;
+    const wobbleAmplitude = 0.5 + 0.01 * i;
     const wobbleSpeed = 0.005 + 0.002 * i;
     p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
 
