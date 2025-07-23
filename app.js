@@ -165,7 +165,7 @@ function animate() {
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
-  const scale = 444; // Scene scale multiplier for AU values
+  const scale = 222; // Scene scale multiplier for AU values
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
