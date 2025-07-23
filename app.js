@@ -42,7 +42,7 @@ const scene = new THREE.Scene();
  // './images/space2.jpg', // front
  // './images/space.jpg', // back
 
-const cubeloader = new THREE.CubeTextureLoader();
+const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxTexture = cubeLoader.load([
   'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
   'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
