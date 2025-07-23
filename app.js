@@ -119,12 +119,12 @@ const scaleFactor = 0.01;
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 99 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 111 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 234},
-  { name: 'Mars',    data: new Planet(marsData),    radius: 4, planetSize: 279 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 555 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 444 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 7, planetSize: 333 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 334 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 117},
+  { name: 'Mars',    data: new Planet(marsData),    radius: 4, planetSize: 123 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 126 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 129 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 7, planetSize: 132 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 138 },
 ];
 
 // Create planet mesh objects with material
@@ -183,7 +183,7 @@ function animate() {
   const lat = planetPos.lat;
 
 function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 777; // Compresses outer distances
+  return Math.log(au + 1) * 50; // Compresses outer distances
 }
 
 const scaledR = scaleOrbitDistance(r);
