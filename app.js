@@ -43,7 +43,7 @@ const cameraOffset = new THREE.Vector3(300, 400, 500);
 // OrbitControls to move around the scene
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 3333;
+controls.minDistance = 1111;
 controls.maxDistance = 5555;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
@@ -51,7 +51,7 @@ controls.panSpeed = 0.5;
 
 // Clamp camera distance around solar system center
 function clampCameraDistance() {
-  const minDistance = 3333;
+  const minDistance = 1111;
   const maxDistance = 7777;
   const distance = camera.position.distanceTo(solarSystem.position);
   const direction = camera.position.clone().sub(solarSystem.position).normalize();
@@ -119,12 +119,12 @@ const scaleFactor = 0.09;
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 69 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 101 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 153},
+  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 123},
   { name: 'Mars',    data: new Planet(marsData),    radius: 4, planetSize: 72 },
   { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 369 },
   { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 297 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 7, planetSize: 234 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 201 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 7, planetSize: 201 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 154 },
 ];
 
 // Create planet mesh objects with material
