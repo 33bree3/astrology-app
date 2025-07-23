@@ -117,14 +117,14 @@ const planetTextures = {
 // Planet configuration: orbital radius and size
 const scaleFactor = 0.1;
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 111, planetSize: 12 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 222, planetSize: 18 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 444, planetSize: 21 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 555, planetSize: 15 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 777, planetSize: 36 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 888, planetSize: 30 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 999, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 1010, planetSize: 24 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 333, planetSize: 12 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 369, planetSize: 18 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 555, planetSize: 21 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 603, planetSize: 15 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 666, planetSize: 36 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 555, planetSize: 30 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 666, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 777, planetSize: 24 },
 ];
 
 // Create planet mesh objects with material
