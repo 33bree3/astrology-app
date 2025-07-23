@@ -159,20 +159,21 @@ let t = 0;
 // -----------------------------------------------------------------------------------
 // Each planet uses true heliocentric 3D coordinates (x, y, z) from Astronomia.
 
-function animate() {
-  const jd = julian.DateToJD(new Date());
+const jd = julian.DateToJD(new Date());
+console.log("Julian Date:", jd.toFixed(2));
 
-// PRINT LOCATIONS TO LOG FOR TEST 
+// PRINT AU + CARTESIAN TO LOG FOR REF TEST 
 
-console.log("JD:", jd);
 planets.forEach(p => {
   const pos = p.data.position2000(jd);
-  console.log(p.name, {
-    lon: (pos.lon * 180 / Math.PI).toFixed(2),
-    lat: (pos.lat * 180 / Math.PI).toFixed(2),
-    range: pos.range.toFixed(2)
-  });
+
+  const lonDeg = (pos.lon * 180 / Math.PI).toFixed(2);
+  const latDeg = (pos.lat * 180 / Math.PI).toFixed(2);
+  const au = pos.range.toFixed(4); // more decimal places for AU
+
+  console.log(`${p.name}: Lon ${lonDeg}°, Lat ${latDeg}°, Distance: ${au} AU`);
 });
+
 
 
   // Tail direction for comet tail particles
