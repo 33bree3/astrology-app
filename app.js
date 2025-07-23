@@ -209,8 +209,8 @@ const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
 
 // Raise Neptune slightly on Y-axis
 if (p.name === 'Neptune') {
-  orbitY +== 150; // tweak this value to raise it higher or lower
-  orbitX +==-69; // tweak this to move closer or further away 
+  orbitY += 150; // tweak this value to raise it higher or lower
+  orbitX +=-69; // tweak this to move closer or further away 
 
 
   // Set planet mesh position using converted Cartesian coords
