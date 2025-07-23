@@ -14,9 +14,20 @@ import uranusData from './astronomia/data/vsop87Duranus.js';
 import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
 // Texture loader for planet and background images
+
 const textureLoader = new THREE.TextureLoader();
 
+// Add sun and planets to solarSystem group
+
+const solarSystem = new THREE.Group();
+solarSystem.add(sun);
+planets.forEach(p => solarSystem.add(p.mesh));
+scene.add(solarSystem);
+
+
 // Renderer setup
+
+
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -24,6 +35,8 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Scene background (skybox)
+
+
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxTexture = cubeLoader.load([
@@ -37,6 +50,7 @@ const skyboxTexture = cubeLoader.load([
 scene.background = skyboxTexture;
 
 // Camera setup
+
 const camera = new THREE.PerspectiveCamera(
   123,
   canvas.clientWidth / canvas.clientHeight,
@@ -45,12 +59,18 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 // Initial camera offset (your original position relative to solar system)
+
+
 const cameraOffset = new THREE.Vector3(300, 400, 500);
 
 // Position the camera initially at solarSystem.position + cameraOffset
+
+
 camera.position.copy(solarSystem.position).add(cameraOffset);
 
 // OrbitControls to move around the scene
+
+
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
 controls.minDistance = 1111;
@@ -60,6 +80,7 @@ controls.enablePan = true;
 controls.panSpeed = 0.5;
 
 // Function to clamp camera distance between min and max from solar system center
+
 function clampCameraDistance() {
   const minDistance = 1111;
   const maxDistance = 7777;
@@ -84,16 +105,23 @@ function mirrorCameraPosition() {
   const mirroredOffset = offset.multiplyScalar(-1);
   
   // Set camera to mirrored position relative to solar system center
+
   camera.position.copy(solarSystem.position).add(mirroredOffset);
   
   // Make sure controls target stays on the solar system center
+
+
   controls.target.copy(solarSystem.position);
   
   // Update controls to apply changes
+
+
   controls.update();
 }
 
 // Cmirror initial camera position
+
+
 mirrorCameraPosition();
 
 // Lighting setup
@@ -177,11 +205,6 @@ planets.forEach(p => {
   p.mesh.receiveShadow = true;
 });
 
-// Add sun and planets to solarSystem group
-const solarSystem = new THREE.Group();
-solarSystem.add(sun);
-planets.forEach(p => solarSystem.add(p.mesh));
-scene.add(solarSystem);
 
 // Animation variables
 let t = 0;
