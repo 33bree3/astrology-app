@@ -172,10 +172,10 @@ function animate() {
 );
 
 
-    p.mesh.rotation.x += 2 + 1 * i;
-    const wobbleAmplitude = 1 + 0.01 * i;
-    const wobbleSpeed = 1 + 0.001 * i;
-  p.mesh.rotation.y += 0.01 + 0.001 * i; // gentle self-rotation
+    p.mesh.rotation.x += 0.1 + 0.03 * i;
+    const wobbleAmplitude = 1 + 0.003 * i;
+    const wobbleSpeed = 1 + 0.03 * i;
+  p.mesh.rotation.y += 0.01 + 0.005 * i; // gentle self-rotation
 
   });
 
