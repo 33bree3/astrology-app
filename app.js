@@ -69,7 +69,7 @@ sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
 
 // Sun mesh setup
-const sunRadius = 69;
+const sunRadius = 39;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 const sunMaterial = new THREE.MeshStandardMaterial({
@@ -162,7 +162,7 @@ function animate() {
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
   const orbitSpeed = 0.0015;
-  const zSpacing = -21;
+  const zSpacing = -9;
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
