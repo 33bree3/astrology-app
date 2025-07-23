@@ -187,7 +187,7 @@ function animate() {
   p.mesh.position.set(orbitX, orbitY, orbitZ);
 
   // Spin on X-axis
-  p.mesh.rotation.x += 0.1 + 0.03 * i;
+  p.mesh.rotation.x += 0.3 + 0.03 * i;
 
   // Optional wobble
   const wobbleAmplitude = 0.05 + 0.01 * i;
