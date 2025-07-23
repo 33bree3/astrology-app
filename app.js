@@ -38,8 +38,8 @@ const skyboxTexture = cubeLoader.load([
   './images/space.left.jpg',
   './images/space.up.jpg',
   './images/space.down.jpg',
-  './images/space.front.jpg',
-  './images/space.back.jpg'
+  './images/space.jpg',
+  './images/space2.jpg'
 ]);
 scene.background = skyboxTexture;
 
