@@ -151,11 +151,10 @@ scene.add(solarSystem);
 let t = 0;
 
 
-
-// Updated Solar System Simulation with Elliptical Orbits Around the Sun
+// Updated Solar System Simulation with Realistic Orbital Eccentricity
 // --------------------------------------------------
-// This version ensures each planet orbits the Sun elliptically while the sun and system continue
-// to move forward in a helix-like trajectory through space.
+// Each planet now orbits the Sun elliptically using real orbital eccentricity values,
+// preserving accurate Z-offset positions while the entire system moves in a helix.
 
 function animate() {
   const jd = julian.DateToJD(new Date());
@@ -164,9 +163,9 @@ function animate() {
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
   // Parameters for group helix motion (solarSystem group)
-  const helixRadius = 0.3;
-  const helixFrequency = 3;
-  const helixZSpeed = 1;
+  const helixRadius = 39;
+  const helixFrequency = 0.005;
+  const helixZSpeed = 0.7;
 
   // Compute position of the solarSystem group along a helix
   const helixX = helixRadius * Math.cos(t * helixFrequency);
@@ -175,23 +174,36 @@ function animate() {
   solarSystem.position.set(helixX, helixY, helixZ);
   sunLight.position.copy(solarSystem.position);
 
-  // Parameters for elliptical orbits
-  const orbitA = 69; // semi-major axis (X)
-  const orbitB = 111; // semi-minor axis (Y)
-  const orbitSpeed = 0.05;
-  const helixZSpacing = -111;
+  // Orbital eccentricity values (approximate)
+  const eccentricities = [
+    0.2056, // Mercury
+    0.0068, // Venus
+    0.0167, // Earth
+    0.0934, // Mars
+    0.0484, // Jupiter
+    0.0542, // Saturn
+    0.0472, // Uranus
+    0.0086  // Neptune
+  ];
+
+  const baseOrbitA = 50; // Base semi-major axis for Mercury
+  const orbitSpeed = 0.0015;
+  const helixZSpacing = -69;
 
   planets.forEach((p, i) => {
-    const angle = t * orbitSpeed + i * 0.5; // phase shift by index
+    const e = eccentricities[i] || 0;
+    const a = baseOrbitA + i * 20; // Spread orbits outward progressively
+    const b = a * Math.sqrt(1 - e * e); // Compute semi-minor axis from eccentricity
 
-    const orbitX = orbitA * Math.cos(angle);
-    const orbitY = orbitB * Math.sin(angle);
+    const angle = t * orbitSpeed + i * 0.5; // angular offset per planet
+    const orbitX = a * Math.cos(angle);
+    const orbitY = b * Math.sin(angle);
     const orbitZ = (i + 1) * helixZSpacing;
 
-    // Position planet around sun (sun is at center of orbit in local solarSystem space)
+    // Position each planet in elliptical orbit
     p.mesh.position.set(orbitX, orbitY, orbitZ);
 
-    // Spin on their X-axis
+    // Spin on X-axis
     p.mesh.rotation.x += 0.1 + 0.03 * i;
 
     // Optional wobble
