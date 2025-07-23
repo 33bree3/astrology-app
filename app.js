@@ -158,7 +158,7 @@ let t = 0;
 // Updated Solar System Simulation with Real 3D Planet Positions Using Astronomia Data
 // -----------------------------------------------------------------------------------
 // Each planet uses true heliocentric 3D coordinates (x, y, z) from Astronomia.
-
+function animate() {
 const jd = julian.DateToJD(new Date());
 console.log("Julian Date:", jd.toFixed(2));
 
@@ -263,7 +263,7 @@ if (p.name === 'Neptune') {
   renderer.render(scene, camera);
   t += 1;
   requestAnimationFrame(animate);
-})
+}
 
 
 
