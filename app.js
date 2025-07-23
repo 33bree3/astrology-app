@@ -165,35 +165,40 @@ function animate() {
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
-  const scale = 0.01; // Scene scale multiplier for AU values
+  const scale = 100; // Scene scale multiplier for AU values
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(solarSystem.position);
 
-  planets.forEach((p, i) => {
-    // Get accurate 3D heliocentric position (x, y, z in AU)
-    const planetPos = p.data.position2000(jd); // Returns { x, y, z }
+ planets.forEach((p, i) => {
+  // Get accurate spherical coordinates from astronomia
+  const planetPos = p.data.position2000(jd); // { lon, lat, range }
 
-    const orbitX = planetPos.x * scale;
-    const orbitY = planetPos.y * scale;
-    const orbitZ = planetPos.z * scale;
+  const r = planetPos.range;
+  const lon = planetPos.lon;
+  const lat = planetPos.lat;
 
-    // Set planet mesh position directly using true coordinates
-    p.mesh.position.set(orbitX, orbitY, orbitZ);
+  const orbitX = r * Math.cos(lat) * Math.cos(lon) * scale;
+  const orbitY = r * Math.sin(lat) * scale;
+  const orbitZ = r * Math.cos(lat) * Math.sin(lon) * scale;
 
-    // Spin on X-axis
-    p.mesh.rotation.x += 0.1 + 0.03 * i;
+  // Set planet mesh position using converted Cartesian coords
+  p.mesh.position.set(orbitX, orbitY, orbitZ);
 
-    // Optional wobble
-    const wobbleAmplitude = 0.05 + 0.01 * i;
-    const wobbleSpeed = 0.005 + 0.002 * i;
-    p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
+  // Spin on X-axis
+  p.mesh.rotation.x += 0.1 + 0.03 * i;
 
-    // Axial tilt toward sun
-    p.mesh.lookAt(sun.position);
-    p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
-  });
+  // Optional wobble
+  const wobbleAmplitude = 0.05 + 0.01 * i;
+  const wobbleSpeed = 0.005 + 0.002 * i;
+  p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
+
+  // Axial tilt toward the Sun
+  p.mesh.lookAt(sun.position);
+  p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
+});
+
 
   // Animate comet tail
   tailParticles.forEach((particle, idx) => {
