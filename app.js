@@ -151,7 +151,7 @@ scene.add(solarSystem);
 let t = 0;
 
 
-// Solar System Simulation with Elliptical Orbits Along X-Axis
+// Updated Solar System Simulation with Elliptical Orbits Using Astronomia Planet Data
 // --------------------------------------------------
 // Planets move around the Sun on the X-axis only, with Z displacement determined by their orbital eccentricity.
 
@@ -161,37 +161,30 @@ function animate() {
   // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
-  // Orbital eccentricity values (approximate)
-  const eccentricities = [
-    0.2056, // Mercury
-    0.0068, // Venus
-    0.0167, // Earth
-    0.0934, // Mars
-    0.0484, // Jupiter
-    0.0542, // Saturn
-    0.0472, // Uranus
-    0.0086  // Neptune
-  ];
-
-  const baseOrbitA = 69; // Base semi-major axis for Mercury
   const orbitSpeed = 0.0015;
-  const zSpacing = -222;
+  const zSpacing = -69;
 
   // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(solarSystem.position);
 
   planets.forEach((p, i) => {
-    const e = eccentricities[i] || 0;
-    const a = baseOrbitA + i * 20; // Spread orbits outward progressively
-    const b = a * Math.sqrt(1 - e * e); // Compute semi-minor axis from eccentricity
+    // Use astronomia library to get heliocentric coordinates
+    const planetPos = p.data.position2000(jd);
+    const x = planetPos.range * Math.cos(planetPos.lon);
+    const z = planetPos.range * Math.sin(planetPos.lon);
 
-    const angle = t * orbitSpeed + i * 0.5; // angular offset per planet
+    // Elliptical motion: stretch X axis, compress Z axis using eccentricity
+    const e = p.data.orbitalElements ? p.data.orbitalElements.eccentricity : 0;
+    const a = p.radius; // Using radius from initial setup as semi-major axis
+    const b = a * Math.sqrt(1 - e * e); // Semi-minor axis
+
+    const angle = t * orbitSpeed + i * 0.5;
     const orbitX = a * Math.cos(angle);
-    const orbitY = 0; // Orbits remain in XZ plane
+    const orbitY = 0;
     const orbitZ = (i + 1) * zSpacing + b * Math.sin(angle);
 
-    // Position each planet in elliptical orbit along X-axis
+    // Set planet position based on elliptical orbit
     p.mesh.position.set(orbitX, orbitY, orbitZ);
 
     // Spin on X-axis
@@ -238,6 +231,8 @@ function animate() {
   t += 1;
   requestAnimationFrame(animate);
 }
+
+
 
 
 
