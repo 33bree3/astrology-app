@@ -139,23 +139,23 @@ const planetTextures = {
   },
   Jupiter: {
     color: textureLoader.load('./images/jupiter.cmap.jpg'),
-    bump: textureLoader.load('./images/jupiter.bump.jpg'),
+    bump: textureLoader.load('./images/merc.bump.jpg'),
   },
   Saturn: {
     color: textureLoader.load('./images/saturn.cmap.jpg'),
-    bump: textureLoader.load('./images/saturn.bump.jpg'),
+    bump: textureLoader.load('./images/saturn.ring.jpg'),
   },
   Uranus: {
     color: textureLoader.load('./images/uranus.cmap.jpg'),
-    bump: textureLoader.load('./images/uranus.bump.jpg'),
+    bump: textureLoader.load('./images/uranus.ring.bump.jpg'),
   },
   Neptune: {
     color: textureLoader.load('./images/neptune.cmap.jpg'),
-    bump: textureLoader.load('./images/neptune.bump.jpg'),
+    bump: textureLoader.load('./images/earth.bump.jpg'),
   },
 };
 
-const scaleFactor = 0.3;
+const scaleFactor = 0.1;
 
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 903 *scaleFactor, planetSize: 9 },
@@ -176,8 +176,8 @@ planets.forEach(p => {
     new THREE.MeshStandardMaterial({
       map: planetTextures[p.name].color,  // Color texture
       bumpMap: planetTextures[p.name].bump, // Bump texture
-      bumpScale: 0.3,                      // Bump effect strength (tweak if needed) - hEIGHT MAP  // soft glow
-      shininess: 10,                        // specular highlight sharpness
+      bumpScale: 0.1,                      // Bump effect strength (tweak if needed) - hEIGHT MAP  // soft glow
+                           // specular highlight sharpness
 
     })
   );
@@ -229,15 +229,15 @@ function animate() {
 
     // ---- SPIN ON OWN AXIS WITH WOBBLE ----
     
-    // Y-axis rotation (normal spin)
+    // X-axis rotation (normal spin)
     
-    p.mesh.rotation.y += 0.01 + 0.001 * i;
+    p.mesh.rotation.X += 0.01 + 0.001 * i;
 
     // Simulate axial tilt wobble using sine wave oscillation on X-axis
     
     const wobbleAmplitude = 0.0005 + 0.01 * i;     // Vary wobble amplitude by planet
     const wobbleSpeed = 0.00005 + 0.001 * i;       // Vary speed of wobble by planet
-    p.mesh.rotation.x = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
+    p.mesh.rotation.Y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
   });
 
   // ---- HELICAL SYSTEM MOTION ----
