@@ -33,14 +33,23 @@ const scene = new THREE.Scene();
 
 //  Add space skybox as cube map background--------------------------
 
-const cubeLoader = new THREE.CubeTextureLoader();
+//const cubeLoader = new THREE.CubeTextureLoader();
+// const skyboxTexture = cubeLoader.load([
+  // './images/space.right.jpg', // right
+ // './images/space.left.jpg', // left
+//  './images/space.up.jpg', // top
+//  './images/space.down.jpg', // bottom     WONT LOAD DUE TO SIZING ISSUES - PLACEHOLDER USED FOR TESTING 
+ // './images/space2.jpg', // front
+ // './images/space.jpg', // back
+
 const skyboxTexture = cubeLoader.load([
-  './images/space.right.jpg', // right
-  './images/space.left.jpg', // left
-  './images/space.up.jpg', // top
-  './images/space.down.jpg', // bottom
-  './images/space2.jpg', // front
-  './images/space.jpg', // back
+  'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg',
+
 ]);
 scene.background = skyboxTexture;
 
@@ -111,7 +120,7 @@ for (let i = 0; i < tailParticlesCount; i++) {
     map: tailTexture,
     color: 0xffcc00,
     transparent: true,
-    opacity: 0.3 * (1 - i / tailParticlesCount),
+    opacity: 3 * (1 - i / tailParticlesCount),
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });
@@ -179,7 +188,7 @@ planets.forEach(p => {
     new THREE.MeshStandardMaterial({
       map: planetTextures[p.name].color,  // Color texture
       bumpMap: planetTextures[p.name].bump, // Bump texture
-      bumpScale: 0.1,                      // Bump effect strength (tweak if needed) - hEIGHT MAP  // soft glow
+      bumpScale: 1,                      // Bump effect strength (tweak if needed) - hEIGHT MAP  // soft glow
                            // specular highlight sharpness
 
     })
@@ -214,7 +223,7 @@ function animate() {
  planets.forEach((p, i) => {
   const pos = p.data.position(julian.DateToJD(new Date()));
   const baseAngle = pos.lon;
-  const orbitalSpin = t * 0.03 * (1.2 + i * 0.3);
+  const orbitalSpin = t * 0.9 * (1.2 + i * 0.3);
   const angleOffset = i * 3;
   const angle = baseAngle + orbitalSpin + angleOffset;
 
@@ -223,11 +232,11 @@ function animate() {
   const y = r * Math.sin(angle);
 
   // Depth stagger: farther planets trail more in Z-axis
-  const zOffset = -r * 5;
+  const zOffset = -r * 1.8;
   p.mesh.position.set(x, y, solarSystem.position.z + zOffset);
 
   // Planet self-spin
-  p.mesh.rotation.x += 0.01 + 0.01 * i;
+  p.mesh.rotation.x += 2 + 1 * i;
 
   const wobbleAmplitude = 1 + 0.01 * i;
   const wobbleSpeed = 1 + 0.001 * i;
