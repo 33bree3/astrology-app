@@ -183,7 +183,7 @@ function animate() {
   const lat = planetPos.lat;
 
 function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 2222; // Compresses outer distances
+  return Math.log(au + 1) * 1111; // Compresses outer distances
 }
 
 const scaledR = scaleOrbitDistance(r);
@@ -200,7 +200,7 @@ const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
   p.mesh.position.set(orbitX, orbitY, orbitZ);
 
   // Spin on X-axis
-  p.mesh.rotation.x += 0.3 + 0.03 * i;
+  p.mesh.rotation.x += 0.9 + 0.03 * i;
 
   // Optional wobble
   const wobbleAmplitude = 0.05 + 0.01 * i;
