@@ -43,8 +43,8 @@ const cameraOffset = new THREE.Vector3(300, 400, 500);
 // OrbitControls to move around the scene
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 1000;
-controls.maxDistance = 2000;
+controls.minDistance = 2222;
+controls.maxDistance = 3333;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
@@ -117,14 +117,14 @@ const planetTextures = {
 // Planet configuration: orbital radius and size
 const scaleFactor = 0.09;
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 99 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 111 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 117},
-  { name: 'Mars',    data: new Planet(marsData),    radius: 4, planetSize: 123 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 126 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 129 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 7, planetSize: 132 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 138 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 69 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 101 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 153},
+  { name: 'Mars',    data: new Planet(marsData),    radius: 4, planetSize: 72 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 369 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 297 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 7, planetSize: 234 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 222 },
 ];
 
 // Create planet mesh objects with material
@@ -183,7 +183,7 @@ function animate() {
   const lat = planetPos.lat;
 
 function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 888; // Compresses outer distances
+  return Math.log(au + 1) * 1111; // Compresses outer distances
 }
 
 const scaledR = scaleOrbitDistance(r);
