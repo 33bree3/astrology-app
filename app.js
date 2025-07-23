@@ -158,81 +158,54 @@ let t = 0;
 // Updated Solar System Simulation with Real 3D Planet Positions Using Astronomia Data
 // -----------------------------------------------------------------------------------
 // Each planet uses true heliocentric 3D coordinates (x, y, z) from Astronomia.
+
 function animate() {
-const jd = julian.DateToJD(new Date());
-console.log("Julian Date:", jd.toFixed(2));
+  const jd = julian.DateToJD(new Date());
+  console.log("Julian Date:", jd.toFixed(2));
 
-// PRINT AU + CARTESIAN TO LOG FOR REF TEST 
+  planets.forEach(p => {
+    const pos = p.data.position2000(jd);
+    const lonDeg = (pos.lon * 180 / Math.PI).toFixed(2);
+    const latDeg = (pos.lat * 180 / Math.PI).toFixed(2);
+    const au = pos.range.toFixed(4);
+    console.log(`${p.name}: Lon ${lonDeg}°, Lat ${latDeg}°, Distance: ${au} AU`);
+  });
 
-planets.forEach(p => {
-  const pos = p.data.position2000(jd);
-
-  const lonDeg = (pos.lon * 180 / Math.PI).toFixed(2);
-  const latDeg = (pos.lat * 180 / Math.PI).toFixed(2);
-  const au = pos.range.toFixed(4); // more decimal places for AU
-
-  console.log(`${p.name}: Lon ${lonDeg}°, Lat ${latDeg}°, Distance: ${au} AU`);
-});
-
-
-
-  // Tail direction for comet tail particles
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
-
-
-
-  // Position the sun and solarSystem group at the origin
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(solarSystem.position);
 
- planets.forEach((p, i) => {
+  planets.forEach((p, i) => {
+    const planetPos = p.data.position2000(jd);
+    const r = planetPos.range;
+    const lon = planetPos.lon;
+    const lat = planetPos.lat;
 
-   // Get accurate spherical coordinates from astronomia
+    function scaleOrbitDistance(au) {
+      return Math.log(au + 1) * 1800;
+    }
 
+    const scaledR = scaleOrbitDistance(r);
+    let orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
+    let orbitY = scaledR * Math.sin(lat);
+    const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
 
-  const planetPos = p.data.position2000(jd); // { lon, lat, range }
+    if (p.name === 'Neptune') {
+      orbitY += 150;
+      orbitX -= 69;
+    }
 
-  const r = planetPos.range;
-  const lon = planetPos.lon;
-  const lat = planetPos.lat;
+    p.mesh.position.set(orbitX, orbitY, orbitZ);
+    p.mesh.rotation.x += 0.09 + 0.03 * i;
 
-function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 1800; // Compresses outer distances
-}
+    const wobbleAmplitude = 0.05 + 0.01 * i;
+    const wobbleSpeed = 0.5 + 0.002 * i;
+    p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
 
-const scaledR = scaleOrbitDistance(r);
-const orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
-const orbitY = scaledR * Math.sin(lat);
-const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
+    p.mesh.lookAt(sun.position);
+    p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
+  });
 
-// ANGLE PLANETS TO MAKE EASIER TO SEE WHEN DIRECTLY IN LINE 
-
-// Raise Neptune slightly on Y-axis
-if (p.name === 'Neptune') {
-  orbitY += 150; // tweak this value to raise it higher or lower
-  orbitX +=-69; // tweak this to move closer or further away 
-
-
-  // Set planet mesh position using converted Cartesian coords
-
-
-   
-  p.mesh.position.set(orbitX, orbitY, orbitZ);
-
-  // Spin on X-axis
-  p.mesh.rotation.x += 0.09 + 0.03 * i;
-
-  // Optional wobble
-  const wobbleAmplitude = 0.05 + 0.01 * i;
-  const wobbleSpeed = 0.5 + 0.002 * i;
-  p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
-
-  // Axial tilt toward the Sun
-  p.mesh.lookAt(sun.position);
-  p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
-
-
-  // Animate comet tail
   tailParticles.forEach((particle, idx) => {
     const distanceBehind = (idx / tailParticlesCount) * tailLength;
     const jitter = new THREE.Vector3(
@@ -252,7 +225,6 @@ if (p.name === 'Neptune') {
     particle.scale.set(scale, scale, scale);
   });
 
-  // Auto-follow camera unless user is interacting
   if (!controls.userIsInteracting) {
     camera.position.copy(solarSystem.position).add(cameraOffset);
     controls.target.copy(solarSystem.position);
@@ -262,21 +234,7 @@ if (p.name === 'Neptune') {
   renderer.render(scene, camera);
   t += 1;
   requestAnimationFrame(animate);
-}
-
-
-
-
-
-
-//----------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
+} // <== Correctly closed animate()
 
 controls.userIsInteracting = false;
 controls.addEventListener('start', () => { controls.userIsInteracting = true; });
@@ -284,7 +242,6 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 animate();
 
-// Tab switching UI logic
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
