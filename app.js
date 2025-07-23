@@ -62,7 +62,7 @@ controls.addEventListener('change', clampCameraDistance);
 
 // Lighting setup
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 1.5);
+const sunLight = new THREE.PointLight(0xffffff, 3);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
@@ -117,14 +117,14 @@ const planetTextures = {
 // Planet configuration: orbital radius and size
 const scaleFactor = 0.1;
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 121.2, planetSize: 12 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 139.2, planetSize: 18 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 152.4, planetSize: 21 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 169.2, planetSize: 15 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 191.9, planetSize: 36 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 202.0, planetSize: 30 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 212.1, planetSize: 24 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 222.2, planetSize: 24 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 1212, planetSize: 12 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 1313, planetSize: 18 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 1515.4, planetSize: 21 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 1616, planetSize: 15 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 1818, planetSize: 36 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 2121, planetSize: 30 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 2222, planetSize: 24 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 3333, planetSize: 24 },
 ];
 
 // Create planet mesh objects with material
@@ -164,9 +164,9 @@ function animate() {
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
   // Parameters for group helix motion (solarSystem group)
-  const helixRadius = 39;
-  const helixFrequency = 0.005;
-  const helixZSpeed = 0.7;
+  const helixRadius = 222;
+  const helixFrequency = 33;
+  const helixZSpeed = 33;
 
   // Compute position of the solarSystem group along a helix
   const helixX = helixRadius * Math.cos(t * helixFrequency);
@@ -178,8 +178,8 @@ function animate() {
   // Parameters for elliptical orbits
   const orbitA = 50; // semi-major axis (X)
   const orbitB = 30; // semi-minor axis (Y)
-  const orbitSpeed = 0.0015;
-  const helixZSpacing = -69;
+  const orbitSpeed = 0.15;
+  const helixZSpacing = -222;
 
   planets.forEach((p, i) => {
     const angle = t * orbitSpeed + i * 0.5; // phase shift by index
