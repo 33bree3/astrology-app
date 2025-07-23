@@ -115,7 +115,7 @@ const planetTextures = {
 };
 
 // Planet configuration: orbital radius and size
-const scaleFactor = 0.01;
+const scaleFactor = 0.09;
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 99 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 111 },
@@ -183,7 +183,7 @@ function animate() {
   const lat = planetPos.lat;
 
 function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 50; // Compresses outer distances
+  return Math.log(au + 1) * 888; // Compresses outer distances
 }
 
 const scaledR = scaleOrbitDistance(r);
