@@ -164,7 +164,7 @@ function animate() {
   const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
 
   // Parameters for group helix motion (solarSystem group)
-  const helixRadius = 333333;
+  const helixRadius = 3;
   const helixFrequency = 3;
   const helixZSpeed = 3;
 
@@ -178,7 +178,7 @@ function animate() {
   // Parameters for elliptical orbits
   const orbitA = 50; // semi-major axis (X)
   const orbitB = 30; // semi-minor axis (Y)
-  const orbitSpeed = 0.15;
+  const orbitSpeed = 0.05;
   const helixZSpacing = -222;
 
   planets.forEach((p, i) => {
