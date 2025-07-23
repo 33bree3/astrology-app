@@ -162,12 +162,21 @@ function animate() {
     const x = r * Math.cos(angle);
     const y = r * Math.sin(angle);
     const zOffset = -r * 1.8;
-    p.mesh.position.set(x, y, solarSystem.position.z + zOffset);
+ 
+///// rotTION AROUNG THE SUN 
+    
+    p.mesh.position.set(    
+  solarSystem.position.x + x,
+  solarSystem.position.y + y,
+  solarSystem.position.z + zOffset
+);
+
 
     p.mesh.rotation.x += 2 + 1 * i;
     const wobbleAmplitude = 1 + 0.01 * i;
     const wobbleSpeed = 1 + 0.001 * i;
-    p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
+  p.mesh.rotation.y += 0.01 + 0.001 * i; // gentle self-rotation
+
   });
 
   const helixRadius = 3;
