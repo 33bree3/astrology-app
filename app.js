@@ -205,7 +205,14 @@ const orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
 const orbitY = scaledR * Math.sin(lat);
 const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
 
-   
+// ANGLE PLANETS TO MAKE EASIER TO SEE WHEN DIRECTLY IN LINE 
+
+// Raise Neptune slightly on Y-axis
+if (p.name === 'Neptune') {
+  orbitY += 150; // tweak this value to raise it higher or lower
+  orbitX +==-69 // tweak this to move closer or further away 
+
+
   // Set planet mesh position using converted Cartesian coords
 
 
@@ -213,11 +220,11 @@ const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
   p.mesh.position.set(orbitX, orbitY, orbitZ);
 
   // Spin on X-axis
-  p.mesh.rotation.x += 0.9 + 0.03 * i;
+  p.mesh.rotation.x += 0.09 + 0.03 * i;
 
   // Optional wobble
   const wobbleAmplitude = 0.05 + 0.01 * i;
-  const wobbleSpeed = 0.005 + 0.002 * i;
+  const wobbleSpeed = 0.5 + 0.002 * i;
   p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
 
   // Axial tilt toward the Sun
