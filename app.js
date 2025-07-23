@@ -115,11 +115,11 @@ const planetTextures = {
 };
 
 // Planet configuration: orbital radius and size
-const scaleFactor = 3;
+const scaleFactor = 1;
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 99 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 111 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 222},
+  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 234},
   { name: 'Mars',    data: new Planet(marsData),    radius: 4, planetSize: 279 },
   { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 555 },
   { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 444 },
@@ -183,7 +183,7 @@ function animate() {
   const lat = planetPos.lat;
 
 function scaleOrbitDistance(au) {
-  return Math.log(au + 1) * 400; // Compresses outer distances
+  return Math.log(au + 1) * 111; // Compresses outer distances
 }
 
 const scaledR = scaleOrbitDistance(r);
