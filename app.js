@@ -1,3 +1,10 @@
+// Solar System Simulation using Three.js and Astronomia Data
+// -----------------------------------------------------------
+// This simulation visualizes the solar system using real planetary data (VSOP87)
+// from the 'astronomia' library, with textured planets, elliptical orbits, and
+// camera controls using OrbitControls from Three.js.
+
+// --------------------------- IMPORTS ---------------------------
 import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
 
@@ -13,55 +20,39 @@ import saturnData from './astronomia/data/vsop87Dsaturn.js';
 import uranusData from './astronomia/data/vsop87Duranus.js';
 import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
-// Texture loader for planet and background images
-
+// --------------------------- TEXTURE LOADING ---------------------------
 const textureLoader = new THREE.TextureLoader();
 
-
-
-// Renderer setup
-
-
+// --------------------------- RENDERER SETUP ---------------------------
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-// Scene background (skybox)
-
-
+// --------------------------- SCENE SETUP ---------------------------
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxTexture = cubeLoader.load([
-  '/images/space.jpg',
-  './images/space.left.jpg',
   './images/space.right.jpg',
+  './images/space.left.jpg',
   './images/space.up.jpg',
   './images/space.down.jpg',
-  './images/space2.jpg'
+  './images/space.front.jpg',
+  './images/space.back.jpg'
 ]);
 scene.background = skyboxTexture;
 
-// Camera setup
-
+// --------------------------- CAMERA SETUP ---------------------------
 const camera = new THREE.PerspectiveCamera(
   123,
   canvas.clientWidth / canvas.clientHeight,
   0.1,
   5000
 );
-
-// Initial camera offset (your original position relative to solar system)
-
-
 const cameraOffset = new THREE.Vector3(300, 400, 500);
 
-
-
-// OrbitControls to move around the scene
-
-
+// --------------------------- ORBIT CONTROLS ---------------------------
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
 controls.minDistance = 1111;
@@ -69,18 +60,11 @@ controls.maxDistance = 5555;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
+controls.userIsInteracting = false;
+controls.addEventListener('start', () => { controls.userIsInteracting = true; });
+controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
-
-
-
-
-
-// 
-
-
-
-
-// Lighting setup
+// --------------------------- LIGHTING ---------------------------
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
 const sunLight = new THREE.PointLight(0xffffff, 3);
 sunLight.castShadow = true;
@@ -88,7 +72,7 @@ sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
 
-// Sun mesh setup
+// --------------------------- SUN SETUP ---------------------------
 const sunRadius = 93;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
@@ -100,8 +84,9 @@ const sunMaterial = new THREE.MeshStandardMaterial({
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.castShadow = false;
 sun.receiveShadow = false;
+scene.add(sun); // Ensure sun is added to the scene
 
-// Comet tail particles
+// --------------------------- COMET TAIL ---------------------------
 const tailLength = 333;
 const tailParticlesCount = 93;
 const tailParticles = [];
@@ -122,7 +107,7 @@ for (let i = 0; i < tailParticlesCount; i++) {
   tailParticles.push(sprite);
 }
 
-// Planet texture loading
+// --------------------------- PLANET TEXTURES ---------------------------
 const planetTextures = {
   Mercury: { color: textureLoader.load('./images/merc.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
   Venus:   { color: textureLoader.load('./images/venus.cmap.jpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
@@ -134,12 +119,11 @@ const planetTextures = {
   Neptune: { color: textureLoader.load('./images/neptune.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
 };
 
-// Planet configuration: orbital radius and size
-const scaleFactor = 0.09;
+// --------------------------- PLANET DATA ---------------------------
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 69 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 101 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 123},
+  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 123 },
   { name: 'Mars',    data: new Planet(marsData),    radius: 4, planetSize: 72 },
   { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 369 },
   { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 297 },
@@ -147,7 +131,6 @@ const planets = [
   { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 154 },
 ];
 
-// Create planet mesh objects with material
 planets.forEach(p => {
   p.mesh = new THREE.Mesh(
     new THREE.SphereGeometry(p.planetSize, 32, 32),
@@ -161,18 +144,12 @@ planets.forEach(p => {
   p.mesh.receiveShadow = true;
 });
 
-
+// --------------------------- SOLAR SYSTEM GROUP ---------------------------
 const solarSystem = new THREE.Group();
+scene.add(solarSystem);
+planets.forEach(p => solarSystem.add(p.mesh));
 
-
-
-
-
-
-
-
-// Function to clamp camera distance between min and max from solar system center
-
+// --------------------------- CAMERA BEHAVIOR ---------------------------
 function clampCameraDistance() {
   const minDistance = 1111;
   const maxDistance = 7777;
@@ -186,77 +163,30 @@ function clampCameraDistance() {
 }
 controls.addEventListener('change', clampCameraDistance);
 
-// ----------- MIRROR CAMERA POSITION -------------
-// Mirror the camera position relative to solarSystem.position
-
+// Mirror initial camera position
 function mirrorCameraPosition() {
-  // Get current vector from solarSystem center to camera
   const offset = camera.position.clone().sub(solarSystem.position);
-  
-  // Mirror the offset by negating all components
   const mirroredOffset = offset.multiplyScalar(-1);
-  
-  // Set camera to mirrored position relative to solar system center
-
   camera.position.copy(solarSystem.position).add(mirroredOffset);
-  
-  // Make sure controls target stays on the solar system center
-
-
   controls.target.copy(solarSystem.position);
-  
-  // Update controls to apply changes
-
-
   controls.update();
 }
-
-// Cmirror initial camera position
-
-
 mirrorCameraPosition();
 
-
-
-// Animation variables
+// --------------------------- ANIMATION LOOP ---------------------------
 let t = 0;
-
-
-// Updated Solar System Simulation with Elliptical Orbits Using Astronomia Planet Data
-// --------------------------------------------------
-// Planets move around the Sun on the X-axis only, with Z displacement determined by their orbital eccentricity.
-
-// Updated Solar System Simulation with Real 3D Planet Positions Using Astronomia Data
-// -----------------------------------------------------------------------------------
-// Each planet uses true heliocentric 3D coordinates (x, y, z) from Astronomia.
-
 function animate() {
   const jd = julian.DateToJD(new Date());
-  console.log("Julian Date:", jd.toFixed(2));
-
-  planets.forEach(p => {
-    const pos = p.data.position2000(jd);
-    const lonDeg = (pos.lon * 180 / Math.PI).toFixed(2);
-    const latDeg = (pos.lat * 180 / Math.PI).toFixed(2);
-    const au = pos.range.toFixed(4);
-    console.log(`${p.name}: Lon ${lonDeg}°, Lat ${latDeg}°, Distance: ${au} AU`);
-  });
-
-  const tailDirection = new THREE.Vector3().subVectors(solarSystem.position, sun.position).normalize();
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(solarSystem.position);
 
   planets.forEach((p, i) => {
-    const planetPos = p.data.position2000(jd);
-    const r = planetPos.range;
-    const lon = planetPos.lon;
-    const lat = planetPos.lat;
+    const pos = p.data.position2000(jd);
+    const r = pos.range;
+    const lon = pos.lon;
+    const lat = pos.lat;
 
-    function scaleOrbitDistance(au) {
-      return Math.log(au + 1) * 1800;
-    }
-
-    const scaledR = scaleOrbitDistance(r);
+    const scaledR = Math.log(r + 1) * 1800;
     let orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
     let orbitY = scaledR * Math.sin(lat);
     const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
@@ -268,14 +198,13 @@ function animate() {
 
     p.mesh.position.set(orbitX, orbitY, orbitZ);
     p.mesh.rotation.x += 0.09 + 0.03 * i;
-
-    const wobbleAmplitude = 0.05 + 0.01 * i;
-    const wobbleSpeed = 0.5 + 0.002 * i;
-    p.mesh.rotation.y = Math.sin(t * wobbleSpeed) * wobbleAmplitude;
-
+    p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
     p.mesh.lookAt(sun.position);
     p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
   });
+
+  const referencePlanet = planets.find(p => p.name === 'Earth') || planets[0];
+  const tailDirection = new THREE.Vector3().subVectors(referencePlanet.mesh.position, sun.position).normalize();
 
   tailParticles.forEach((particle, idx) => {
     const distanceBehind = (idx / tailParticlesCount) * tailLength;
@@ -305,14 +234,10 @@ function animate() {
   renderer.render(scene, camera);
   t += 1;
   requestAnimationFrame(animate);
-} // <== Correctly closed animate()
-
-controls.userIsInteracting = false;
-controls.addEventListener('start', () => { controls.userIsInteracting = true; });
-controls.addEventListener('end', () => { controls.userIsInteracting = false; });
-
+}
 animate();
 
+// --------------------------- UI INTERACTIONS ---------------------------
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
