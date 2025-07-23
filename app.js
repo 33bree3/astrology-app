@@ -182,7 +182,7 @@ function animate() {
    // Get accurate heliocentric 3D coordinates
     
     
-const scale = 100; // adjust this value to fit your scene scale
+const scale = 9; // adjust this value to fit your scene scale
 
 const orbitX = planetPos.x * scale;
 const orbitY = planetPos.y * scale;
