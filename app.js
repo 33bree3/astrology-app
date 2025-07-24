@@ -375,9 +375,9 @@ if (earth) {
 
 // ---- LOG MOON DISTANCE ----
   
-const moonDistanceAU = (moonGeo.range / 149597870.7).toFixed(6);
+
 console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
-}
+
   
   // ---------------- Moon Illumination ----------------
 
