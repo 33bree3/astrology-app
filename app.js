@@ -28,14 +28,11 @@ import neptuneData from './astronomia/data/vsop87Dneptune.js';
 // --------------------------- CONSTANTS & SETTINGS ---------------------------
 
 // Base scaling factors for distances and planet sizes
-const BASE_SCALE = 3333;          // Used for logarithmic distance scaling
+const BASE_SCALE = 2000;          // Scale orbital radii to fit scene nicely
 const PLANET_SIZE_MULTIPLIER = 3; // Adjust planet size scaling here
 
 // Speed factor for advancing time in Julian Days
 const TIME_SPEED_FACTOR = 3;
-
-// Compression factor for outer planets to bring them visually closer
-const OUTER_PLANETS_COMPRESSION = 1;
 
 // Eccentricities for planets (used for elliptical orbits)
 const ECCENTRICITIES = {
@@ -59,7 +56,6 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Scene & Background (Skybox)
-
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxUrls = [
@@ -79,11 +75,11 @@ skyboxTexture.generateMipmaps = false;
 scene.background = skyboxTexture;
 
 // Camera & Controls
-const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
+const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 20000);
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 3333;
-controls.maxDistance = 7777;
+controls.minDistance = 500;
+controls.maxDistance = 15000;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
@@ -98,7 +94,7 @@ sunLight.castShadow = false;
 sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
-scene.add(new THREE.PointLightHelper(sunLight, 10));
+scene.add(new THREE.PointLightHelper(sunLight, 50));
 
 // Texture Loader
 const textureLoader = new THREE.TextureLoader();
@@ -106,12 +102,12 @@ const textureLoader = new THREE.TextureLoader();
 // --------------------------- SUN ---------------------------
 
 const sunRadius = 999;
-const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
+const sunGeometry = new THREE.SphereGeometry(sunRadius, 64, 64);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 const sunMaterial = new THREE.MeshStandardMaterial({
   map: sunTexture,
   emissive: new THREE.Color(0xffffaa),
-  emissiveIntensity: 69,
+  emissiveIntensity: 50,
 });
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.castShadow = false;
@@ -134,21 +130,19 @@ const planetTextures = {
   Neptune: { color: textureLoader.load('./planets/neptune.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
 };
 
-// Planets data with radius and size scaling
+// Planets data with radius and size scaling (radius here just used for distance scale)
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 69 },
-  { name: 'Venus',   data: new Planet(venusData), radius: 2, planetSize: 101 },
-  { name: 'Earth',   data: new Planet(earthData), radius: 3, planetSize: 123 },
-  { name: 'Mars',    data: new Planet(marsData), radius: 4, planetSize: 72 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 369 },
-  { name: 'Saturn',  data: new Planet(saturnData), radius: 6, planetSize: 297 },
-  { name: 'Uranus',  data: new Planet(uranusData), radius: 7, planetSize: 201 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 154 },
+  { name: 'Mercury', data: new Planet(mercuryData), radiusAU: 0.39, planetSize: 69 },
+  { name: 'Venus',   data: new Planet(venusData), radiusAU: 0.72, planetSize: 101 },
+  { name: 'Earth',   data: new Planet(earthData), radiusAU: 1.00, planetSize: 123 },
+  { name: 'Mars',    data: new Planet(marsData), radiusAU: 1.52, planetSize: 72 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radiusAU: 5.20, planetSize: 369 },
+  { name: 'Saturn',  data: new Planet(saturnData), radiusAU: 9.58, planetSize: 297 },
+  { name: 'Uranus',  data: new Planet(uranusData), radiusAU: 19.20, planetSize: 201 },
+  { name: 'Neptune', data: new Planet(neptuneData), radiusAU: 30.05, planetSize: 154 },
 ];
 
 // Create meshes for each planet and add to solarSystem group
-
-
 const solarSystem = new THREE.Group();
 scene.add(solarSystem);
 
@@ -170,10 +164,7 @@ planets.forEach(p => {
   solarSystem.add(mesh);
 });
 
-
 // --------------------------- MOON ---------------------------
-
-
 
 const moonTextures = {
   color: textureLoader.load('./planets/moon.jpg'),
@@ -181,7 +172,7 @@ const moonTextures = {
 };
 
 const moonMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(333, 333, 333),
+  new THREE.SphereGeometry(333, 32, 32),
   new THREE.MeshPhongMaterial({
     map: moonTextures.color,
     bumpMap: moonTextures.bump,
@@ -190,7 +181,7 @@ const moonMesh = new THREE.Mesh(
     emissive: new THREE.Color(0xffffff)
   })
 );
-moonMesh.scale.set(50, 50, 50); // Scale moon size appropriately
+moonMesh.scale.set(0.27 * PLANET_SIZE_MULTIPLIER, 0.27 * PLANET_SIZE_MULTIPLIER, 0.27 * PLANET_SIZE_MULTIPLIER); // Moon scaled relative to Earth
 moonMesh.castShadow = true;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
@@ -216,29 +207,25 @@ function createOrbitLine(a, e, segments = 128) {
   );
   const points = curve.getPoints(segments);
   const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, 0, p.y)));
-  const material = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
+  const material = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.3, transparent: true });
   return new THREE.LineLoop(geometry, material);
 }
 
-// Create and add orbit lines for planets
+// Create and add orbit lines for planets scaled properly in AU * BASE_SCALE
 planets.forEach(p => {
-  // Calculate orbit radius scaled and compressed for outer planets
-  let scaledA = (Math.log10(p.radius) + 1) * BASE_SCALE;
-  if (p.radius > 4) scaledA *= OUTER_PLANETS_COMPRESSION;
-
-  const orbit = createOrbitLine(scaledA, ECCENTRICITIES[p.name]);
+  const a = p.radiusAU * BASE_SCALE;   // semi-major axis in scaled units
+  const e = ECCENTRICITIES[p.name];
+  const orbit = createOrbitLine(a, e);
   orbitLines.add(orbit);
 });
 
 // --------------------------- TIME ---------------------------
 
-// Start with current Julian date
-let julianDate = julian.CalendarGregorianToJD(
-  new Date().getFullYear(),
-  new Date().getMonth() + 1,
-  new Date().getDate()
-);
+// Start with current Julian date (UTC now)
+let now = new Date();
+let julianDate = julian.CalendarGregorianToJD(now.getUTCFullYear(), now.getUTCMonth() + 1, now.getUTCDate() + (now.getUTCHours() / 24));
 
+// To update smoothly
 let lastTimestamp = 0;
 
 // --------------------------- ANIMATION LOOP ---------------------------
@@ -251,52 +238,83 @@ function animate(timestamp = 0) {
   // Advance Julian date by speed factor
   julianDate += delta * TIME_SPEED_FACTOR;
 
-  // Position planets on orbits
+  // Position planets on orbits using Astronomia VSOP87 data
   planets.forEach(p => {
-    const planetPos = p.data.position(julianDate);
+    const pos = p.data.position(julianDate); // Returns {ra, dec, range}
 
-    // Convert equatorial coordinates (ra, dec) to ecliptic using Astronomia
-    const eq = new Equatorial(planetPos.ra, planetPos.dec, planetPos.range);
-    const ecl = eq.toEcliptic(julianDate);
+    // Convert from equatorial spherical to ecliptic rectangular coordinates in AU
+    // Astronomia returns ra, dec in radians, range in AU
+    // Convert spherical to Cartesian equatorial coordinates:
+    // x = range * cos(dec) * cos(ra)
+    // y = range * cos(dec) * sin(ra)
+    // z = range * sin(dec)
 
-    // Calculate scaled and compressed orbital radius
-    let scaledRadius = (Math.log10(p.radius) + 1) * BASE_SCALE;
-    if (p.radius > 4) scaledRadius *= OUTER_PLANETS_COMPRESSION;
+    // Then convert equatorial XYZ to ecliptic XYZ by rotating by obliquity of ecliptic
+    // But Astronomia's Planet.position returns heliocentric ecliptic coordinates already in ra/dec,
+    // so instead convert ra/dec/range directly to Cartesian:
 
-    // Convert polar to cartesian
-    const y = Math.cos(ecl.lon) * scaledRadius;
-    const z = Math.sin(ecl.lon) * scaledRadius;
-    const x = Math.sin(ecl.lat) * scaledRadius;
+    // We'll convert ra/dec to Cartesian in equatorial system first:
+    let x_eq = pos.range * Math.cos(pos.dec) * Math.cos(pos.ra);
+    let y_eq = pos.range * Math.cos(pos.dec) * Math.sin(pos.ra);
+    let z_eq = pos.range * Math.sin(pos.dec);
+
+    // Now convert equatorial XYZ to ecliptic XYZ by rotating around x-axis by -epsilon
+    // Obliquity of ecliptic (approximate) in radians:
+    const epsilon = 23.439281 * Math.PI / 180;
+
+    const x_ecl = x_eq;
+    const y_ecl = y_eq * Math.cos(-epsilon) - z_eq * Math.sin(-epsilon);
+    const z_ecl = y_eq * Math.sin(-epsilon) + z_eq * Math.cos(-epsilon);
+
+    // Scale to scene units
+    const scale = BASE_SCALE;
+    const posX = x_ecl * scale;
+    const posY = y_ecl * scale;
+    const posZ = z_ecl * scale;
 
     // Update planet mesh position
-    p.mesh.position.set(x, y, z);
+    p.mesh.position.set(posX, posY, posZ);
   });
 
-  // -------- MOON POSITION --------
+  // -------- MOON POSITION RELATIVE TO EARTH --------
 
+  // Get Moon geocentric position in equatorial coordinates (ra, dec, range in AU)
   const moonPos = moonPosition.position(julianDate);
 
-  // Convert moon equatorial coordinates to ecliptic
-  const moonEq = new Equatorial(moonPos.ra, moonPos.dec, moonPos.range);
-  const moonEcl = moonEq.toEcliptic(julianDate);
+  // Earth's heliocentric position to offset Moon relative to Sun position (convert same way)
+  const earthPos = planets.find(p => p.name === 'Earth').data.position(julianDate);
+  // Earth equatorial Cartesian
+  const x_eq_e = earthPos.range * Math.cos(earthPos.dec) * Math.cos(earthPos.ra);
+  const y_eq_e = earthPos.range * Math.cos(earthPos.dec) * Math.sin(earthPos.ra);
+  const z_eq_e = earthPos.range * Math.sin(earthPos.dec);
 
-  // Calculate Earth's orbital radius scaled & compressed
-  let earthRadiusScaled = (Math.log10(3) + 1) * BASE_SCALE; // Earth radius is 3 in our data
-  if (3 > 4) earthRadiusScaled *= OUTER_PLANETS_COMPRESSION; // Not compressed because radius=3
+  // Earth ecliptic Cartesian
+  const epsilon = 23.439281 * Math.PI / 180;
+  const x_ecl_e = x_eq_e;
+  const y_ecl_e = y_eq_e * Math.cos(-epsilon) - z_eq_e * Math.sin(-epsilon);
+  const z_ecl_e = y_eq_e * Math.sin(-epsilon) + z_eq_e * Math.cos(-epsilon);
 
-  // Moon's cartesian position relative to Earth
-  const moonY = Math.cos(moonEcl.lon) * earthRadiusScaled;
-  const moonZ = Math.sin(moonEcl.lon) * earthRadiusScaled;
-  const moonX = Math.sin(moonEcl.lat) * earthRadiusScaled;
+  // Moon equatorial Cartesian (geocentric)
+  const x_eq_m = moonPos.range * Math.cos(moonPos.dec) * Math.cos(moonPos.ra);
+  const y_eq_m = moonPos.range * Math.cos(moonPos.dec) * Math.sin(moonPos.ra);
+  const z_eq_m = moonPos.range * Math.sin(moonPos.dec);
+
+  // Moon ecliptic Cartesian
+  const x_ecl_m = x_eq_m;
+  const y_ecl_m = y_eq_m * Math.cos(-epsilon) - z_eq_m * Math.sin(-epsilon);
+  const z_ecl_m = y_eq_m * Math.sin(-epsilon) + z_eq_m * Math.cos(-epsilon);
+
+  // Moon position relative to Sun = Earth position + Moon geocentric position
+  const moonX = (x_ecl_e + x_ecl_m) * BASE_SCALE;
+  const moonY = (y_ecl_e + y_ecl_m) * BASE_SCALE;
+  const moonZ = (z_ecl_e + z_ecl_m) * BASE_SCALE;
 
   moonMesh.position.set(moonX, moonY, moonZ);
 
   // -------- UPDATE SUN LIGHT POSITION --------
-
   sunLight.position.copy(sun.position);
 
   // -------- RENDER --------
-
   renderer.render(scene, camera);
   controls.update();
 
@@ -304,6 +322,6 @@ function animate(timestamp = 0) {
 }
 
 // Start camera position and begin animation
-camera.position.set(1000, 1000, 3000);
+camera.position.set(0, 5000, 7000);
 controls.update();
 animate();
