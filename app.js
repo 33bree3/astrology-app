@@ -246,14 +246,7 @@ sun.position.set(0, 0, 0);
 sunLight.position.copy(sun.position);
 
 
-//                                                                   orbit linesss 
 
-planets.forEach(p => {
-  const pos = p.data.position2000(julian.DateToJD(new Date()));
-  const r = Math.log(pos.range + 1) * baseScale;
-  const orbitLine = createOrbitLine(r);
-  orbitLines.add(orbitLine);
-});
 
 
 // --------------------------- CAMERA BEHAVIOR ---------------------------
@@ -305,7 +298,17 @@ function animate() {
 
   const timeSpeedFactor = 200; // Increase to speed up orbits
 const jd = julian.DateToJD(new Date()) + t * timeSpeedFactor;
-;
+  
+
+  //                                                                   orbit linesss 
+  
+
+planets.forEach(p => {
+  const pos = p.data.position2000(julian.DateToJD(new Date()));
+  const r = Math.log(pos.range + 1) * baseScale;
+  const orbitLine = createOrbitLine(r);
+  orbitLines.add(orbitLine);
+});
 
   
   const scale = 2222;                                     // scale for visibility
