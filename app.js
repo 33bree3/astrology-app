@@ -21,27 +21,57 @@ import uranusData from './astronomia/data/vsop87Duranus.js';
 import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
 // --------------------------- TEXTURE LOADING ---------------------------
+
 const textureLoader = new THREE.TextureLoader();
 
 // --------------------------- RENDERER SETUP ---------------------------
+
+
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+
+
 // --------------------------- SCENE SETUP ---------------------------
+
+
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
-const skyboxTexture = cubeLoader.load([
-  './images/space.right.jpg',
-  './images/space.left.jpg',
-  './images/space.up.jpg',
-  './images/space.down.jpg',
-  './images/space.jpg',
-  './images/space2.jpg'
-]);
+const skyboxUrls = [
+  './images/space.right.jpg', // POSITIVE_X
+  './images/space.left.jpg',  // NEGATIVE_X
+  './images/space.up.jpg',    // POSITIVE_Y
+  './images/space.down.jpg',  // NEGATIVE_Y
+  './images/space.jpg',       // POSITIVE_Z (FRONT)
+  './images/space2.jpg'       // NEGATIVE_Z (BACK)
+];
+
+const skyboxTexture = cubeLoader.load(
+  skyboxUrls,
+  () => {
+    console.log('✅ Skybox loaded');
+    // Optional: log sizes
+    skyboxTexture.image.forEach((img, i) => {
+      console.log(`Cube face ${i}: ${img.width} x ${img.height}`);
+    });
+  },
+  undefined,
+  (err) => {
+    console.error('❌ Skybox load error:', err);
+  }
+);
+skyboxTexture.minFilter = THREE.LinearFilter;
+skyboxTexture.magFilter = THREE.LinearFilter;
+skyboxTexture.generateMipmaps = false;
+
 scene.background = skyboxTexture;
+
+
+
+
 
 // --------------------------- CAMERA SETUP ---------------------------
 const camera = new THREE.PerspectiveCamera(
