@@ -296,13 +296,6 @@ planets.forEach((p) => {
   console.log(`${p.name} - Distance (AU): ${pos.range.toFixed(6)}`);
 });
 
-// ---- LOG MOON DISTANCE ----
-  
-const moonGeo = moonPosition.position(jd); // already used later too
-const moonDistanceAU = (moonGeo.range / 149597870.7).toFixed(6);
-console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
-}
-
   
   // Scale factor to make planets visible and separated
   
@@ -365,6 +358,7 @@ if (p.name === 'Neptune') {
 const earth = planets.find(p => p.name === 'Earth');
 if (earth) {
 
+  
   const earthPos = earth.data.position2000(jd); // heliocentric Earth position
 
   // Use Earth position to get Moon position relative to Earth
@@ -378,6 +372,14 @@ if (earth) {
 
   moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
 
+
+// ---- LOG MOON DISTANCE ----
+  
+const moonGeo = moonPosition.position(jd); // already used later too
+const moonDistanceAU = (moonGeo.range / 149597870.7).toFixed(6);
+console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
+}
+  
   // ---------------- Moon Illumination ----------------
 
   const moonEcl = new Ecliptic(moonGeo.lon, moonGeo.lat);
