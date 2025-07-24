@@ -28,8 +28,8 @@ import neptuneData from './astronomia/data/vsop87Dneptune.js';
 // --------------------------- CONSTANTS & SETTINGS ---------------------------
 
 // Base scaling factors for distances and planet sizes
-const BASE_SCALE = 3333;          // Used for distance scaling (adjusted for visibility)
-const PLANET_SIZE_MULTIPLIER = 9; // Adjust planet size scaling here
+const BASE_SCALE = 555;          // Used for distance scaling (adjusted for visibility)
+const PLANET_SIZE_MULTIPLIER = 0.1; // Adjust planet size scaling here
 
 // Speed factor for advancing time in Julian Days
 const TIME_SPEED_FACTOR = 5;
