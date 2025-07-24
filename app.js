@@ -360,17 +360,19 @@ const earth = planets.find(p => p.name === 'Earth');
 if (earth) {
 
   
-const moonGeo = moonPosition.position(jd);
+const earthPos = earth.data.position2000(jd); // heliocentric Earth position
 
-// Convert km to scene scale (1 AU = 149597870.7 km)
-  
-const moonScaleFactor = scale / 149597870.7; // Same as planets
+// Use Earth position to get Moon position relative to Earth
+const moonGeo = moonPosition.position(jd, earthPos);
+
+// Convert spherical to Cartesian (Moon relative to Earth)
 const moonVector = new THREE.Vector3(
-  moonGeo.x * moonScaleFactor,
-  moonGeo.y * moonScaleFactor,
-  moonGeo.z * moonScaleFactor
-);
+  moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
+  moonGeo.range * Math.sin(moonGeo.lat),
+  moonGeo.range * Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
+).multiplyScalar(222);
 
+// Place moon relative to Earth
 moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
 
 
