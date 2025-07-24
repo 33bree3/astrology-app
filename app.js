@@ -249,7 +249,7 @@ planets.forEach((p, i) => {
   let scaledR = Math.log(r + 1) * baseScale;
 
   if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
-    scaledR *= 3; // bring last three planets closer by 90%
+    scaledR *= 0.9; // bring last three planets closer by 90%
   }
 
   // Calculate cartesian coords from spherical
