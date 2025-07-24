@@ -379,7 +379,7 @@ const moonVector = new THREE.Vector3(
 
 moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
 
-
+}
 
 
   // Calculate illumination (assuming phaseAngleEquatorial is fixed and working)
