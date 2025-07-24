@@ -250,6 +250,10 @@ scene.add(moonMesh);
 
 // --------------------------- SOLAR SYSTEM GROUP ---------------------------
 
+  
+  const scale = 2222;                                     // scale for visibility
+  const baseScale = 2222;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
+
 
 const solarSystem = new THREE.Group();
 scene.add(solarSystem);
@@ -339,9 +343,6 @@ const jd = julian.DateToJD(new Date()) + t * timeSpeedFactor;
 
 
   
-  
-  const scale = 2222;                                     // scale for visibility
-  const baseScale = 2222;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
 
 
   //                                                                   orbit linesss 
