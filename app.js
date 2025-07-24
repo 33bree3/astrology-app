@@ -28,14 +28,24 @@ import neptuneData from './astronomia/data/vsop87Dneptune.js';
 // --------------------------- CONSTANTS & SETTINGS ---------------------------
 
 // Base scaling factors for distances and planet sizes
-const BASE_SCALE = 3333;          // Used for logarithmic distance scaling
+const BASE_SCALE = 4000;          // Used for distance scaling (adjusted for visibility)
 const PLANET_SIZE_MULTIPLIER = 3; // Adjust planet size scaling here
 
 // Speed factor for advancing time in Julian Days
 const TIME_SPEED_FACTOR = 3;
 
-// Compression factor for outer planets to bring them visually closer
-const OUTER_PLANETS_COMPRESSION = 1;
+// Eccentricities and orbital elements for planets (J2000 epoch)
+const degToRad = deg => deg * Math.PI / 180;
+const orbitalElementsData = {
+  Mercury: { a: 0.3871, e: 0.2056, i: degToRad(7.005),   o: degToRad(48.331),  w: degToRad(29.124) },
+  Venus:   { a: 0.7233, e: 0.0068, i: degToRad(3.3946),  o: degToRad(76.680),  w: degToRad(54.884) },
+  Earth:   { a: 1.0000, e: 0.0167, i: degToRad(0.000),   o: degToRad(0.000),   w: degToRad(114.207) },
+  Mars:    { a: 1.5237, e: 0.0934, i: degToRad(1.850),   o: degToRad(49.558),  w: degToRad(286.502) },
+  Jupiter: { a: 5.2026, e: 0.0484, i: degToRad(1.303),   o: degToRad(100.464), w: degToRad(273.867) },
+  Saturn:  { a: 9.5549, e: 0.0555, i: degToRad(2.489),   o: degToRad(113.665), w: degToRad(339.392) },
+  Uranus:  { a: 19.218, e: 0.0463, i: degToRad(0.773),   o: degToRad(74.006),  w: degToRad(96.998) },
+  Neptune: { a: 30.110, e: 0.0090, i: degToRad(1.770),   o: degToRad(131.784), w: degToRad(272.846) },
+};
 
 // --------------------------- SETUP ---------------------------
 
@@ -67,11 +77,11 @@ skyboxTexture.generateMipmaps = false;
 scene.background = skyboxTexture;
 
 // Camera & Controls
-const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
+const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 50000);
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 3333;
-controls.maxDistance = 7777;
+controls.minDistance = 2000;
+controls.maxDistance = 40000;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
@@ -124,18 +134,17 @@ const planetTextures = {
 
 // Planets data with radius and size scaling
 const planets = [
-  { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 69 },
-  { name: 'Venus',   data: new Planet(venusData), radius: 2, planetSize: 101 },
-  { name: 'Earth',   data: new Planet(earthData), radius: 3, planetSize: 123 },
-  { name: 'Mars',    data: new Planet(marsData), radius: 4, planetSize: 72 },
-  { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 369 },
-  { name: 'Saturn',  data: new Planet(saturnData), radius: 6, planetSize: 297 },
-  { name: 'Uranus',  data: new Planet(uranusData), radius: 7, planetSize: 201 },
-  { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 154 },
+  { name: 'Mercury', data: new Planet(mercuryData), radius: 0.3871, planetSize: 69 },
+  { name: 'Venus',   data: new Planet(venusData),   radius: 0.7233, planetSize: 101 },
+  { name: 'Earth',   data: new Planet(earthData),   radius: 1.0000, planetSize: 123 },
+  { name: 'Mars',    data: new Planet(marsData),    radius: 1.5237, planetSize: 72 },
+  { name: 'Jupiter', data: new Planet(jupiterData), radius: 5.2026, planetSize: 369 },
+  { name: 'Saturn',  data: new Planet(saturnData),  radius: 9.5549, planetSize: 297 },
+  { name: 'Uranus',  data: new Planet(uranusData),  radius: 19.218, planetSize: 201 },
+  { name: 'Neptune', data: new Planet(neptuneData), radius: 30.110, planetSize: 154 },
 ];
 
 // Create meshes for each planet and add to solarSystem group
-
 const solarSystem = new THREE.Group();
 scene.add(solarSystem);
 
@@ -186,149 +195,123 @@ const orbitLines = new THREE.Group();
 scene.add(orbitLines);
 
 /**
- * Creates an elliptical orbit line in 3D space from orbital elements:
- * a (semi-major axis, AU),
+ * Creates a 3D elliptical orbit line from orbital elements:
+ * a (semi-major axis in AU),
  * e (eccentricity),
- * i (inclination, radians),
- * o (longitude of ascending node, radians),
- * w (argument of periapsis, radians).
- *
- * The ellipse is rotated according to inclination and node, centered so the Sun is at one focus.
+ * i (inclination in radians),
+ * o (longitude of ascending node in radians),
+ * w (argument of perihelion in radians)
+ * 
+ * The ellipse is calculated in 3D space and rotated to correct orbital plane.
  */
-function createOrbitLineFromElements(elements, segments = 256) {
-  const a = elements.a;       // semi-major axis in AU
-  const e = elements.e;       // eccentricity
-  const i = elements.i;       // inclination
-  const o = elements.o;       // longitude of ascending node
-  const w = elements.w;       // argument of periapsis
-
-  // Semi-minor axis
-  const b = a * Math.sqrt(1 - e * e);
-  // Focus offset
-  const focusOffset = a * e;
-
-  // Points in orbital plane (2D ellipse, centered on focus)
+function createOrbitLineFromElements({a, e, i, o, w}, segments = 256) {
   const points = [];
 
-  for (let t = 0; t <= segments; t++) {
-    const theta = (t / segments) * 2 * Math.PI;
-    // Parametric ellipse, center shifted by focusOffset along x-axis
-    const x = a * Math.cos(theta) - focusOffset;
-    const y = b * Math.sin(theta);
-    points.push(new THREE.Vector3(x, y, 0));
+  // semi-minor axis
+  const b = a * Math.sqrt(1 - e * e);
+
+  // We'll sample the ellipse parametrically from 0 to 2PI (true anomaly approx)
+  for (let t = 0; t <= 2 * Math.PI; t += (2 * Math.PI) / segments) {
+    // Parametric ellipse coordinates before rotation
+    const x = a * Math.cos(t) - a * e; // offset by a*e to shift focus to origin
+    const y = b * Math.sin(t);
+    const z = 0;
+
+    // Rotate point according to orbital elements (3D rotation)
+    // Rotation matrix: Rz(-o) * Rx(-i) * Rz(-w)
+    // This orients the ellipse correctly in 3D space
+
+    // Precompute sines and cosines
+    const cosO = Math.cos(o);
+    const sinO = Math.sin(o);
+    const cosI = Math.cos(i);
+    const sinI = Math.sin(i);
+    const cosW = Math.cos(w);
+    const sinW = Math.sin(w);
+
+    // Apply argument of perihelion (w)
+    let x1 = x * cosW - y * sinW;
+    let y1 = x * sinW + y * cosW;
+    let z1 = z;
+
+    // Apply inclination (i)
+    let x2 = x1;
+    let y2 = y1 * cosI - z1 * sinI;
+    let z2 = y1 * sinI + z1 * cosI;
+
+    // Apply longitude of ascending node (o)
+    let x3 = x2 * cosO - y2 * sinO;
+    let y3 = x2 * sinO + y2 * cosO;
+    let z3 = z2;
+
+    // Scale from AU to your visualization scale
+    points.push(new THREE.Vector3(x3, z3, y3).multiplyScalar(BASE_SCALE));
   }
 
-  // Create geometry from points
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-  // Apply rotation matrices to tilt the orbit into correct 3D orientation
-
-  // Rotation order: 
-  // 1. Rotate by argument of periapsis (w) around Z axis
-  // 2. Rotate by inclination (i) around X axis
-  // 3. Rotate by longitude of ascending node (o) around Z axis
-
-  // We'll use Euler rotations in order: Z(w), X(i), Z(o)
-
-  const matrix = new THREE.Matrix4();
-
-  const rotW = new THREE.Matrix4().makeRotationZ(w);
-  const rotI = new THREE.Matrix4().makeRotationX(i);
-  const rotO = new THREE.Matrix4().makeRotationZ(o);
-
-  // Combined rotation: O * I * W
-  matrix.multiply(rotO);
-  matrix.multiply(rotI);
-  matrix.multiply(rotW);
-
-  geometry.applyMatrix4(matrix);
-
-  // Scale AU to scene scale
-  const scale = BASE_SCALE;
-  geometry.scale(scale, scale, scale);
-
-  // Material
   const material = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
-
   return new THREE.LineLoop(geometry, material);
 }
 
-// Create and add orbit lines for planets
+// Create orbits for all planets
 planets.forEach(p => {
-  // Get orbital elements at J2000 epoch for stable orbit lines
-  const elements = p.data.orbit(julian.J2000);
-  const orbit = createOrbitLineFromElements(elements);
-  orbitLines.add(orbit);
-  p.orbitElements = elements; // cache for later if needed
+  const el = orbitalElementsData[p.name];
+  if (!el) {
+    console.warn(`No orbital elements for ${p.name}`);
+    return;
+  }
+  const orbitLine = createOrbitLineFromElements(el);
+  orbitLines.add(orbitLine);
 });
 
-// --------------------------- TIME ---------------------------
+// --------------------------- TIME & ANIMATION ---------------------------
 
-// Start with current Julian date
-let julianDate = julian.CalendarGregorianToJD(
-  new Date().getFullYear(),
-  new Date().getMonth() + 1,
-  new Date().getDate()
-);
+let startJulianDate = julian.CalendarToJD(new Date().getFullYear(), new Date().getMonth()+1, new Date().getDate());
+let timeElapsed = 0;
 
-let lastTimestamp = 0;
+function animate() {
+  requestAnimationFrame(animate);
 
-// --------------------------- ANIMATION LOOP ---------------------------
+  timeElapsed += TIME_SPEED_FACTOR;
 
-function animate(timestamp = 0) {
-  // Calculate delta time for smooth animations
-  const delta = (timestamp - lastTimestamp) / 1000;
-  lastTimestamp = timestamp;
+  // Current simulation Julian Date
+  const currentJD = startJulianDate + timeElapsed;
 
-  // Advance Julian date by speed factor
-  julianDate += delta * TIME_SPEED_FACTOR;
-
-  // Position planets on orbits using Astronomia's position() for accuracy
+  // Update planet positions based on VSOP87 data and place meshes accordingly
   planets.forEach(p => {
-    // Get heliocentric ecliptic rectangular coordinates (x,y,z) in AU from Astronomia
-    const pos = p.data.position(julianDate);
-
-    // Scale AU to scene scale
-    const x = pos.x * BASE_SCALE;
-    const y = pos.y * BASE_SCALE;
-    const z = pos.z * BASE_SCALE;
-
-    // Update planet mesh position
+    const eq = p.data.position(currentJD);
+    // eq is rectangular equatorial coords, convert to Three.js xyz
+    // Equatorial coords: x = x, y = y, z = z in AU
+    // Our coordinate system: x = x, y = z, z = y (swapping for visualization)
+    const x = eq.x * BASE_SCALE;
+    const y = eq.z * BASE_SCALE;
+    const z = eq.y * BASE_SCALE;
     p.mesh.position.set(x, y, z);
   });
 
-  // -------- MOON POSITION --------
+  // Update Moon position relative to Earth
+  const earth = planets.find(p => p.name === 'Earth');
+  if (earth) {
+    const moonEquatorial = moonPosition.position(currentJD);
+    // Moon position is relative to Earth, scale accordingly
+    const moonX = moonEquatorial.x * BASE_SCALE * 0.00257; // scaled down
+    const moonY = moonEquatorial.z * BASE_SCALE * 0.00257;
+    const moonZ = moonEquatorial.y * BASE_SCALE * 0.00257;
+    moonMesh.position.set(earth.mesh.position.x + moonX, earth.mesh.position.y + moonY, earth.mesh.position.z + moonZ);
+  }
 
-  const moonPos = moonPosition.position(julianDate);
-
-  // Convert moon equatorial coordinates to ecliptic
-  const moonEq = new Equatorial(moonPos.ra, moonPos.dec, moonPos.range);
-  const moonEcl = moonEq.toEcliptic(julianDate);
-
-  // Earth's position for reference
-  const earthPos = planets.find(p => p.name === 'Earth').mesh.position;
-
-  // Moon's position relative to Earth in AU scaled
-  const moonX = earthPos.x + moonEcl.lon * BASE_SCALE * 0.00257; // Moon avg distance ~0.00257 AU
-  const moonY = earthPos.y + Math.sin(moonEcl.lat) * BASE_SCALE * 0.00257;
-  const moonZ = earthPos.z + Math.cos(moonEcl.lat) * BASE_SCALE * 0.00257;
-
-  moonMesh.position.set(moonX, moonY, moonZ);
-
-  // -------- UPDATE SUN LIGHT POSITION --------
-
-  sunLight.position.copy(sun.position);
-
-  // -------- RENDER --------
-
-  renderer.render(scene, camera);
   controls.update();
-
-  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
 }
 
-// Start camera position and begin animation
-camera.position.set(1000, 1000, 3000);
-controls.update();
 animate();
 
+// --------------------------- WINDOW RESIZE ---------------------------
+
+window.addEventListener('resize', () => {
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  renderer.setSize(width, height);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+});
