@@ -309,6 +309,12 @@ planets.forEach((p, i) => {
   const lon = pos.lon;
   const lat = pos.lat;
 
+  if (p.name === 'Neptune') {
+  // Apply slight manual offset to make Neptune appear offset
+  lon += 0.05; // ~2.8 degrees
+  lat += 0.02; // ~1.1 degrees
+}
+
   // Base scale for distances (log scale or linear)
 
   
@@ -355,15 +361,18 @@ if (earth) {
 
   
 const moonGeo = moonPosition.position(jd);
-const moonScaledRange = Math.log(moonGeo.range + 1) * baseScale;
 
+// Convert km to scene scale (1 AU = 149597870.7 km)
+  
+const moonScaleFactor = scale / 149597870.7; // Same as planets
 const moonVector = new THREE.Vector3(
-  Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
-  Math.sin(moonGeo.lat),
-  Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-).multiplyScalar(moonScaledRange);
+  moonGeo.x * moonScaleFactor,
+  moonGeo.y * moonScaleFactor,
+  moonGeo.z * moonScaleFactor
+);
 
 moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
+
 
   
   moonMesh.lookAt(sun.position);
@@ -378,6 +387,9 @@ moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
   const sunLat = 0;
   const sunEcl = new Ecliptic(sunLon, sunLat);
   const sunEq = sunEcl.toEquatorial(jd);
+
+
+
 
   // Get phase angle (make sure function exists and works)
   
