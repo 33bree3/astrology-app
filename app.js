@@ -82,7 +82,12 @@ const camera = new THREE.PerspectiveCamera(
 );
 const cameraOffset = new THREE.Vector3(300, 400, 500);
 
+
+
 // --------------------------- ORBIT CONTROLS ---------------------------
+
+
+
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
 controls.minDistance = 1111;
@@ -94,15 +99,25 @@ controls.userIsInteracting = false;
 controls.addEventListener('start', () => { controls.userIsInteracting = true; });
 controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
+
+
 // --------------------------- LIGHTING ---------------------------
+
+
+
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 3);
+const sunLight = new THREE.PointLight(0xffffff, 100000, 0, 2);
+
+
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
 
+
 // --------------------------- SUN SETUP ---------------------------
+
+
 const sunRadius = 93;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
@@ -116,7 +131,11 @@ sun.castShadow = false;
 sun.receiveShadow = false;
 scene.add(sun); // Ensure sun is added to the scene
 
+
 // --------------------------- COMET TAIL ---------------------------
+
+
+
 const tailLength = 333;
 const tailParticlesCount = 93;
 const tailParticles = [];
