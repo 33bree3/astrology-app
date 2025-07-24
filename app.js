@@ -249,7 +249,7 @@ planets.forEach((p, i) => {
   let scaledR = Math.log(r + 1) * baseScale;
 
   if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
-    scaledR *= 0.1; // bring last three planets closer by 90%
+    scaledR *= 0.05; // bring last three planets closer by 90%
   }
 
   // Calculate cartesian coords from spherical
@@ -279,7 +279,7 @@ if (earth) {
     moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
     moonGeo.range * Math.sin(moonGeo.lat),
     moonGeo.range * Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-  ).multiplyScalar(50);
+  ).multiplyScalar(222);
 
   moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
   moonMesh.lookAt(sun.position);
