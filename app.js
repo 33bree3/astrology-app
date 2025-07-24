@@ -108,7 +108,7 @@ scene.add(new THREE.PointLightHelper(sunLight, 10));
 // --------------------------- SUN SETUP ---------------------------
 
 
-const sunRadius = 444;
+const sunRadius = 666;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 const sunMaterial = new THREE.MeshStandardMaterial({
@@ -282,8 +282,8 @@ function animate() {
   const jd = julian.DateToJD(new Date());
 
   
-  const scale = 1111;                                     // scale for visibility
-  const baseScale = 1111;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
+  const scale = 2222;                                     // scale for visibility
+  const baseScale = 2222;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
