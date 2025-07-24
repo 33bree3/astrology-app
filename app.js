@@ -398,6 +398,7 @@ tailParticles.forEach((particle, idx) => {
   particle.position.copy(sun.position).add(tailDirection.clone().multiplyScalar(distanceFromSun)).add(jitter);
   particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
 });
+}
 
 // ---------------- Render & Animate ----------------
 
