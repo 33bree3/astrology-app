@@ -211,7 +211,7 @@ const moonMesh = new THREE.Mesh(
   })
 );
 
-moonMesh.scale.set(99999, 999999, 999999);  // Adjust 0.5r size factor you want
+moonMesh.scale.set(20, 20, 20);  // Adjust 0.5r size factor you want
 moonMesh.castShadow = true;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
@@ -280,8 +280,8 @@ function animate() {
   const jd = julian.DateToJD(new Date());
 
   
-  const scale = 10000; // scale for visibility
-  const baseScale = 18000; // 🌟 MOVE IT HERE
+  const scale = 1; // scale for visibility
+  const baseScale = 1; // 🌟 MOVE IT HERE
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
@@ -343,7 +343,7 @@ if (p.name === 'Neptune') {
 
 
   if (p.name === 'Moon') {
-    p.mesh.scale.set(0.1, 0.1, 0.1); // Set Moon size here (tweak the 0.5 as needed)
+    p.mesh.scale.set(0.01, 0.01, 0.01); // Set Moon size here (tweak the 0.5 as needed)
   }
 
 
@@ -441,4 +441,3 @@ function initialize() {
 }
 
 initialize();
-}
