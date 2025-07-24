@@ -352,23 +352,26 @@ const earth = planets.find(p => p.name === 'Earth');
 if (earth) {
 
   
-  // Get moon position relative to Earth at JD
+const moonGeo = moonPosition.position(jd);
+
+// Convert moon AU to render scale (same as Earth)
 
   
-  const moonGeo = moonPosition.position(jd);
+const moonScaledRange = Math.log(moonGeo.range + 1) * baseScale;
+
+// Convert to 3D vector in scene space
 
   
-  // Moon position in cartesian coordinates, scaled for visualization
-  // Adjust multiplier to fit your scene (try 50-100)
+const moonVector = new THREE.Vector3(
+  Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
+  Math.sin(moonGeo.lat),
+  Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
+).multiplyScalar(moonScaledRange);
 
+// Offset from Earth in scene space
   
-  const moonVector = new THREE.Vector3(
-    moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
-    moonGeo.range * Math.sin(moonGeo.lat),
-    moonGeo.range * Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-  ).multiplyScalar(39);
+moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
 
-  moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
   moonMesh.lookAt(sun.position);
 
   // Calculate illumination (assuming phaseAngleEquatorial is fixed and working)
