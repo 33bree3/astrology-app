@@ -274,9 +274,6 @@ const eccentricities = {
   Neptune: 0.0113,
 };
 
-// Group to hold orbit lines
-const orbitLines = new THREE.Group();
-scene.add(orbitLines);
 
 // Create elliptical orbit lines with eccentricity & compression
 function createOrbitLine(a, e) {
@@ -305,7 +302,7 @@ function createOrbitLines() {
 
     // Apply compression for outer planets (match your scale in animate)
     if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
-      a *= 0.9;
+      a *= 1.8;
     }
 
     const e = eccentricities[p.name] || 0.05;
