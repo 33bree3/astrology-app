@@ -262,7 +262,7 @@ sun.position.set(0, 0, 0);
 sunLight.position.copy(sun.position);
 
 
-// Realistic orbital eccentricities (approximate)
+// Eccentricities for planets (approximate)
 const eccentricities = {
   Mercury: 0.2056,
   Venus: 0.0067,
@@ -271,21 +271,51 @@ const eccentricities = {
   Jupiter: 0.0489,
   Saturn: 0.0565,
   Uranus: 0.0457,
-  Neptune: 0.0113
+  Neptune: 0.0113,
 };
 
-// Create elliptical orbit lines for each planet and add to scene
-planets.forEach(p => {
-  // Get current distance for scaling (you can also use average orbital radius for consistency)
-  const pos = p.data.position2000(julian.DateToJD(new Date()));
-  const r = Math.log(pos.range + 1) * baseScale;
+// Group to hold orbit lines
+const orbitLines = new THREE.Group();
+scene.add(orbitLines);
 
-  const e = eccentricities[p.name] || 0.05; // default eccentricity if missing
+// Create elliptical orbit lines with eccentricity & compression
+function createOrbitLine(a, e) {
+  const b = a * Math.sqrt(1 - e * e);
+  const curve = new THREE.EllipseCurve(
+    -a * e, 0,      // center shifted by focus offset on X axis
+    a, b,           // xRadius, yRadius (XZ plane)
+    0, 2 * Math.PI, // full ellipse
+    false,
+    0
+  );
+  const points = curve.getPoints(128);
+  const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, 0, p.y)));
+  const material = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.3, transparent: true });
+  return new THREE.Line(geometry, material);
+}
 
-  const orbit = createOrbitLine(r, e);
-  orbitLines.add(orbit);
-});
+// Create orbit lines for all planets with consistent scaling & compression
+function createOrbitLines() {
+  const baseScale = 2222; // match your base scale
 
+  planets.forEach(p => {
+    // Get current position data to extract range (AU)
+    const pos = p.data.position2000(julian.DateToJD(new Date()));
+    let a = Math.log(pos.range + 1) * baseScale;
+
+    // Apply compression for outer planets (match your scale in animate)
+    if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
+      a *= 0.9;
+    }
+
+    const e = eccentricities[p.name] || 0.05;
+    const orbitLine = createOrbitLine(a, e);
+    orbitLines.add(orbitLine);
+  });
+}
+
+// Call this ONCE during initialization
+createOrbitLines();
 
 
 
@@ -369,41 +399,60 @@ planets.forEach((p) => {
 });
 
   
-  // Scale factor to make planets visible and separated
+  // Scale factor to make planets visible and separated <?
   
-  
-planets.forEach((p, i) => {
+ planets.forEach((p, i) => {
   const pos = p.data.position2000(jd);
+  let lon = pos.lon;
+  let lat = pos.lat;
   const r = pos.range;
- let lon = pos.lon;
-let lat = pos.lat;
 
-if (p.name === 'Neptune') {
-  // Apply slight manual offset to make Neptune appear offset
-  lon += 0.09; // ~2.8 degrees
-  lat += 0.03; // ~1.1 degrees
-}
-
-  // Compress last three planets' distances
-  
-  
-  let scaledR = Math.log(r + 1) * baseScale;
-
-  if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
-    scaledR *= 0.3; // bring last three planets closer by 90%
+  // Neptune manual offset (keep this)
+  if (p.name === 'Neptune') {
+    lon += 0.09; // ~2.8 degrees
+    lat += 0.03; // ~1.1 degrees
   }
 
-  // Calculate cartesian coords from spherical
+  // Base scale (keep this from your code)
+  const baseScale = 2222;
 
-  
-  
-  const orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
-  const orbitY = scaledR * Math.sin(lat);
-  const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
+  // Compress last three planets' distances (keep, but adjust compression factor as needed)
+  let scaledR = Math.log(r + 1) * baseScale;
+  if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
+    scaledR *= 0.3;  // your compression factor
+  }
 
-  p.mesh.position.set(orbitX, orbitY, orbitZ);
+  // Elliptical orbit calculations using eccentricity
+  const eccentricities = {
+    Mercury: 0.2056,
+    Venus: 0.0067,
+    Earth: 0.0167,
+    Mars: 0.0934,
+    Jupiter: 0.0489,
+    Saturn: 0.0565,
+    Uranus: 0.0457,
+    Neptune: 0.0113,
+  };
+  const e = eccentricities[p.name] || 0.05;
+  const a = scaledR;                        // semi-major axis
+  const b = a * Math.sqrt(1 - e * e);      // semi-minor axis
 
-  
+  // Angle along orbit is longitude (ignore lat for orbit position)
+  // XZ plane orbit with focus offset on X-axis
+  const x = a * Math.cos(lon) - a * e;
+  const y = scaledR * Math.sin(lat);  // preserve lat for height (Y)
+  const z = b * Math.sin(lon);
+
+  // Set position on elliptical orbit with latitude as Y height
+  p.mesh.position.set(x, y, z);
+
+  // Rotation animations (keep yours)
+  p.mesh.rotation.x += 1 + 1 * i;
+  p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
+  p.mesh.lookAt(sun.position);
+  p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
+});
+
     // MOOOOOOOOOOOOOON SIZE IF IT IS MOON MAKE DAT SIE - commented out 
 
 
