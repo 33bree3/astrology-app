@@ -6,8 +6,8 @@ import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/cont
 
 // --------------------------- CONSTANTS ---------------------------
 
-const BASE_SCALE = 44444;
-const PLANET_SIZE_MULTIPLIER = 11111;
+const BASE_SCALE = 4;
+const PLANET_SIZE_MULTIPLIER = 1;
 const TIME_SPEED_FACTOR = 5;
 const degToRad = deg => deg * Math.PI / 180;
 
