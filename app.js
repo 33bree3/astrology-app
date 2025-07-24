@@ -397,7 +397,7 @@ tailParticles.forEach((particle, idx) => {
   const jitter = new THREE.Vector3((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
   particle.position.copy(sun.position).add(tailDirection.clone().multiplyScalar(distanceFromSun)).add(jitter);
   particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
-}
+});
 
 // ---------------- Render & Animate ----------------
 
