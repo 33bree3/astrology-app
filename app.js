@@ -177,6 +177,22 @@ const planets = [
   { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 154 },
 ];
 
+
+// orbital lines 
+
+const orbitLines = new THREE.Group();
+scene.add(orbitLines);
+
+function createOrbitLine(radius, segments = 128) {
+  const curve = new THREE.EllipseCurve(0, 0, radius, radius, 0, 2 * Math.PI, false, 0);
+  const points = curve.getPoints(segments);
+  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, 0, p.y)));
+  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
+  return new THREE.Line(orbitGeometry, orbitMaterial);
+}
+
+
+
 planets.forEach(p => {
   p.mesh = new THREE.Mesh(
     new THREE.SphereGeometry(p.planetSize, 32, 32),
@@ -230,6 +246,15 @@ sun.position.set(0, 0, 0);
 sunLight.position.copy(sun.position);
 
 
+//                                                                   orbit linesss 
+
+planets.forEach(p => {
+  const pos = p.data.position2000(julian.DateToJD(new Date()));
+  const r = Math.log(pos.range + 1) * baseScale;
+  const orbitLine = createOrbitLine(r);
+  orbitLines.add(orbitLine);
+});
+
 
 // --------------------------- CAMERA BEHAVIOR ---------------------------
 
@@ -278,8 +303,9 @@ function animate() {
   
   // Current Julian Date
 
-  
-  const jd = julian.DateToJD(new Date());
+  const timeSpeedFactor = 200; // Increase to speed up orbits
+const jd = julian.DateToJD(new Date()) + t * timeSpeedFactor;
+;
 
   
   const scale = 2222;                                     // scale for visibility
