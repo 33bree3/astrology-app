@@ -375,7 +375,6 @@ if (earth) {
 
 // ---- LOG MOON DISTANCE ----
   
-const moonGeo = moonPosition.position(jd); // already used later too
 const moonDistanceAU = (moonGeo.range / 149597870.7).toFixed(6);
 console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
 }
