@@ -306,10 +306,10 @@ console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
 planets.forEach((p, i) => {
   const pos = p.data.position2000(jd);
   const r = pos.range;
-  const lon = pos.lon;
-  const lat = pos.lat;
+ let lon = pos.lon;
+let lat = pos.lat;
 
-  if (p.name === 'Neptune') {
+if (p.name === 'Neptune') {
   // Apply slight manual offset to make Neptune appear offset
   lon += 0.05; // ~2.8 degrees
   lat += 0.02; // ~1.1 degrees
