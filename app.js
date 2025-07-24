@@ -32,10 +32,10 @@ const BASE_SCALE = 2222;          // Used for logarithmic distance scaling
 const PLANET_SIZE_MULTIPLIER = 1; // Adjust planet size scaling here
 
 // Speed factor for advancing time in Julian Days
-const TIME_SPEED_FACTOR = 21;
+const TIME_SPEED_FACTOR = 333;
 
 // Compression factor for outer planets to bring them visually closer
-const OUTER_PLANETS_COMPRESSION = 0.3;
+const OUTER_PLANETS_COMPRESSION = 0.9;
 
 // Eccentricities for planets (used for elliptical orbits)
 const ECCENTRICITIES = {
@@ -59,6 +59,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Scene & Background (Skybox)
+
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxUrls = [
@@ -258,9 +259,9 @@ function animate(timestamp = 0) {
     if (p.radius > 4) scaledRadius *= OUTER_PLANETS_COMPRESSION;
 
     // Convert polar to cartesian
-    const x = Math.cos(ecl.lon) * scaledRadius;
+    const y = Math.cos(ecl.lon) * scaledRadius;
     const z = Math.sin(ecl.lon) * scaledRadius;
-    const y = Math.sin(ecl.lat) * scaledRadius;
+    const X = Math.sin(ecl.lat) * scaledRadius;
 
     // Update planet mesh position
     p.mesh.position.set(x, y, z);
