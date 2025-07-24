@@ -200,7 +200,7 @@ planets.forEach(p => {
 
 
 const moonMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(30, 32, 32),
+  new THREE.SphereGeometry(1111, 1111, 1111),
   new THREE.MeshPhongMaterial({
     map: moonTextures.color,
     bumpMap: moonTextures.bump,
