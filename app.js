@@ -24,6 +24,13 @@ import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
 const textureLoader = new THREE.TextureLoader();
 
+textureLoader.load('./images/earth.cmap.jpg',
+  (texture) => console.log('Earth texture loaded', texture),
+  undefined,
+  (err) => console.error('Error loading earth texture:', err)
+);
+
+
 // --------------------------- RENDERER SETUP ---------------------------
 
 
@@ -110,10 +117,10 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 100000, 0, 0);
+const sunLight = new THREE.PointLight(0xffffff, 9, 0, 2);
 
 
-sunLight.castShadow = true;
+sunLight.castShadow = false;
 sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
