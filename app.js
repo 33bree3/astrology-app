@@ -208,8 +208,8 @@ const moonMesh = new THREE.Mesh(
     shininess: 5,
     emissive: new THREE.Color(0x111111)
 
-  }
-));
+  })
+);
 
 moonMesh.scale.set(1, 1, 1);  // Adjust 0.5r size factor you want
 moonMesh.castShadow = true;
@@ -344,9 +344,12 @@ if (p.name === 'Neptune') {
 
   p.mesh.position.set(orbitX, orbitY, orbitZ);
 
-    // If this is the Moon, set its visual size:
+  
+    // MOOOOOOOOOOOOOON SIZE IF IT IS MOON MAKE DAT SIE
+
+
   if (p.name === 'Moon') {
-    p.mesh.scale.set(0.5, 0.5, 0.5); // Set Moon size here (tweak the 0.5 as needed)
+    p.mesh.scale.set(10, 10, 10); // Set Moon size here (tweak the 0.5 as needed)
   }
 
 
