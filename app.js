@@ -206,10 +206,11 @@ const moonMesh = new THREE.Mesh(
     bumpScale: 0.3,
     shininess: 5,
     emissive: new THREE.Color(0x111111)
-    moonMesh.scale.set(1, 1, 1);  // Adjust 0.5 to whatever size factor you want
 
   })
 );
+
+moonMesh scale.set(1, 1, 1);  // Adjust 0.5r size factor you want
 moonMesh.castShadow = true;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
