@@ -44,7 +44,7 @@ const orbitalElementsData = {
   Jupiter: { a: 8.2026, e: 0.07, i: degToRad(1.303),   o: degToRad(100.464), w: degToRad(273.867) },
   Saturn:  { a: 10.5549, e: 0.1, i: degToRad(2.489),   o: degToRad(113.665), w: degToRad(339.392) },
   Uranus:  { a: 12.218, e: 0.07, i: degToRad(0.773),   o: degToRad(74.006),  w: degToRad(96.998) },
-  Neptune: { a: 15.110, e: 0.03, i: degToRad(1.770),   o: degToRad(131.784), w: degToRad(272.846) },
+  Neptune: { a: 15.110, e: 0.09, i: degToRad(1.770),   o: degToRad(131.784), w: degToRad(272.846) },
 };
 
 // --------------------------- SETUP ---------------------------
