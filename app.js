@@ -211,7 +211,7 @@ const moonMesh = new THREE.Mesh(
   })
 );
 
-moonMesh.scale.set(10000, 10000, 10000);  // Adjust 0.5r size factor you want
+moonMesh.scale.set(0.001, 0.001, 0.001);  // Adjust 0.5r size factor you want
 moonMesh.castShadow = true;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
@@ -319,12 +319,6 @@ if (p.name === 'Neptune') {
   lat += 0.02; // ~1.1 degrees
 }
 
-  // Base scale for distances (log scale or linear)
-
-  
-  const baseScale = 1800;
-
-  
   // Compress last three planets' distances
   
   
@@ -349,7 +343,7 @@ if (p.name === 'Neptune') {
 
 
   if (p.name === 'Moon') {
-    p.mesh.scale.set(10, 10, 10); // Set Moon size here (tweak the 0.5 as needed)
+    p.mesh.scale.set(1111, 1111, 1111); // Set Moon size here (tweak the 0.5 as needed)
   }
 
 
@@ -357,7 +351,7 @@ if (p.name === 'Neptune') {
   // Rotation animations
   
   
-  p.mesh.rotation.x += 0.09 + 0.03 * i;
+  p.mesh.rotation.x += 1 + 0.03 * i;
   p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
   p.mesh.lookAt(sun.position);
   p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
@@ -388,8 +382,6 @@ const moonVector = new THREE.Vector3(
 moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
 
 
-  
-  moonMesh.lookAt(sun.position);
 
   // Calculate illumination (assuming phaseAngleEquatorial is fixed and working)
   
