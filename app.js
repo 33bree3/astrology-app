@@ -84,7 +84,7 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 // --------------------------- LIGHTING ---------------------------
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 3333, 0, 2);
+const sunLight = new THREE.PointLight(0xffffff, 33333333, 0, 2);
 sunLight.castShadow = false;
 sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
