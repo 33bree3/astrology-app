@@ -11,7 +11,7 @@ import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/cont
 import julian from './astronomia/src/julian.js';
 import { Planet } from './astronomia/src/planetposition.js';
 import moonPosition from './astronomia/src/moonposition.js';  // moonposition default export object
-import moonIllum from './astronomia/src/moonillum.js';       // moonillum default export object
+import { phaseAngleEquatorial } from './astronomia/src/moonillum.js';     // moonillum default export object
 
 import mercuryData from './astronomia/data/vsop87Bmercury.js';
 import venusData from './astronomia/data/vsop87Bvenus.js';
@@ -271,7 +271,7 @@ function animate() {
     moonMesh.lookAt(sun.position);
 
     // Calculate moon illumination using phase angle
-    const phaseAngle = moonIllum.phaseAngleEquatorial(jd);
+    const phaseAngle = phaseAngleEquatorial(jd);
     const illumination = (1 + Math.cos(phaseAngle)) / 2; // Normalize to [0,1]
     moonMesh.material.emissiveIntensity = illumination * 3; // Adjust brightness
   }
