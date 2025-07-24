@@ -5,6 +5,8 @@
 // camera controls using OrbitControls from Three.js.
 
 // --------------------------- IMPORTS ---------------------------
+
+
 import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
 
@@ -23,6 +25,8 @@ import uranusData from './astronomia/data/vsop87Duranus.js';
 import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
 // --------------------------- TEXTURE LOADING ---------------------------
+
+
 const textureLoader = new THREE.TextureLoader();
 
 textureLoader.load('./images/earth.cmap.jpg',
@@ -32,12 +36,16 @@ textureLoader.load('./images/earth.cmap.jpg',
 );
 
 // --------------------------- MOON TEXTURE ---------------------------
+
+
 const moonTextures = {
   color: textureLoader.load('./planets/moon.jpg'),
   bump: textureLoader.load('./images/pluto.bump.jpg')
 };
 
 // --------------------------- RENDERER SETUP ---------------------------
+
+
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -45,6 +53,8 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // --------------------------- SCENE SETUP ---------------------------
+
+
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxUrls = [
@@ -65,10 +75,14 @@ skyboxTexture.generateMipmaps = false;
 scene.background = skyboxTexture;
 
 // --------------------------- CAMERA SETUP ---------------------------
+
+
 const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
 const cameraOffset = new THREE.Vector3(300, 400, 500);
 
 // --------------------------- ORBIT CONTROLS ---------------------------
+
+
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
 controls.minDistance = 1111;
@@ -81,8 +95,10 @@ controls.addEventListener('start', () => { controls.userIsInteracting = true; })
 controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 // --------------------------- LIGHTING ---------------------------
+
+
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 3333, 0, 2);
+const sunLight = new THREE.PointLight(0xffffff, 3333333, 0, 2);
 sunLight.castShadow = false;
 sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
@@ -90,6 +106,8 @@ scene.add(sunLight);
 scene.add(new THREE.PointLightHelper(sunLight, 10));
 
 // --------------------------- SUN SETUP ---------------------------
+
+
 const sunRadius = 93;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
@@ -103,7 +121,10 @@ sun.castShadow = false;
 sun.receiveShadow = false;
 scene.add(sun);
 
+
 // --------------------------- COMET TAIL ---------------------------
+
+
 const tailLength = 333;
 const tailParticlesCount = 93;
 const tailParticles = [];
@@ -124,7 +145,11 @@ for (let i = 0; i < tailParticlesCount; i++) {
   tailParticles.push(sprite);
 }
 
+
+
 // --------------------------- PLANET TEXTURES ---------------------------
+
+
 const planetTextures = {
   Mercury: { color: textureLoader.load('./planets/mercury.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
   Venus:   { color: textureLoader.load('./planets/venusjpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
@@ -136,7 +161,11 @@ const planetTextures = {
   Neptune: { color: textureLoader.load('./planets/neptune.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
 };
 
+
+
 // --------------------------- PLANET DATA ---------------------------
+
+
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 69 },
   { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 101 },
@@ -164,7 +193,11 @@ planets.forEach(p => {
   p.mesh.receiveShadow = true;
 });
 
+
+
 // --------------------------- MOON MESH SETUP ---------------------------
+
+
 const moonMesh = new THREE.Mesh(
   new THREE.SphereGeometry(30, 32, 32),
   new THREE.MeshPhongMaterial({
@@ -179,14 +212,22 @@ moonMesh.castShadow = false;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
 
+
+
 // --------------------------- SOLAR SYSTEM GROUP ---------------------------
+
+
 const solarSystem = new THREE.Group();
 scene.add(solarSystem);
 planets.forEach(p => solarSystem.add(p.mesh));
 sun.position.set(0, 0, 0);
 sunLight.position.copy(sun.position);
 
+
+
 // --------------------------- CAMERA BEHAVIOR ---------------------------
+
+
 function clampCameraDistance() {
   const minDistance = 1111;
   const maxDistance = 7777;
@@ -227,13 +268,37 @@ let t = 0;
 
 
 function animate() {
+
+  
   // Current Julian Date
+
+  
   const jd = julian.DateToJD(new Date());
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
 
+if (Math.floor(t * 100) % 300 === 0) {
+
+
+// ---- LOG AU DISTANCES ----
+  
+planets.forEach((p) => {
+  const pos = p.data.position2000(jd);
+  console.log(`${p.name} - Distance (AU): ${pos.range.toFixed(6)}`);
+});
+
+// ---- LOG MOON DISTANCE ----
+  
+const moonGeo = moonPosition.position(jd); // already used later too
+const moonDistanceAU = (moonGeo.range / 149597870.7).toFixed(6);
+console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
+}
+
+  
   // Scale factor to make planets visible and separated
+  
+  
   const scale = 1000; // Adjusted scale for visibility in 3D scene
 
 planets.forEach((p, i) => {
@@ -243,9 +308,14 @@ planets.forEach((p, i) => {
   const lat = pos.lat;
 
   // Base scale for distances (log scale or linear)
+
+  
   const baseScale = 1800;
 
+  
   // Compress last three planets' distances
+  
+  
   let scaledR = Math.log(r + 1) * baseScale;
 
   if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
@@ -253,28 +323,45 @@ planets.forEach((p, i) => {
   }
 
   // Calculate cartesian coords from spherical
+
+  
+  
   const orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
   const orbitY = scaledR * Math.sin(lat);
   const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
 
   p.mesh.position.set(orbitX, orbitY, orbitZ);
 
+
+  
   // Rotation animations
+  
+  
   p.mesh.rotation.x += 0.09 + 0.03 * i;
   p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
   p.mesh.lookAt(sun.position);
   p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
 });
 
+
+  
 // --------- MOON POSITION -----------
+  
 
 const earth = planets.find(p => p.name === 'Earth');
 if (earth) {
+
+  
   // Get moon position relative to Earth at JD
+
+  
   const moonGeo = moonPosition.position(jd);
 
+  
   // Moon position in cartesian coordinates, scaled for visualization
   // Adjust multiplier to fit your scene (try 50-100)
+
+  
   const moonVector = new THREE.Vector3(
     moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
     moonGeo.range * Math.sin(moonGeo.lat),
@@ -285,6 +372,7 @@ if (earth) {
   moonMesh.lookAt(sun.position);
 
   // Calculate illumination (assuming phaseAngleEquatorial is fixed and working)
+  
   const moonEcl = new Ecliptic(moonGeo.lon, moonGeo.lat);
   const moonEq = moonEcl.toEquatorial(jd);
 
@@ -295,17 +383,21 @@ if (earth) {
   const sunEq = sunEcl.toEquatorial(jd);
 
   // Get phase angle (make sure function exists and works)
+  
   const phaseAngle = phaseAngleEquatorial(moonEq, sunEq);
 
   // Normalize illumination
+  
   const illumination = (1 + Math.cos(phaseAngle)) / 2;
   moonMesh.material.emissiveIntensity = illumination * 3;
 
   // Optional: scale moon brightness or size slightly based on illumination
+  
   moonMesh.material.opacity = 0.7 + illumination * 0.3;
 }
 
   // Animate comet tail (using sun and earth positions for tail direction)
+  
   const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
   tailParticles.forEach((particle, idx) => {
     const distanceFromSun = (idx / tailParticlesCount) * tailLength;
@@ -315,10 +407,12 @@ if (earth) {
   });
 
   // Update controls and render
+  
   controls.update();
   renderer.render(scene, camera);
 
   // Increment time for animation
+  
   t += 0.01;
 
   // Request next frame
@@ -326,6 +420,7 @@ if (earth) {
 }
 
 // --------------------------- INITIALIZATION ---------------------------
+
 function initialize() {
   camera.position.copy(cameraOffset);
   controls.target.set(0, 0, 0);
