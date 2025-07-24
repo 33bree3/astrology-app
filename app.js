@@ -186,9 +186,15 @@ const planetTextures = {
   Uranus:  { color: textureLoader.load('./planets/uranus.jpg'), bump: textureLoader.load('./images/pluto.bump.jpg') },
   Neptune: { color: textureLoader.load('./planets/neptune.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
   
-  const moonTexture = textureLoader.load('./planets/moon.cmap.jpg')};
+}
 
+// mooooooooooooooooooooooooooooooooooooooon 
+
+const moonTextures = {
+  color: textureLoader.load('./planets/moon.cmap.jpg'),
+  bump: textureLoader.load('./images/pluto.bump.jpg')
 };
+
 
 // --------------------------- PLANET DATA ---------------------------
 const planets = [
