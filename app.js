@@ -242,68 +242,108 @@ function mirrorCameraPosition() {
 mirrorCameraPosition();
 
 // --------------------------- ANIMATION LOOP ---------------------------
-let t = 0;
-function animate() {
-  const jd = julian.DateToJD(new Date());
-  solarSystem.position.set(0, 0, 0);
-  sunLight.position.copy(solarSystem.position);
 
+// Time counter for rotations
+let t = 0;
+
+function animate() {
+  // Convert current date to Julian Date for astronomy calculations
+  const jd = julian.DateToJD(new Date());
+
+  // Ensure the entire solar system is centered at origin
+  solarSystem.position.set(0, 0, 0);
+
+  // Ensure sunLight is positioned at the sun's location
+  sunLight.position.copy(sun.position); // 🔥 This was likely missing before!
+
+  // Update each planet's position and rotation
   planets.forEach((p, i) => {
+    // Get heliocentric coordinates for planet
     const pos = p.data.position2000(jd);
     const r = pos.range;
     const lon = pos.lon;
     const lat = pos.lat;
 
+    // Scale and convert spherical coords to Cartesian 3D space
     const scaledR = Math.log(r + 1) * 1800;
     let orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
     let orbitY = scaledR * Math.sin(lat);
     const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
 
+    // Neptune adjustment to fit visually
     if (p.name === 'Neptune') {
       orbitY += 150;
       orbitX -= 69;
     }
 
+    // Set planet mesh position in space
     p.mesh.position.set(orbitX, orbitY, orbitZ);
+
+    // Animate rotation of planet (arbitrary spin behavior)
     p.mesh.rotation.x += 0.09 + 0.03 * i;
     p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
+
+    // Make planets face the sun + tilt like Earth
     p.mesh.lookAt(sun.position);
-    p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
+    p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5)); // axial tilt
   });
 
-  const referencePlanet = planets.find(p => p.name === 'Earth') || planets[0];
-  const tailDirection = new THREE.Vector3().subVectors(referencePlanet.mesh.position, sun.position).normalize();
+  // ------------------ COMET TAIL PARTICLES ------------------
 
+  // Choose Earth as reference for tail direction
+  const referencePlanet = planets.find(p => p.name === 'Earth') || planets[0];
+
+  // Compute direction from Sun to Earth
+  const tailDirection = new THREE.Vector3()
+    .subVectors(referencePlanet.mesh.position, sun.position)
+    .normalize();
+
+  // Update each tail particle along that direction
   tailParticles.forEach((particle, idx) => {
     const distanceBehind = (idx / tailParticlesCount) * tailLength;
+
+    // Add random offset for tail jitter
     const jitter = new THREE.Vector3(
       (Math.random() - 0.5) * 2,
       (Math.random() - 0.5) * 2,
       (Math.random() - 0.5) * 2
     ).multiplyScalar(0.3);
 
+    // Position each particle behind the planet
     const pos = new THREE.Vector3()
-      .copy(solarSystem.position)
+      .copy(referencePlanet.mesh.position)
       .addScaledVector(tailDirection, -distanceBehind)
       .add(jitter);
 
+    // Apply position and visual settings
     particle.position.copy(pos);
     particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
     const scale = 100 * (1 - idx / tailParticlesCount);
     particle.scale.set(scale, scale, scale);
   });
 
+  // ------------------ CAMERA AUTO-TRACKING ------------------
+
+  // If the user isn't interacting, orbit around system
   if (!controls.userIsInteracting) {
     camera.position.copy(solarSystem.position).add(cameraOffset);
     controls.target.copy(solarSystem.position);
     controls.update();
   }
 
+  // Render the scene from the current camera view
   renderer.render(scene, camera);
+
+  // Increment time step
   t += 1;
+
+  // Request the next animation frame
   requestAnimationFrame(animate);
 }
+
+// Start the animation loop
 animate();
+
 
 // --------------------------- UI INTERACTIONS ---------------------------
 document.querySelectorAll('.tab').forEach(btn => {
