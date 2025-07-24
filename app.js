@@ -32,7 +32,7 @@ const BASE_SCALE = 2222;          // Used for logarithmic distance scaling
 const PLANET_SIZE_MULTIPLIER = 1; // Adjust planet size scaling here
 
 // Speed factor for advancing time in Julian Days
-const TIME_SPEED_FACTOR = 333;
+const TIME_SPEED_FACTOR = 0.9;
 
 // Compression factor for outer planets to bring them visually closer
 const OUTER_PLANETS_COMPRESSION = 0.9;
