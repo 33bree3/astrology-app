@@ -10,8 +10,8 @@ import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/cont
 
 import julian from './astronomia/src/julian.js';
 import { Planet } from './astronomia/src/planetposition.js';
-import { position as moonPosition } from './astronomia/src/moonposition.js'; // NEW: Moon position
-import { phase as moonPhase } from './astronomia/src/moonphase.js'; // UPDATED: moonPhase function to get phase fraction
+import moonPosition from './astronomia/src/moonposition.js';  // moonposition default export object
+import moonIllum from './astronomia/src/moonillum.js';       // moonillum default export object
 
 import mercuryData from './astronomia/data/vsop87Bmercury.js';
 import venusData from './astronomia/data/vsop87Bvenus.js';
@@ -126,15 +126,14 @@ for (let i = 0; i < tailParticlesCount; i++) {
 
 // --------------------------- PLANET TEXTURES ---------------------------
 const planetTextures = {
-  Mercury: { color: textureLoader.load('./planets.mercury.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Venus:   { color: textureLoader.load('./planet/venus.jpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
-  Earth:   { color: textureLoader.load('./planets/earth.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
-  Mars:    { color: textureLoader.load('./planets/mars.jpg'), bump: textureLoader.load('./images/mars.bump.jpg') },
-  Jupiter: { color: textureLoader.load('./planets/jupiter.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Saturn:  { color: textureLoader.load('./planets/saturn.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Uranus:  { color: textureLoader.load('./planets/uranus.jpg'), bump: textureLoader.load('./images/pluto.bump.jpg') },
-  Neptune: { color: textureLoader.load('./planets/neptune.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
-  Moob: { color: textureLoader.load('./planets/moon.jpg'), bump: textureLoader.load('./images/mars.bump.jpg') },
+  Mercury: { color: textureLoader.load('./images/merc.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Venus:   { color: textureLoader.load('./images/venus.cmap.jpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
+  Earth:   { color: textureLoader.load('./images/earth.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
+  Mars:    { color: textureLoader.load('./images/mars.cmap.jpg'), bump: textureLoader.load('./images/mars.bump.jpg') },
+  Jupiter: { color: textureLoader.load('./images/jupiter.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Saturn:  { color: textureLoader.load('./images/saturn.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Uranus:  { color: textureLoader.load('./images/uranus.cmap.jpg'), bump: textureLoader.load('./images/pluto.bump.jpg') },
+  Neptune: { color: textureLoader.load('./images/neptune.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
 };
 
 // --------------------------- PLANET DATA ---------------------------
@@ -213,105 +212,96 @@ mirrorCameraPosition();
 // --------------------------- ANIMATION LOOP ---------------------------
 let t = 0;
 function animate() {
+  // Current Julian Date
   const jd = julian.DateToJD(new Date());
+
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
 
-  // Scale factor to keep planets visible and spread nicely
-  const scale = 300;
+  // Scale factor to make planets visible and separated
+  const scale = 1000; // Adjusted scale for visibility in 3D scene
 
   planets.forEach((p, i) => {
-    // Get VSOP87 position for planet at JD (equinox 2000)
+    // Get planet heliocentric position at JD
     const pos = p.data.position2000(jd);
-    const r = pos.range; // Distance from sun in AU
-    const lon = pos.lon;  // Longitude in radians
-    const lat = pos.lat;  // Latitude in radians
+    const r = pos.range;
+    const lon = pos.lon;
+    const lat = pos.lat;
 
-    // Convert spherical coordinates (r, lat, lon) to Cartesian and scale for visualization
-    let orbitX = r * Math.cos(lat) * Math.cos(lon) * scale;
-    let orbitY = r * Math.sin(lat) * scale;
-    let orbitZ = r * Math.cos(lat) * Math.sin(lon) * scale;
+    // Convert spherical coordinates to Cartesian, apply scale
+    const orbitX = r * Math.cos(lat) * Math.cos(lon) * scale;
+    const orbitY = r * Math.sin(lat) * scale;
+    const orbitZ = r * Math.cos(lat) * Math.sin(lon) * scale;
 
-    // Slight positional adjustment for Neptune for better visibility (as per original code)
+    // For Neptune tweak position so it does not overlap sun too closely
     if (p.name === 'Neptune') {
-      orbitY += 150;
-      orbitX -= 69;
+      p.mesh.position.set(orbitX - 69, orbitY + 150, orbitZ);
+    } else {
+      p.mesh.position.set(orbitX, orbitY, orbitZ);
     }
 
-    p.mesh.position.set(orbitX, orbitY, orbitZ);
+    // Rotate planets slowly for effect
+    p.mesh.rotation.x += 0.01 + 0.005 * i;
+    p.mesh.rotation.y += 0.01 + 0.002 * i;
 
-    // Rotate planets slowly, giving a little spin
-    p.mesh.rotation.x += 0.09 + 0.03 * i;
-    p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
-
-    // Planets face the sun
+    // Make planets look toward sun
     p.mesh.lookAt(sun.position);
 
-    // Tilt planet rotation to simulate Earth's axial tilt, for all planets similarly
-    p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
+    // Axial tilt approx 23.5 degrees for Earth and some others
+    if (p.name === 'Earth') {
+      p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
+    }
   });
 
-  // --------------------------- MOON POSITION LOGIC ---------------------------
+  // Find Earth planet object for moon calculation
   const earth = planets.find(p => p.name === 'Earth');
   if (earth) {
-    // Get moon position at JD in spherical coords
-    const moonGeo = moonPosition(jd);
-    // moonGeo: { range (AU), lon (rad), lat (rad) }
+    // Get moon position relative to Earth at JD
+    const moonGeo = moonPosition.position(jd);
 
-    // Calculate moon position relative to Earth
+    // Moon position in cartesian coordinates, scaled for visualization
     const moonVector = new THREE.Vector3(
       moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
       moonGeo.range * Math.sin(moonGeo.lat),
       moonGeo.range * Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-    ).multiplyScalar(scale * 0.1); // Scaled for visualization (moon closer to Earth)
+    ).multiplyScalar(50); // Adjust scale for moon distance from Earth
 
+    // Position moon mesh relative to Earth
     moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
-
-    // Calculate moon phase illumination (0 to 1) using astronomia's moonphase.phase()
-    const phaseFraction = moonPhase(jd); // Returns 0 (new) to 1 (next new moon)
-    const illumination = 1 - Math.abs(phaseFraction - 0.5) * 2; // Full moon ~1, new moon ~0
-
-    // Use illumination to affect moon emissive intensity (brightness)
-    moonMesh.material.emissiveIntensity = illumination * 3;
-
-    // Moon looks toward the sun for lighting effect
     moonMesh.lookAt(sun.position);
 
-    // --------------------------- TAIL ANIMATION ---------------------------
-    const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
-    tailParticles.forEach((particle, idx) => {
-      const distanceFromSun = (idx / tailParticlesCount) * tailLength;
-      const jitter = new THREE.Vector3((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2).multiplyScalar(1.2);
-      const pos = new THREE.Vector3().copy(sun.position).addScaledVector(tailDirection, distanceFromSun).add(jitter);
-      particle.position.copy(pos);
-      particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
-      const scaleParticle = 100 * (1 - idx / tailParticlesCount);
-      particle.scale.set(scaleParticle, scaleParticle, scaleParticle);
-    });
+    // Calculate moon illumination using phase angle
+    const phaseAngle = moonIllum.phaseAngleEquatorial(jd);
+    const illumination = (1 + Math.cos(phaseAngle)) / 2; // Normalize to [0,1]
+    moonMesh.material.emissiveIntensity = illumination * 3; // Adjust brightness
   }
 
-  // Smooth camera follow unless user interacts
-  if (!controls.userIsInteracting) {
-    camera.position.copy(solarSystem.position).add(cameraOffset);
-    controls.target.copy(solarSystem.position);
-    controls.update();
-  }
-
-  renderer.render(scene, camera);
-  t += 1;
-  
-requestAnimationFrame(animate);
-}
-animate();
-
-// --------------------------- UI INTERACTIONS ---------------------------
-
-
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
+  // Animate comet tail (using sun and earth positions for tail direction)
+  const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
+  tailParticles.forEach((particle, idx) => {
+    const distanceFromSun = (idx / tailParticlesCount) * tailLength;
+    const jitter = new THREE.Vector3((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
+    particle.position.copy(sun.position).add(tailDirection.clone().multiplyScalar(distanceFromSun)).add(jitter);
+    particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
   });
-});
+
+  // Update controls and render
+  controls.update();
+  renderer.render(scene, camera);
+
+  // Increment time for animation
+  t += 0.01;
+
+  // Request next frame
+  requestAnimationFrame(animate);
+}
+
+// --------------------------- INITIALIZATION ---------------------------
+function initialize() {
+  camera.position.copy(cameraOffset);
+  controls.target.set(0, 0, 0);
+  controls.update();
+  animate();
+}
+
+initialize();
