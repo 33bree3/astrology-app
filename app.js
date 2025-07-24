@@ -257,9 +257,6 @@ planets.forEach(p => solarSystem.add(p.mesh));
 sun.position.set(0, 0, 0);
 sunLight.position.copy(sun.position);
 
-// Create a group to hold orbit lines
-const orbitLines = new THREE.Group();
-scene.add(orbitLines);
 
 // Realistic orbital eccentricities (approximate)
 const eccentricities = {
