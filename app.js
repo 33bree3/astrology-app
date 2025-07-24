@@ -366,7 +366,7 @@ if (earth) {
     moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
     moonGeo.range * Math.sin(moonGeo.lat),
     moonGeo.range * Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-  ).multiplyScalar(222);
+  ).multiplyScalar(39);
 
   moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
   moonMesh.lookAt(sun.position);
