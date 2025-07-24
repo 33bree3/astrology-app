@@ -126,14 +126,14 @@ for (let i = 0; i < tailParticlesCount; i++) {
 
 // --------------------------- PLANET TEXTURES ---------------------------
 const planetTextures = {
-  Mercury: { color: textureLoader.load('./images/merc.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Venus:   { color: textureLoader.load('./images/venus.cmap.jpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
-  Earth:   { color: textureLoader.load('./images/earth.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
-  Mars:    { color: textureLoader.load('./images/mars.cmap.jpg'), bump: textureLoader.load('./images/mars.bump.jpg') },
-  Jupiter: { color: textureLoader.load('./images/jupiter.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Saturn:  { color: textureLoader.load('./images/saturn.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Uranus:  { color: textureLoader.load('./images/uranus.cmap.jpg'), bump: textureLoader.load('./images/pluto.bump.jpg') },
-  Neptune: { color: textureLoader.load('./images/neptune.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
+  Mercury: { color: textureLoader.load('./planets/mercury.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Venus:   { color: textureLoader.load('./planets/venusjpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
+  Earth:   { color: textureLoader.load('./planets/earth.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
+  Mars:    { color: textureLoader.load('./planets/mars.jpg'), bump: textureLoader.load('./images/mars.bump.jpg') },
+  Jupiter: { color: textureLoader.load('./planets/jupiter.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Saturn:  { color: textureLoader.load('./planets/saturn.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Uranus:  { color: textureLoader.load('./planets/uranus.jpg'), bump: textureLoader.load('./images/pluto.bump.jpg') },
+  Neptune: { color: textureLoader.load('./planets/neptune.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
 };
 
 // --------------------------- PLANET DATA ---------------------------
@@ -236,45 +236,45 @@ function animate() {
   // Scale factor to make planets visible and separated
   const scale = 1000; // Adjusted scale for visibility in 3D scene
 
-  planets.forEach((p, i) => {
-    // Get planet heliocentric position at JD
-    const pos = p.data.position2000(jd);
-    const r = pos.range;
-    const lon = pos.lon;
-    const lat = pos.lat;
+planets.forEach((p, i) => {
+  const pos = p.data.position2000(jd);
+  const r = pos.range;
+  const lon = pos.lon;
+  const lat = pos.lat;
 
-    // Convert spherical coordinates to Cartesian, apply scale
-    const orbitX = r * Math.cos(lat) * Math.cos(lon) * scale;
-    const orbitY = r * Math.sin(lat) * scale;
-    const orbitZ = r * Math.cos(lat) * Math.sin(lon) * scale;
+  // Base scale for distances (log scale or linear)
+  const baseScale = 1800;
 
-    // For Neptune tweak position so it does not overlap sun too closely
-    if (p.name === 'Neptune') {
-      p.mesh.position.set(orbitX - 69, orbitY + 150, orbitZ);
-    } else {
-      p.mesh.position.set(orbitX, orbitY, orbitZ);
-    }
+  // Compress last three planets' distances
+  let scaledR = Math.log(r + 1) * baseScale;
 
-    // Rotate planets slowly for effect
-    p.mesh.rotation.x += 0.01 + 0.005 * i;
-    p.mesh.rotation.y += 0.01 + 0.002 * i;
+  if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
+    scaledR *= 0.1; // bring last three planets closer by 90%
+  }
 
-    // Make planets look toward sun
-    p.mesh.lookAt(sun.position);
+  // Calculate cartesian coords from spherical
+  const orbitX = scaledR * Math.cos(lat) * Math.cos(lon);
+  const orbitY = scaledR * Math.sin(lat);
+  const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
 
-    // Axial tilt approx 23.5 degrees for Earth and some others
-    if (p.name === 'Earth') {
-      p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
-    }
-  });
+  p.mesh.position.set(orbitX, orbitY, orbitZ);
 
- // Find Earth planet object for moon calculation
+  // Rotation animations
+  p.mesh.rotation.x += 0.09 + 0.03 * i;
+  p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
+  p.mesh.lookAt(sun.position);
+  p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
+});
+
+// --------- MOON POSITION -----------
+
 const earth = planets.find(p => p.name === 'Earth');
 if (earth) {
   // Get moon position relative to Earth at JD
   const moonGeo = moonPosition.position(jd);
 
-  // Moon position vector scaled for visualization
+  // Moon position in cartesian coordinates, scaled for visualization
+  // Adjust multiplier to fit your scene (try 50-100)
   const moonVector = new THREE.Vector3(
     moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
     moonGeo.range * Math.sin(moonGeo.lat),
@@ -284,24 +284,26 @@ if (earth) {
   moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
   moonMesh.lookAt(sun.position);
 
-  // Convert Moon ecliptic coords to equatorial
+  // Calculate illumination (assuming phaseAngleEquatorial is fixed and working)
   const moonEcl = new Ecliptic(moonGeo.lon, moonGeo.lat);
   const moonEq = moonEcl.toEquatorial(jd);
 
-  // Calculate Sun ecliptic position approx
+  // Sun approx at opposite ecliptic lon
   const sunLon = (moonGeo.lon + Math.PI) % (2 * Math.PI);
   const sunLat = 0;
   const sunEcl = new Ecliptic(sunLon, sunLat);
   const sunEq = sunEcl.toEquatorial(jd);
 
-  // Calculate phase angle
+  // Get phase angle (make sure function exists and works)
   const phaseAngle = phaseAngleEquatorial(moonEq, sunEq);
 
-  // Illumination from phase angle
+  // Normalize illumination
   const illumination = (1 + Math.cos(phaseAngle)) / 2;
   moonMesh.material.emissiveIntensity = illumination * 3;
-}
 
+  // Optional: scale moon brightness or size slightly based on illumination
+  moonMesh.material.opacity = 0.7 + illumination * 0.3;
+}
 
   // Animate comet tail (using sun and earth positions for tail direction)
   const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
