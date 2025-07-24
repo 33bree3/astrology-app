@@ -85,7 +85,7 @@ const cameraOffset = new THREE.Vector3(300, 400, 500);
 
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 1111;
+controls.minDistance = 777;
 controls.maxDistance = 5555;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
@@ -108,7 +108,7 @@ scene.add(new THREE.PointLightHelper(sunLight, 10));
 // --------------------------- SUN SETUP ---------------------------
 
 
-const sunRadius = 123;
+const sunRadius = 444;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 const sunMaterial = new THREE.MeshStandardMaterial({
@@ -282,8 +282,8 @@ function animate() {
   const jd = julian.DateToJD(new Date());
 
   
-  const scale = 333; // scale for visibility
-  const baseScale = 333; // 🌟 MOVE IT HERE
+  const scale = 3333;                                     // scale for visibility
+  const baseScale = 33333;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
@@ -310,8 +310,8 @@ let lat = pos.lat;
 
 if (p.name === 'Neptune') {
   // Apply slight manual offset to make Neptune appear offset
-  lon += 0.05; // ~2.8 degrees
-  lat += 0.02; // ~1.1 degrees
+  lon += 0.09; // ~2.8 degrees
+  lat += 0.03; // ~1.1 degrees
 }
 
   // Compress last three planets' distances
