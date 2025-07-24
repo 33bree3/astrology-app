@@ -261,7 +261,7 @@ function animate(timestamp = 0) {
     // Convert polar to cartesian
     const y = Math.cos(ecl.lon) * scaledRadius;
     const z = Math.sin(ecl.lon) * scaledRadius;
-    const X = Math.sin(ecl.lat) * scaledRadius;
+    const x = Math.sin(ecl.lat) * scaledRadius;
 
     // Update planet mesh position
     p.mesh.position.set(x, y, z);
