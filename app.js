@@ -183,13 +183,25 @@ const planets = [
 const orbitLines = new THREE.Group();
 scene.add(orbitLines);
 
-function createOrbitLine(radius, segments = 128) {
-  const curve = new THREE.EllipseCurve(0, 0, radius, radius, 0, 2 * Math.PI, false, 0);
+function createOrbitLine(semiMajorAxis, eccentricity = 0.05, segments = 256) {
+  const semiMinorAxis = semiMajorAxis * Math.sqrt(1 - eccentricity ** 2);
+  const focusOffset = semiMajorAxis * eccentricity;
+
+  const curve = new THREE.EllipseCurve(
+    -focusOffset, 0,              // x/y center offset so Sun is at one focus
+    semiMajorAxis,
+    semiMinorAxis,
+    0, 2 * Math.PI,
+    false,
+    0
+  );
+
   const points = curve.getPoints(segments);
-  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, 0, p.y)));
-  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
-  return new THREE.Line(orbitGeometry, orbitMaterial);
+  const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, 0, p.y)));
+  const material = new THREE.LineBasicMaterial({ color: 0x555555 });
+  return new THREE.Line(geometry, material);
 }
+
 
 
 
@@ -245,6 +257,35 @@ planets.forEach(p => solarSystem.add(p.mesh));
 sun.position.set(0, 0, 0);
 sunLight.position.copy(sun.position);
 
+// Create a group to hold orbit lines
+const orbitLines = new THREE.Group();
+scene.add(orbitLines);
+
+// Realistic orbital eccentricities (approximate)
+const eccentricities = {
+  Mercury: 0.2056,
+  Venus: 0.0067,
+  Earth: 0.0167,
+  Mars: 0.0934,
+  Jupiter: 0.0489,
+  Saturn: 0.0565,
+  Uranus: 0.0457,
+  Neptune: 0.0113
+};
+
+// Create elliptical orbit lines for each planet and add to scene
+planets.forEach(p => {
+  // Get current distance for scaling (you can also use average orbital radius for consistency)
+  const pos = p.data.position2000(julian.DateToJD(new Date()));
+  const r = Math.log(pos.range + 1) * baseScale;
+
+  const e = eccentricities[p.name] || 0.05; // default eccentricity if missing
+
+  const orbit = createOrbitLine(r, e);
+  orbitLines.add(orbit);
+});
+
+
 
 
 
@@ -296,7 +337,7 @@ function animate() {
   
   // Current Julian Date
 
-  const timeSpeedFactor = 200; // Increase to speed up orbits
+  const timeSpeedFactor = 21; // Increase to speed up orbits
 const jd = julian.DateToJD(new Date()) + t * timeSpeedFactor;
 
 
