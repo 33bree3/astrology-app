@@ -28,11 +28,11 @@ import neptuneData from './astronomia/data/vsop87Dneptune.js';
 // --------------------------- CONSTANTS & SETTINGS ---------------------------
 
 // Base scaling factors for distances and planet sizes
-const BASE_SCALE = 2222;          // Used for logarithmic distance scaling
-const PLANET_SIZE_MULTIPLIER = 1; // Adjust planet size scaling here
+const BASE_SCALE = 3333;          // Used for logarithmic distance scaling
+const PLANET_SIZE_MULTIPLIER = 9; // Adjust planet size scaling here
 
 // Speed factor for advancing time in Julian Days
-const TIME_SPEED_FACTOR = 0.9;
+const TIME_SPEED_FACTOR = 3333;
 
 // Compression factor for outer planets to bring them visually closer
 const OUTER_PLANETS_COMPRESSION = 0.9;
@@ -105,7 +105,7 @@ const textureLoader = new THREE.TextureLoader();
 
 // --------------------------- SUN ---------------------------
 
-const sunRadius = 666;
+const sunRadius = 999;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 const sunMaterial = new THREE.MeshStandardMaterial({
