@@ -200,7 +200,7 @@ planets.forEach(p => {
 
 
 const moonMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(33,33 ,33),
+  new THREE.SphereGeometry(333,333 ,333),
   new THREE.MeshPhongMaterial({
     map: moonTextures.color,
     bumpMap: moonTextures.bump,
@@ -282,8 +282,8 @@ function animate() {
   const jd = julian.DateToJD(new Date());
 
   
-  const scale = 8888;                                     // scale for visibility
-  const baseScale = 8888;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
+  const scale = 4444;                                     // scale for visibility
+  const baseScale = 4444;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
