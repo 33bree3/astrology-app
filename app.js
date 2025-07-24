@@ -63,9 +63,13 @@ const skyboxTexture = cubeLoader.load(
     console.error('❌ Skybox load error:', err);
   }
 );
-skyboxTexture.minFilter = THREE.LinearFilter;
+
 skyboxTexture.magFilter = THREE.LinearFilter;
+skyboxTexture.minFilter = THREE.LinearFilter;
+skyboxTexture.wrapS = THREE.ClampToEdgeWrapping;
+skyboxTexture.wrapT = THREE.ClampToEdgeWrapping;
 skyboxTexture.generateMipmaps = false;
+
 
 scene.background = skyboxTexture;
 
