@@ -299,4 +299,19 @@ function animate() {
 
   renderer.render(scene, camera);
   t += 1;
-  requestAnimationFrame(
+  
+requestAnimationFrame(animate);
+}
+animate();
+
+// --------------------------- UI INTERACTIONS ---------------------------
+
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
