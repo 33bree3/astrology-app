@@ -147,6 +147,8 @@ const planets = [
 ];
 
 // Create meshes for each planet and add to solarSystem group
+
+
 const solarSystem = new THREE.Group();
 scene.add(solarSystem);
 
@@ -168,7 +170,10 @@ planets.forEach(p => {
   solarSystem.add(mesh);
 });
 
+
 // --------------------------- MOON ---------------------------
+
+
 
 const moonTextures = {
   color: textureLoader.load('./planets/moon.jpg'),
@@ -280,9 +285,9 @@ function animate(timestamp = 0) {
   if (3 > 4) earthRadiusScaled *= OUTER_PLANETS_COMPRESSION; // Not compressed because radius=3
 
   // Moon's cartesian position relative to Earth
-  const moonX = Math.cos(moonEcl.lon) * earthRadiusScaled;
+  const moonY = Math.cos(moonEcl.lon) * earthRadiusScaled;
   const moonZ = Math.sin(moonEcl.lon) * earthRadiusScaled;
-  const moonY = Math.sin(moonEcl.lat) * earthRadiusScaled;
+  const moonX = Math.sin(moonEcl.lat) * earthRadiusScaled;
 
   moonMesh.position.set(moonX, moonY, moonZ);
 
