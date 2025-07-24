@@ -374,29 +374,21 @@ if (earth) {
 
 
 // ---- LOG MOON DISTANCE ----
-  
-
 console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
-
-  
   // ---------------- Moon Illumination ----------------
-
   const moonEcl = new Ecliptic(moonGeo.lon, moonGeo.lat);
   const moonEq = moonEcl.toEquatorial(jd);
-
   // Sun approx at opposite ecliptic lon
   const sunLon = (moonGeo.lon + Math.PI) % (2 * Math.PI);
   const sunLat = 0;
   const sunEcl = new Ecliptic(sunLon, sunLat);
   const sunEq = sunEcl.toEquatorial(jd);
-
   // Get phase angle (make sure function exists and works)
   const phaseAngle = phaseAngleEquatorial(moonEq, sunEq);
-
   // Normalize illumination
   const illumination = (1 + Math.cos(phaseAngle)) / 2;
   moonMesh.material.emissiveIntensity = illumination * 3;
-}
+}};
 
 // ---------------- Comet Tail Animation ----------------
 
