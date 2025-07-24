@@ -211,7 +211,7 @@ const moonMesh = new THREE.Mesh(
   })
 );
 
-moonMesh.scale.set(0.001, 0.001, 0.001);  // Adjust 0.5r size factor you want
+moonMesh.scale.set(99999, 999999, 999999);  // Adjust 0.5r size factor you want
 moonMesh.castShadow = true;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
@@ -233,7 +233,7 @@ sunLight.position.copy(sun.position);
 
 
 function clampCameraDistance() {
-  const minDistance = 1111;
+  const minDistance = 3333;
   const maxDistance = 7777;
   const distance = camera.position.distanceTo(solarSystem.position);
   const direction = camera.position.clone().sub(solarSystem.position).normalize();
@@ -343,7 +343,7 @@ if (p.name === 'Neptune') {
 
 
   if (p.name === 'Moon') {
-    p.mesh.scale.set(1111, 1111, 1111); // Set Moon size here (tweak the 0.5 as needed)
+    p.mesh.scale.set(0.1, 0.1, 0.1); // Set Moon size here (tweak the 0.5 as needed)
   }
 
 
@@ -376,7 +376,7 @@ const moonVector = new THREE.Vector3(
   moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
   moonGeo.range * Math.sin(moonGeo.lat),
   moonGeo.range * Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-).multiplyScalar(222);
+).multiplyScalar(22222);
 
 // Place moon relative to Earth
 moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
@@ -406,10 +406,7 @@ moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
   const illumination = (1 + Math.cos(phaseAngle)) / 2;
   moonMesh.material.emissiveIntensity = illumination * 3;
 
-  // Optional: scale moon brightness or size slightly based on illumination
-  
-  moonMesh.material.opacity = 0.7 + illumination * 0.3;
-}
+
 
   // Animate comet tail (using sun and earth positions for tail direction)
   
