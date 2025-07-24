@@ -365,25 +365,21 @@ if (p.name === 'Neptune') {
 const earth = planets.find(p => p.name === 'Earth');
 if (earth) {
 
-  
-const earthPos = earth.data.position2000(jd); // heliocentric Earth position
+  const earthPos = earth.data.position2000(jd); // heliocentric Earth position
 
-// Use Earth position to get Moon position relative to Earth
-const moonGeo = moonPosition.position(jd, earthPos);
+  // Use Earth position to get Moon position relative to Earth
+  const moonGeo = moonPosition.position(jd, earthPos);
 
-const moonVector = new THREE.Vector3(
-  Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
-  Math.sin(moonGeo.lat),
-  Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-).multiplyScalar(moonGeo.range * baseScale); // correct Earth-relative position
+  const moonVector = new THREE.Vector3(
+    Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
+    Math.sin(moonGeo.lat),
+    Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
+  ).multiplyScalar(moonGeo.range * baseScale); // correct Earth-relative position
 
-moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
+  moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
 
-}
+  // ---------------- Moon Illumination ----------------
 
-
-  // Calculate illumination (assuming phaseAngleEquatorial is fixed and working)
-  
   const moonEcl = new Ecliptic(moonGeo.lon, moonGeo.lat);
   const moonEq = moonEcl.toEquatorial(jd);
 
@@ -393,40 +389,30 @@ moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
   const sunEcl = new Ecliptic(sunLon, sunLat);
   const sunEq = sunEcl.toEquatorial(jd);
 
-
-
-
   // Get phase angle (make sure function exists and works)
-  
   const phaseAngle = phaseAngleEquatorial(moonEq, sunEq);
 
   // Normalize illumination
-  
   const illumination = (1 + Math.cos(phaseAngle)) / 2;
   moonMesh.material.emissiveIntensity = illumination * 3;
+}
 
+// ---------------- Comet Tail Animation ----------------
 
+const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
+tailParticles.forEach((particle, idx) => {
+  const distanceFromSun = (idx / tailParticlesCount) * tailLength;
+  const jitter = new THREE.Vector3((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
+  particle.position.copy(sun.position).add(tailDirection.clone().multiplyScalar(distanceFromSun)).add(jitter);
+  particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
+});
 
-  // Animate comet tail (using sun and earth positions for tail direction)
-  
-  const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
-  tailParticles.forEach((particle, idx) => {
-    const distanceFromSun = (idx / tailParticlesCount) * tailLength;
-    const jitter = new THREE.Vector3((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
-    particle.position.copy(sun.position).add(tailDirection.clone().multiplyScalar(distanceFromSun)).add(jitter);
-    particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
-  });
+// ---------------- Render & Animate ----------------
 
-   // Update controls and render
-  controls.update();
-  renderer.render(scene, camera);
-
-  // Increment time for animation
-  t += 0.01;
-
-  // Request next frame
-  requestAnimationFrame(animate);
-} // <-- this closes animate()
+controls.update();
+renderer.render(scene, camera);
+t += 0.01;
+requestAnimationFrame(animate);
 
 // --------------------------- INITIALIZATION ---------------------------
 
