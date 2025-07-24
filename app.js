@@ -441,3 +441,4 @@ function initialize() {
 }
 
 initialize();
+}
