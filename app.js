@@ -209,7 +209,7 @@ const moonMesh = new THREE.Mesh(
     emissive: new THREE.Color(0x111111)
 
   }
-);
+));
 
 moonMesh.scale.set(1, 1, 1);  // Adjust 0.5r size factor you want
 moonMesh.castShadow = true;
