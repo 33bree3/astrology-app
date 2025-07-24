@@ -1,8 +1,5 @@
-// Solar System Simulation using Three.js and Astronomia Data
+// Solar System Simulation using Three.js and orbital elements
 // -----------------------------------------------------------
-// Visualizes planets with elliptical orbits using orbital elements.
-
-// --------------------------- IMPORTS ---------------------------
 
 import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
@@ -30,19 +27,40 @@ const planetSizes = {
   Jupiter: 369, Saturn: 297, Uranus: 201, Neptune: 154
 };
 
+const planetColors = {
+  Mercury: 0xaaaaaa, Venus: 0xffcc99, Earth: 0x3399ff, Mars: 0xff3300,
+  Jupiter: 0xffcc66, Saturn: 0xffcc00, Uranus: 0x66ffff, Neptune: 0x6666ff
+};
+
 // --------------------------- SCENE SETUP ---------------------------
 
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
 
 const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 100000);
 camera.position.set(0, 5000, 10000);
 const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
 
-const light = new THREE.PointLight(0xffffff, 3);
-scene.add(light);
+// Lights
+const pointLight = new THREE.PointLight(0xffffff, 2);
+pointLight.position.set(0, 5000, 10000);
+scene.add(pointLight);
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+scene.add(ambientLight);
+
+// --------------------------- SUN ---------------------------
+
+const sunGeometry = new THREE.SphereGeometry(300 * PLANET_SIZE_MULTIPLIER, 32, 32);
+const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
+scene.add(sunMesh);
 
 // --------------------------- PLANET MESHES ---------------------------
 
@@ -50,7 +68,7 @@ const planets = [];
 
 Object.keys(orbitalElementsData).forEach(name => {
   const geometry = new THREE.SphereGeometry(planetSizes[name] * PLANET_SIZE_MULTIPLIER, 32, 32);
-  const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  const material = new THREE.MeshStandardMaterial({ color: planetColors[name] || 0xffffff });
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
   planets.push({ name, mesh });
@@ -93,8 +111,8 @@ function createOrbitLine(el, segments = 256) {
 }
 
 Object.entries(orbitalElementsData).forEach(([name, el]) => {
-  const line = createOrbitLine(el);
-  scene.add(line);
+  const orbit = createOrbitLine(el);
+  scene.add(orbit);
 });
 
 // --------------------------- ANIMATION ---------------------------
@@ -106,8 +124,9 @@ function animate() {
 
   planets.forEach(p => {
     const { a, e, i, o, w } = orbitalElementsData[p.name];
-    const M = (time / 1000 + a) % (2 * Math.PI); // crude mean anomaly
-    const E = M; // approximation
+    const M = (time / 1000 + a) % (2 * Math.PI);
+    const E = M; // simple approximation of eccentric anomaly
+
     const x = a * (Math.cos(E) - e);
     const y = a * Math.sqrt(1 - e * e) * Math.sin(E);
 
