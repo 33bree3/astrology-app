@@ -28,14 +28,14 @@ import neptuneData from './astronomia/data/vsop87Dneptune.js';
 // --------------------------- CONSTANTS & SETTINGS ---------------------------
 
 // Base scaling factors for distances and planet sizes
-const BASE_SCALE = 3333;          // Used for logarithmic distance scaling
+const BASE_SCALE = 1236;          // Used for logarithmic distance scaling
 const PLANET_SIZE_MULTIPLIER = 9; // Adjust planet size scaling here
 
 // Speed factor for advancing time in Julian Days
-const TIME_SPEED_FACTOR = 3333;
+const TIME_SPEED_FACTOR = 333333;
 
 // Compression factor for outer planets to bring them visually closer
-const OUTER_PLANETS_COMPRESSION = 0.9;
+const OUTER_PLANETS_COMPRESSION = 0.1;
 
 // Eccentricities for planets (used for elliptical orbits)
 const ECCENTRICITIES = {
