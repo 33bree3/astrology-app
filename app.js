@@ -38,7 +38,7 @@ textureLoader.load('./images/earth.cmap.jpg',
 // --------------------------- MOON TEXTURE ---------------------------
 // Moon color and bump textures (used below for Moon mesh)
 const moonTextures = {
-  color: textureLoader.load('./pLANETS/moon.jpg'),  // <-- your moon image path
+  color: textureLoader.load('./pLanets/moon.jpg'),  // <-- your moon image path
   bump: textureLoader.load('./images/pluto.bump.jpg')
 };
 
