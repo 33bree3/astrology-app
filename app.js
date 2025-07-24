@@ -12,7 +12,7 @@ import julian from './astronomia/src/julian.js';
 import { Planet } from './astronomia/src/planetposition.js';
 import moonPosition from './astronomia/src/moonposition.js';  // moonposition default export object
 import { phaseAngleEquatorial } from './astronomia/src/moonillum.js';     // moonillum default export object
-import { eclToEq } from './astronomia/src/coord.js';
+import { Ecliptic } from './astronomia/src/coord.js';
 import mercuryData from './astronomia/data/vsop87Bmercury.js';
 import venusData from './astronomia/data/vsop87Bvenus.js';
 import earthData from './astronomia/data/vsop87Bearth.js';
@@ -274,45 +274,32 @@ if (earth) {
   // Get moon position relative to Earth at JD
   const moonGeo = moonPosition.position(jd);
 
-  // Moon position in cartesian coordinates, scaled for visualization
+  // Moon position vector scaled for visualization
   const moonVector = new THREE.Vector3(
     moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
     moonGeo.range * Math.sin(moonGeo.lat),
     moonGeo.range * Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-  ).multiplyScalar(50); // Adjust scale for moon distance from Earth
+  ).multiplyScalar(50);
 
-  // Position moon mesh relative to Earth
-  
   moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
   moonMesh.lookAt(sun.position);
 
-  // --- Begin illumination calculation ---
+  // Convert Moon ecliptic coords to equatorial
+  const moonEcl = new Ecliptic(moonGeo.lon, moonGeo.lat);
+  const moonEq = moonEcl.toEquatorial(jd);
 
-  // Convert Moon ecliptic coords (lon, lat) to equatorial coords
-  
-  const moonEq = eclToEq(moonGeo.lon, moonGeo.lat, jd);
-
-  // Get Sun ecliptic position relative to Earth at JD (sun's lon, lat=0)
-  // Here we assume sun.position is THREE.Vector3; we need sun's ecliptic lon
-  // Alternatively, use Earth planet object to get sun position in ecliptic coords:
-  
-  const sunGeo = earth.data.position2000(jd); // This gives Earth's heliocentric position
-  // Since Earth position is heliocentric, Sun's geocentric lon ~ earthGeo.lon + π (approx)
-  // Or you can calculate Sun's ecliptic longitude as (moonGeo.lon + π), simplified here:
+  // Calculate Sun ecliptic position approx
   const sunLon = (moonGeo.lon + Math.PI) % (2 * Math.PI);
-  const sunLat = 0; // Sun's ecliptic latitude approximately zero
-  const sunEq = eclToEq(sunLon, sunLat, jd);
+  const sunLat = 0;
+  const sunEcl = new Ecliptic(sunLon, sunLat);
+  const sunEq = sunEcl.toEquatorial(jd);
 
-  // Calculate phase angle between Moon and Sun equatorial coordinates
+  // Calculate phase angle
   const phaseAngle = phaseAngleEquatorial(moonEq, sunEq);
 
-  // Normalize illumination to [0,1]
+  // Illumination from phase angle
   const illumination = (1 + Math.cos(phaseAngle)) / 2;
-
-  // Set moon emissive intensity based on illumination (scale as needed)
   moonMesh.material.emissiveIntensity = illumination * 3;
-
-  // --- End illumination calculation ---
 }
 
 
