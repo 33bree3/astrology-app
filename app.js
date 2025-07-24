@@ -318,7 +318,7 @@ function animate() {
 
   // Choose Earth as reference for tail direction
   
-const referencePlanet = planets.find(p => p.name === 'Eart') || planets[0];
+const referencePlanet = planets.find(p => p.name === 'sun') || planets[0];
 
 const tailDirection = new THREE.Vector3()
   .subVectors(referencePlanet.mesh.position, sun.position)
