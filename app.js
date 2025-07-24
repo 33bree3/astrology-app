@@ -1,20 +1,19 @@
 // Solar System Simulation using Three.js and Astronomia Data
 // -----------------------------------------------------------
-// This simulation visualizes the solar system using real planetary data (VSOP87)
-// from the 'astronomia' library, with textured planets, elliptical orbits, and
-// camera controls using OrbitControls from Three.js.
+// Visualizes planets with real orbital data, textured spheres, elliptical orbits,
+// moon position and illumination, comet tail particles, and camera controls.
 
 // --------------------------- IMPORTS ---------------------------
-
 
 import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
 
 import julian from './astronomia/src/julian.js';
 import { Planet } from './astronomia/src/planetposition.js';
-import moonPosition from './astronomia/src/moonposition.js';  // moonposition default export object
-import { phaseAngleEquatorial } from './astronomia/src/moonillum.js';     // moonillum default export object
+import moonPosition from './astronomia/src/moonposition.js';
+import { phaseAngleEquatorial } from './astronomia/src/moonillum.js';
 import { Ecliptic } from './astronomia/src/coord.js';
+
 import mercuryData from './astronomia/data/vsop87Bmercury.js';
 import venusData from './astronomia/data/vsop87Bvenus.js';
 import earthData from './astronomia/data/vsop87Bearth.js';
@@ -24,37 +23,40 @@ import saturnData from './astronomia/data/vsop87Dsaturn.js';
 import uranusData from './astronomia/data/vsop87Duranus.js';
 import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
-// --------------------------- TEXTURE LOADING ---------------------------
+// --------------------------- CONSTANTS & SETTINGS ---------------------------
 
+// Base scaling factors for distances and planet sizes
+const BASE_SCALE = 2222;          // Used for logarithmic distance scaling
+const PLANET_SIZE_MULTIPLIER = 1; // Adjust planet size scaling here
 
-const textureLoader = new THREE.TextureLoader();
+// Speed factor for advancing time in Julian Days
+const TIME_SPEED_FACTOR = 21;
 
-textureLoader.load('./images/earth.cmap.jpg',
-  (texture) => console.log('Earth texture loaded', texture),
-  undefined,
-  (err) => console.error('Error loading earth texture:', err)
-);
+// Compression factor for outer planets to bring them visually closer
+const OUTER_PLANETS_COMPRESSION = 0.3;
 
-// --------------------------- MOON TEXTURE ---------------------------
-
-
-const moonTextures = {
-  color: textureLoader.load('./planets/moon.jpg'),
-  bump: textureLoader.load('./images/pluto.bump.jpg')
+// Eccentricities for planets (used for elliptical orbits)
+const ECCENTRICITIES = {
+  Mercury: 0.2056,
+  Venus: 0.0067,
+  Earth: 0.0167,
+  Mars: 0.0934,
+  Jupiter: 0.0489,
+  Saturn: 0.0565,
+  Uranus: 0.0457,
+  Neptune: 0.0113,
 };
 
-// --------------------------- RENDERER SETUP ---------------------------
+// --------------------------- SETUP ---------------------------
 
-
+// Canvas & Renderer
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-// --------------------------- SCENE SETUP ---------------------------
-
-
+// Scene & Background (Skybox)
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxUrls = [
@@ -65,7 +67,6 @@ const skyboxUrls = [
   './images/space.jpg',
   './images/space2.jpg'
 ];
-
 const skyboxTexture = cubeLoader.load(skyboxUrls);
 skyboxTexture.magFilter = THREE.LinearFilter;
 skyboxTexture.minFilter = THREE.LinearFilter;
@@ -74,19 +75,13 @@ skyboxTexture.wrapT = THREE.ClampToEdgeWrapping;
 skyboxTexture.generateMipmaps = false;
 scene.background = skyboxTexture;
 
-// --------------------------- CAMERA SETUP ---------------------------
-
-
+// Camera & Controls
 const camera = new THREE.PerspectiveCamera(123, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
 const cameraOffset = new THREE.Vector3(300, 400, 500);
-
-// --------------------------- ORBIT CONTROLS ---------------------------
-
-
 const controls = new OrbitControls(camera, canvas);
 controls.enableZoom = true;
-controls.minDistance = 777;
-controls.maxDistance = 5555;
+controls.minDistance = 3333;
+controls.maxDistance = 7777;
 controls.maxPolarAngle = Math.PI / 2;
 controls.enablePan = true;
 controls.panSpeed = 0.5;
@@ -94,19 +89,19 @@ controls.userIsInteracting = false;
 controls.addEventListener('start', () => { controls.userIsInteracting = true; });
 controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
-// --------------------------- LIGHTING ---------------------------
-
-
+// Lighting Setup
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 3333333, 0, 2);
+const sunLight = new THREE.PointLight(0xffffff, 3, 0, 2);
 sunLight.castShadow = false;
 sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
 scene.add(new THREE.PointLightHelper(sunLight, 10));
 
-// --------------------------- SUN SETUP ---------------------------
+// Texture Loader
+const textureLoader = new THREE.TextureLoader();
 
+// --------------------------- SUN ---------------------------
 
 const sunRadius = 666;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
@@ -120,36 +115,12 @@ const sun = new THREE.Mesh(sunGeometry, sunMaterial);
 sun.castShadow = false;
 sun.receiveShadow = false;
 scene.add(sun);
+sun.position.set(0, 0, 0);
+sunLight.position.copy(sun.position);
 
+// --------------------------- PLANETS ---------------------------
 
-// --------------------------- COMET TAIL ---------------------------
-
-
-const tailLength = 333;
-const tailParticlesCount = 93;
-const tailParticles = [];
-const tailTexture = textureLoader.load('https://threejs.org/examples/textures/sprites/disc.png');
-
-for (let i = 0; i < tailParticlesCount; i++) {
-  const tailMaterial = new THREE.SpriteMaterial({
-    map: tailTexture,
-    color: 0xffcc00,
-    transparent: true,
-    opacity: 3 * (3 - i / tailParticlesCount),
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-  });
-  const sprite = new THREE.Sprite(tailMaterial);
-  sprite.scale.set(21, 30, 1);
-  scene.add(sprite);
-  tailParticles.push(sprite);
-}
-
-
-
-// --------------------------- PLANET TEXTURES ---------------------------
-
-
+// Textures for planets (color + bump maps)
 const planetTextures = {
   Mercury: { color: textureLoader.load('./planets/mercury.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
   Venus:   { color: textureLoader.load('./planets/venus.jpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
@@ -161,53 +132,25 @@ const planetTextures = {
   Neptune: { color: textureLoader.load('./planets/neptune.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
 };
 
-
-
-// --------------------------- PLANET DATA ---------------------------
-
-
+// Planets data with radius and size scaling
 const planets = [
   { name: 'Mercury', data: new Planet(mercuryData), radius: 1, planetSize: 69 },
-  { name: 'Venus',   data: new Planet(venusData),   radius: 2, planetSize: 101 },
-  { name: 'Earth',   data: new Planet(earthData),   radius: 3, planetSize: 123 },
-  { name: 'Mars',    data: new Planet(marsData),    radius: 4, planetSize: 72 },
+  { name: 'Venus',   data: new Planet(venusData), radius: 2, planetSize: 101 },
+  { name: 'Earth',   data: new Planet(earthData), radius: 3, planetSize: 123 },
+  { name: 'Mars',    data: new Planet(marsData), radius: 4, planetSize: 72 },
   { name: 'Jupiter', data: new Planet(jupiterData), radius: 5, planetSize: 369 },
-  { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 297 },
-  { name: 'Uranus',  data: new Planet(uranusData),  radius: 7, planetSize: 201 },
+  { name: 'Saturn',  data: new Planet(saturnData), radius: 6, planetSize: 297 },
+  { name: 'Uranus',  data: new Planet(uranusData), radius: 7, planetSize: 201 },
   { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 154 },
 ];
 
-
-// orbital lines 
-
-const orbitLines = new THREE.Group();
-scene.add(orbitLines);
-
-function createOrbitLine(semiMajorAxis, eccentricity = 0.05, segments = 256) {
-  const semiMinorAxis = semiMajorAxis * Math.sqrt(1 - eccentricity ** 2);
-  const focusOffset = semiMajorAxis * eccentricity;
-
-  const curve = new THREE.EllipseCurve(
-    -focusOffset, 0,              // x/y center offset so Sun is at one focus
-    semiMajorAxis,
-    semiMinorAxis,
-    0, 2 * Math.PI,
-    false,
-    0
-  );
-
-  const points = curve.getPoints(segments);
-  const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, 0, p.y)));
-  const material = new THREE.LineBasicMaterial({ color: 0x555555 });
-  return new THREE.Line(geometry, material);
-}
-
-
-
+// Create meshes for each planet and add to solarSystem group
+const solarSystem = new THREE.Group();
+scene.add(solarSystem);
 
 planets.forEach(p => {
-  p.mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(p.planetSize, 32, 32),
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(p.planetSize * PLANET_SIZE_MULTIPLIER, 32, 32),
     new THREE.MeshPhongMaterial({
       map: planetTextures[p.name].color,
       bumpMap: planetTextures[p.name].bump,
@@ -217,322 +160,192 @@ planets.forEach(p => {
       emissive: new THREE.Color(0x000000)
     })
   );
-  p.mesh.castShadow = true;
-  p.mesh.receiveShadow = true;
-}
-            );
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  p.mesh = mesh;
+  solarSystem.add(mesh);
+});
 
+// --------------------------- MOON ---------------------------
 
-
-// --------------------------- MOON MESH SETUP ---------------------------
-
+const moonTextures = {
+  color: textureLoader.load('./planets/moon.jpg'),
+  bump: textureLoader.load('./images/pluto.bump.jpg')
+};
 
 const moonMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(333,333 ,333),
+  new THREE.SphereGeometry(333, 333, 333),
   new THREE.MeshPhongMaterial({
     map: moonTextures.color,
     bumpMap: moonTextures.bump,
     bumpScale: 0.3,
     shininess: 5,
     emissive: new THREE.Color(0xffffff)
-
   })
 );
-
-  moonMesh.visible = true;
-
-moonMesh.scale.set(50, 50,50);  // Adjust 0.5r size factor you want
+moonMesh.scale.set(50, 50, 50); // Scale moon size appropriately
 moonMesh.castShadow = true;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
 
+// --------------------------- ORBITS ---------------------------
 
+// Group to hold orbit lines
+const orbitLines = new THREE.Group();
+scene.add(orbitLines);
 
-// --------------------------- SOLAR SYSTEM GROUP ---------------------------
+/**
+ * Creates an elliptical orbit line using semi-major axis (a) and eccentricity (e).
+ * The ellipse is shifted so the Sun is at one focus.
+ */
+function createOrbitLine(a, e, segments = 128) {
+  const b = a * Math.sqrt(1 - e * e);       // semi-minor axis
+  const focusOffset = a * e;                 // offset so Sun is at focus
+  const curve = new THREE.EllipseCurve(
+    -focusOffset, 0,                        // center shifted by focus offset
+    a, b,                                   // xRadius (a), yRadius (b)
+    0, 2 * Math.PI,                         // full ellipse
+    false, 0
+  );
+  const points = curve.getPoints(segments);
+  const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, 0, p.y)));
+  const material = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
+  return new THREE.LineLoop(geometry, material);
+}
 
-  
-  const scale = 22222;                                     // scale for visibility
-  const baseScale = 3333;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
+// Create and add orbit lines for planets
+planets.forEach(p => {
+  // Calculate orbit radius scaled and compressed for outer planets
+  let orbitRadius = (Math.log(p.radius) * BASE_SCALE);
+  if (p.radius > 4) orbitRadius *= OUTER_PLANETS_COMPRESSION;
 
+  const orbit = createOrbitLine(orbitRadius, ECCENTRICITIES[p.name]);
+  orbitLines.add(orbit);
+  p.orbitRadius = orbitRadius;
+});
 
-const solarSystem = new THREE.Group();
-scene.add(solarSystem);
-planets.forEach(p => solarSystem.add(p.mesh));
-sun.position.set(0, 0, 0);
-sunLight.position.copy(sun.position);
+// --------------------------- COMET & TAIL ---------------------------
 
-
-// Eccentricities for planets (approximate)
-const eccentricities = {
-  Mercury: 0.2056,
-  Venus: 0.0067,
-  Earth: 0.0167,
-  Mars: 0.0934,
-  Jupiter: 0.0489,
-  Saturn: 0.0565,
-  Uranus: 0.0457,
-  Neptune: 0.0113,
+// Comet parameters
+const comet = {
+  velocity: 0,
+  acceleration: 0.00001,
+  tailParticles: [],
+  tailLength: 1000,
 };
 
+// Create comet mesh (simple white sphere)
+const cometGeometry = new THREE.SphereGeometry(11, 8, 8);
+const cometMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const cometMesh = new THREE.Mesh(cometGeometry, cometMaterial);
+scene.add(cometMesh);
 
-// Create elliptical orbit lines with eccentricity & compression
-function createOrbitLine(a, e) {
-  const b = a * Math.sqrt(1 - e * e);
-  const curve = new THREE.EllipseCurve(
-    -a * e, 0,      // center shifted by focus offset on X axis
-    a, b,           // xRadius, yRadius (XZ plane)
-    0, 2 * Math.PI, // full ellipse
-    false,
-    0
-  );
-  const points = curve.getPoints(128);
-  const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, 0, p.y)));
-  const material = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.3, transparent: true });
-  return new THREE.Line(geometry, material);
+// Particle system for comet tail (points)
+const cometTailGeometry = new THREE.BufferGeometry();
+const tailPositions = new Float32Array(comet.tailLength * 3); // x,y,z for each particle
+cometTailGeometry.setAttribute('position', new THREE.BufferAttribute(tailPositions, 3));
+const cometTailMaterial = new THREE.PointsMaterial({ size: 7, color: 0xffffff, transparent: true, opacity: 0.8 });
+const cometTail = new THREE.Points(cometTailGeometry, cometTailMaterial);
+scene.add(cometTail);
+
+// --------------------------- UTILITY FUNCTIONS ---------------------------
+
+/**
+ * Convert planetary heliocentric equatorial coordinates (from Astronomia)
+ * to Three.js Vector3 in the simulation space with scaling.
+ */
+function heliocentricToVector3(helioCoords, scaleFactor) {
+  // Coordinates from Astronomia are in AU, convert and scale
+  return new THREE.Vector3(helioCoords.x * scaleFactor, 0, helioCoords.y * scaleFactor);
 }
 
-// Create orbit lines for all planets with consistent scaling & compression
-function createOrbitLines() {
-  const baseScale = 2222; // match your base scale
+// --------------------------- TIME ---------------------------
 
-  planets.forEach(p => {
-    // Get current position data to extract range (AU)
-    const pos = p.data.position2000(julian.DateToJD(new Date()));
-    let a = Math.log(pos.range + 1) * baseScale;
+let julianDate = julian.CalendarToJD(2023, 7, 21); // Start date July 21, 2023
 
-    // Apply compression for outer planets (match your scale in animate)
-    if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
-      a *= 1.8;
-    }
-
-    const e = eccentricities[p.name] || 0.05;
-    const orbitLine = createOrbitLine(a, e);
-    orbitLines.add(orbitLine);
-  });
-}
-
-// Call this ONCE during initialization
-createOrbitLines();
-
-
-
-
-
-// --------------------------- CAMERA BEHAVIOR ---------------------------
-
-
-function clampCameraDistance() {
-  const minDistance = 3333;
-  const maxDistance = 7777;
-  const distance = camera.position.distanceTo(solarSystem.position);
-  const direction = camera.position.clone().sub(solarSystem.position).normalize();
-  if (distance < minDistance) {
-    camera.position.copy(solarSystem.position).add(direction.multiplyScalar(minDistance));
-  } else if (distance > maxDistance) {
-    camera.position.copy(solarSystem.position).add(direction.multiplyScalar(maxDistance));
-  }
-}
-controls.addEventListener('change', clampCameraDistance);
-
-function mirrorCameraPosition() {
-  const offset = camera.position.clone().sub(solarSystem.position);
-  const mirroredOffset = offset.multiplyScalar(-1);
-  camera.position.copy(solarSystem.position).add(mirroredOffset);
-  controls.target.copy(solarSystem.position);
-  controls.update();
-}
-mirrorCameraPosition();
-
-
-
-
-
-
-
-
-
-
-// --------------------------- ANIMATION LOOP ---------------------------bitch
-
-
-
-
-let t = 0;
-
+// --------------------------- ANIMATION LOOP ---------------------------
 
 function animate() {
+  requestAnimationFrame(animate);
 
-  
-  // Current Julian Date
+  // Advance time
+  julianDate += TIME_SPEED_FACTOR;
 
-  const timeSpeedFactor = 21; // Increase to speed up orbits
-const jd = julian.DateToJD(new Date()) + t * timeSpeedFactor;
+  // Update planet positions and rotations
+  planets.forEach(p => {
+    // Compute heliocentric equatorial coordinates for current date
+    const pos = p.data.position(julianDate);
+    // Apply distance scaling & compression for outer planets
+    let scale = (Math.log(p.radius) * BASE_SCALE);
+    if (p.radius > 4) scale *= OUTER_PLANETS_COMPRESSION;
 
+    // Convert to Three.js coordinates
+    const planetPos = heliocentricToVector3(pos, scale);
+    p.mesh.position.copy(planetPos);
 
-  
+    // Rotate planet slowly for a bit of animation
+    p.mesh.rotation.y += 0.01;
+  });
 
+  // ----------------- Update Moon -----------------
 
-  //                                                                   orbit linesss 
-  
+  // Calculate moon position relative to Earth
+  const moonPos = moonPosition.position(julianDate);
+  const ecl = Ecliptic.fromEquatorial(moonPos.ra, moonPos.dec, julianDate);
+  const moonDistanceAU = moonPos.range;
+  const earthScale = Math.log(3) * BASE_SCALE;  // Earth radius scaling
 
-planets.forEach(p => {
-  const pos = p.data.position2000(julian.DateToJD(new Date()));
-  const r = Math.log(pos.range + 1) * baseScale;
-  const orbitLine = createOrbitLine(r);
-  orbitLines.add(orbitLine);
-});
+  // Moon position in simulation space relative to Earth
+  const moonX = earthScale + ecl.lon * 10 * 2;  // Adjust scaling here for visibility
+  const moonZ = earthScale + ecl.lat * 10 * 2;
 
-  solarSystem.position.set(0, 0, 0);
-  sunLight.position.copy(sun.position);
+  moonMesh.position.set(moonX, 0, moonZ);
 
-if (Math.floor(t * 100) % 300 === 0) {
+  // Moon rotation for some realism
+  moonMesh.rotation.y += 0.01;
 
+  // ----------------- Moon Illumination -----------------
+  // Compute phase angle for illumination
+  const phaseAngle = phaseAngleEquatorial(julianDate);
+  moonMesh.material.emissiveIntensity = phaseAngle / Math.PI;
 
-// ---- LOG AU DISTANCES ----
-  
-planets.forEach((p) => {
-  const pos = p.data.position2000(jd);
-  console.log(`${p.name} - Distance (AU): ${pos.range.toFixed(6)}`);
-});
+  // ----------------- Comet Movement & Tail -----------------
 
-  
-  // Scale factor to make planets visible and separated <?
-  
- planets.forEach((p, i) => {
-  const pos = p.data.position2000(jd);
-  let lon = pos.lon;
-  let lat = pos.lat;
-  const r = pos.range;
+  // Update comet velocity and position
+  comet.velocity += comet.acceleration;
+  cometMesh.position.x -= comet.velocity;
+  cometMesh.position.z -= comet.velocity;
 
-  // Neptune manual offset (keep this)
-  if (p.name === 'Neptune') {
-    lon += 0.09; // ~2.8 degrees
-    lat += 0.03; // ~1.1 degrees
+  // Update tail particles positions, shift backwards, add new particle at comet position
+  for (let i = comet.tailLength - 1; i > 0; i--) {
+    tailPositions[i * 3] = tailPositions[(i - 1) * 3];
+    tailPositions[i * 3 + 1] = tailPositions[(i - 1) * 3 + 1];
+    tailPositions[i * 3 + 2] = tailPositions[(i - 1) * 3 + 2];
+  }
+  tailPositions[0] = cometMesh.position.x;
+  tailPositions[1] = cometMesh.position.y;
+  tailPositions[2] = cometMesh.position.z;
+
+  cometTailGeometry.attributes.position.needsUpdate = true;
+
+  // ----------------- Camera & Controls -----------------
+
+  if (!controls.userIsInteracting) {
+    // Automatic camera rotation around the sun
+    const angle = Date.now() * 0.0001;
+    camera.position.x = 1000 * Math.sin(angle);
+    camera.position.z = 1000 * Math.cos(angle);
+    camera.position.y = 500;
+    camera.lookAt(sun.position);
+  } else {
+    controls.update();
   }
 
-  // Base scale (keep this from your code)
-  const baseScale = 2222;
-
-  // Compress last three planets' distances (keep, but adjust compression factor as needed)
-  let scaledR = Math.log(r + 1) * baseScale;
-  if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
-    scaledR *= 0.3;  // your compression factor
-  }
-
-  // Elliptical orbit calculations using eccentricity
-  const eccentricities = {
-    Mercury: 0.2056,
-    Venus: 0.0067,
-    Earth: 0.0167,
-    Mars: 0.0934,
-    Jupiter: 0.0489,
-    Saturn: 0.0565,
-    Uranus: 0.0457,
-    Neptune: 0.0113,
-  };
-  const e = eccentricities[p.name] || 0.05;
-  const a = scaledR;                        // semi-major axis
-  const b = a * Math.sqrt(1 - e * e);      // semi-minor axis
-
-  // Angle along orbit is longitude (ignore lat for orbit position)
-  // XZ plane orbit with focus offset on X-axis
-  const x = a * Math.cos(lon) - a * e;
-  const y = scaledR * Math.sin(lat);  // preserve lat for height (Y)
-  const z = b * Math.sin(lon);
-
-  // Set position on elliptical orbit with latitude as Y height
-  p.mesh.position.set(x, y, z);
-
-  // Rotation animations (keep yours)
-  p.mesh.rotation.x += 1 + 1 * i;
-  p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
-  p.mesh.lookAt(sun.position);
-  p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
-});
-
-    // MOOOOOOOOOOOOOON SIZE IF IT IS MOON MAKE DAT SIE - commented out 
-
-
-//  if (p.name === 'Moon') {
-  //  p.mesh.scale.set(0.01, 0.01, 0.01); // Set Moon size here (tweak the 0.5 as needed)
- // }
-
-
-  
-  // Rotation animations
-  
-  
-  p.mesh.rotation.x += 1 + 1 * i;
-  p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
-  p.mesh.lookAt(sun.position);
-  p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
- });
-
-
-  
-// --------- MOON POSITION -----------
-  
-
-const earth = planets.find(p => p.name === 'Earth');
-if (earth) {
-
-  
-  const earthPos = earth.data.position2000(jd); // heliocentric Earth position
-
-  // Use Earth position to get Moon position relative to Earth
-  const moonGeo = moonPosition.position(jd, earthPos);
-
-  const moonVector = new THREE.Vector3(
-    Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
-    Math.sin(moonGeo.lat),
-    Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-  ).multiplyScalar(moonGeo.range * baseScale); // correct Earth-relative position
-
-  moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
-
-
-
-  // ---------------- Moon Illumination ----------------
-  const moonEcl = new Ecliptic(moonGeo.lon, moonGeo.lat);
-  const moonEq = moonEcl.toEquatorial(jd);
-  // Sun approx at opposite ecliptic lon
-  const sunLon = (moonGeo.lon + Math.PI) % (2 * Math.PI);
-  const sunLat = 0;
-  const sunEcl = new Ecliptic(sunLon, sunLat);
-  const sunEq = sunEcl.toEquatorial(jd);
-  // Get phase angle (make sure function exists and works)
-  const phaseAngle = phaseAngleEquatorial(moonEq, sunEq);
-  // Normalize illumination
-  const illumination = (1 + Math.cos(phaseAngle)) / 2;
-  moonMesh.material.emissiveIntensity = illumination * 3;
+  // Render scene
+  renderer.render(scene, camera);
 }
 
-// ---------------- Comet Tail Animation ----------------
+// Start animation
+animate();
 
-const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
-tailParticles.forEach((particle, idx) => {
-  const distanceFromSun = (idx / tailParticlesCount) * tailLength;
-  const jitter = new THREE.Vector3((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
-  particle.position.copy(sun.position).add(tailDirection.clone().multiplyScalar(distanceFromSun)).add(jitter);
-  particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
-});
-}
-
-// ---------------- Render & Animate ----------------
-
-controls.update();
-renderer.render(scene, camera);
-t += 0.01;
-requestAnimationFrame(animate);
-}
-
-// --------------------------- INITIALIZATION ---------------------------
-
-function initialize() {
-  camera.position.copy(cameraOffset);
-  controls.target.set(0, 0, 0);
-  controls.update();
-  animate();
-}
-
-initialize(); // <-- this closes everything cleanly
+// --------------------------- END ---------------------------
