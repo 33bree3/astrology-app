@@ -374,7 +374,7 @@ if (earth) {
 
 
 // ---- LOG MOON DISTANCE ----
-console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
+console.log(`Moon - Distance (AU): ${moonGeo.range}`);
   // ---------------- Moon Illumination ----------------
   const moonEcl = new Ecliptic(moonGeo.lon, moonGeo.lat);
   const moonEq = moonEcl.toEquatorial(jd);
