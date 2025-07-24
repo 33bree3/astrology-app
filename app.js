@@ -303,8 +303,6 @@ console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
   // Scale factor to make planets visible and separated
   
   
-  const scale = 1000; // Adjusted scale for visibility in 3D scene
-
 planets.forEach((p, i) => {
   const pos = p.data.position2000(jd);
   const r = pos.range;
