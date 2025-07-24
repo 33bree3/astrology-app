@@ -211,7 +211,7 @@ const moonMesh = new THREE.Mesh(
   })
 );
 
-moonMesh.scale.set(100, 100, 100);  // Adjust 0.5r size factor you want
+moonMesh.scale.set(10000, 10000, 10000);  // Adjust 0.5r size factor you want
 moonMesh.castShadow = true;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
@@ -280,8 +280,8 @@ function animate() {
   const jd = julian.DateToJD(new Date());
 
   
-  const scale = 1000; // scale for visibility
-  const baseScale = 1800; // 🌟 MOVE IT HERE
+  const scale = 10000; // scale for visibility
+  const baseScale = 18000; // 🌟 MOVE IT HERE
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
