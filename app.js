@@ -191,7 +191,8 @@ planets.forEach(p => {
   );
   p.mesh.castShadow = true;
   p.mesh.receiveShadow = true;
-});
+}
+            );
 
 
 
@@ -207,7 +208,7 @@ const moonMesh = new THREE.Mesh(
     shininess: 5,
     emissive: new THREE.Color(0x111111)
 
-  })
+  }
 );
 
 moonMesh.scale.set(1, 1, 1);  // Adjust 0.5r size factor you want
