@@ -200,7 +200,7 @@ planets.forEach(p => {
 
 
 const moonMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(21, 369, 369),
+  new THREE.SphereGeometry(333,33333 ,33333 ),
   new THREE.MeshPhongMaterial({
     map: moonTextures.color,
     bumpMap: moonTextures.bump,
@@ -282,8 +282,8 @@ function animate() {
   const jd = julian.DateToJD(new Date());
 
   
-  const scale = 333333; // scale for visibility
-  const baseScale = 33333; // 🌟 MOVE IT HERE
+  const scale = 3333; // scale for visibility
+  const baseScale = 3333; // 🌟 MOVE IT HERE
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
@@ -346,7 +346,7 @@ if (p.name === 'Neptune') {
   // Rotation animations
   
   
-  p.mesh.rotation.x += 1 + 0.03 * i;
+  p.mesh.rotation.x += 1 + 1 * i;
   p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
   p.mesh.lookAt(sun.position);
   p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
