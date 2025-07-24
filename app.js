@@ -189,7 +189,7 @@ planets.forEach(p => {
       emissive: new THREE.Color(0x000000)
     })
   );
-  p.mesh.castShadow = false;
+  p.mesh.castShadow = true;
   p.mesh.receiveShadow = true;
 });
 
@@ -206,9 +206,11 @@ const moonMesh = new THREE.Mesh(
     bumpScale: 0.3,
     shininess: 5,
     emissive: new THREE.Color(0x111111)
+    moonMesh.scale.set(1, 1, 1);  // Adjust 0.5 to whatever size factor you want
+
   })
 );
-moonMesh.castShadow = false;
+moonMesh.castShadow = true;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
 
@@ -339,6 +341,11 @@ if (p.name === 'Neptune') {
   const orbitZ = scaledR * Math.cos(lat) * Math.sin(lon);
 
   p.mesh.position.set(orbitX, orbitY, orbitZ);
+
+    // If this is the Moon, set its visual size:
+  if (p.name === 'Moon') {
+    p.mesh.scale.set(0.5, 0.5, 0.5); // Set Moon size here (tweak the 0.5 as needed)
+  }
 
 
   
