@@ -108,7 +108,7 @@ scene.add(new THREE.PointLightHelper(sunLight, 10));
 // --------------------------- SUN SETUP ---------------------------
 
 
-const sunRadius = 93;
+const sunRadius = 123;
 const sunGeometry = new THREE.SphereGeometry(sunRadius, 32, 32);
 const sunTexture = textureLoader.load('./images/sun.cmap.jpg');
 const sunMaterial = new THREE.MeshStandardMaterial({
@@ -200,7 +200,7 @@ planets.forEach(p => {
 
 
 const moonMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(10, 69, 69),
+  new THREE.SphereGeometry(21, 369, 369),
   new THREE.MeshPhongMaterial({
     map: moonTextures.color,
     bumpMap: moonTextures.bump,
@@ -282,8 +282,8 @@ function animate() {
   const jd = julian.DateToJD(new Date());
 
   
-  const scale = 100000; // scale for visibility
-  const baseScale = 100000; // 🌟 MOVE IT HERE
+  const scale = 333333; // scale for visibility
+  const baseScale = 33333; // 🌟 MOVE IT HERE
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
