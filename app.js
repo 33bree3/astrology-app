@@ -350,7 +350,7 @@ if (p.name === 'Neptune') {
   p.mesh.rotation.y = Math.sin(t * (0.5 + 0.002 * i)) * (0.05 + 0.01 * i);
   p.mesh.lookAt(sun.position);
   p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5));
-});
+// });
 
 
   
