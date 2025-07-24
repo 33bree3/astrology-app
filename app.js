@@ -19,7 +19,7 @@ import jupiterData from './astronomia/data/vsop87Djupiter.js';
 import saturnData from './astronomia/data/vsop87Dsaturn.js';
 import uranusData from './astronomia/data/vsop87Duranus.js';
 import neptuneData from './astronomia/data/vsop87Dneptune.js';
-import * as moonData from './astronomia/src/moonposition.js';
+import moonData from './astronomia/src/moonposition.js';
 
 // --------------------------- TEXTURE LOADING ---------------------------
 
@@ -387,7 +387,7 @@ if (earth) {
   
 // Tail direction: From Sun to Earth, normalized
   
-const earth = planets.find(p => p.name === 'Earth');
+
 if (earth) {
   const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
 
