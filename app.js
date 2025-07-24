@@ -117,7 +117,7 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 9, 0, 2);
+const sunLight = new THREE.PointLight(0xffffff, 3333, 0, 2);
 
 
 sunLight.castShadow = false;
@@ -220,6 +220,10 @@ planets.forEach(p => {
 const solarSystem = new THREE.Group();
 scene.add(solarSystem);
 planets.forEach(p => solarSystem.add(p.mesh));
+
+sun.position.set(0, 0, 0);        // make sure sun is centered
+sunLight.position.copy(sun.position); // move the light to the Sun!
+
 
 
 
