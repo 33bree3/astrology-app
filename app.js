@@ -119,7 +119,7 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 333333, 0, 2);
+const sunLight = new THREE.PointLight(0xffffff, 3333333, 0, 2);
 
 
 sunLight.castShadow = false;
@@ -210,7 +210,7 @@ planets.forEach(p => {
     emissive: new THREE.Color(0x000000)  // no glow — let lighting do the work
     })
   );
-  p.mesh.castShadow = false;
+  p.mesh.castShadow = true;
   p.mesh.receiveShadow = true;
 });
 
