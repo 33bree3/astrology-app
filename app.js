@@ -200,7 +200,7 @@ planets.forEach(p => {
 
 
 const moonMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(333,33333 ,33333 ),
+  new THREE.SphereGeometry(33,33 ,33),
   new THREE.MeshPhongMaterial({
     map: moonTextures.color,
     bumpMap: moonTextures.bump,
@@ -213,7 +213,7 @@ const moonMesh = new THREE.Mesh(
 
   moonMesh.visible = true;
 
-moonMesh.scale.set(3, 3,3);  // Adjust 0.5r size factor you want
+moonMesh.scale.set(50, 50,50);  // Adjust 0.5r size factor you want
 moonMesh.castShadow = true;
 moonMesh.receiveShadow = true;
 scene.add(moonMesh);
