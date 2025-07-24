@@ -152,7 +152,7 @@ for (let i = 0; i < tailParticlesCount; i++) {
 
 const planetTextures = {
   Mercury: { color: textureLoader.load('./planets/mercury.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Venus:   { color: textureLoader.load('./planets/venusjpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
+  Venus:   { color: textureLoader.load('./planets/venus.jpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
   Earth:   { color: textureLoader.load('./planets/earth.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
   Mars:    { color: textureLoader.load('./planets/mars.jpg'), bump: textureLoader.load('./images/mars.bump.jpg') },
   Jupiter: { color: textureLoader.load('./planets/jupiter.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
@@ -275,6 +275,10 @@ function animate() {
   
   const jd = julian.DateToJD(new Date());
 
+  
+  const scale = 1000; // scale for visibility
+  const baseScale = 1800; // 🌟 MOVE IT HERE
+
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
 
@@ -353,25 +357,17 @@ if (earth) {
 
   
 const moonGeo = moonPosition.position(jd);
-
-// Convert moon AU to render scale (same as Earth)
-
-  
 const moonScaledRange = Math.log(moonGeo.range + 1) * baseScale;
 
-// Convert to 3D vector in scene space
-
-  
 const moonVector = new THREE.Vector3(
   Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
   Math.sin(moonGeo.lat),
   Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
 ).multiplyScalar(moonScaledRange);
 
-// Offset from Earth in scene space
-  
 moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
 
+  
   moonMesh.lookAt(sun.position);
 
   // Calculate illumination (assuming phaseAngleEquatorial is fixed and working)
