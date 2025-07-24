@@ -110,13 +110,18 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 100000, 0, 2);
+const sunLight = new THREE.PointLight(0xffffff, 100000, 0, 0);
 
 
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
 scene.add(sunLight);
+
+const lightHelper = new THREE.PointLightHelper(sunLight, 10);
+scene.add(lightHelper);
+
+
 
 
 // --------------------------- SUN SETUP ---------------------------
@@ -187,15 +192,18 @@ const planets = [
 planets.forEach(p => {
   p.mesh = new THREE.Mesh(
     new THREE.SphereGeometry(p.planetSize, 32, 32),
-    new THREE.MeshStandardMaterial({
+    new THREE.MeshPhongMaterial({
       map: planetTextures[p.name].color,
       bumpMap: planetTextures[p.name].bump,
       bumpScale: 1,
+      shininess: 7, // optional: tweak for different material effect
+      specular: 0x333333
     })
   );
   p.mesh.castShadow = true;
   p.mesh.receiveShadow = true;
 });
+
 
 // --------------------------- SOLAR SYSTEM GROUP ---------------------------
 const solarSystem = new THREE.Group();
