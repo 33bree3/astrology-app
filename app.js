@@ -294,7 +294,7 @@ if (Math.floor(t * 100) % 300 === 0) {
 planets.forEach((p) => {
   const pos = p.data.position2000(jd);
   console.log(`${p.name} - Distance (AU): ${pos.range.toFixed(6)}`);
-});
+}
 
   
   // Scale factor to make planets visible and separated
@@ -406,6 +406,7 @@ controls.update();
 renderer.render(scene, camera);
 t += 0.01;
 requestAnimationFrame(animate);
+}
 
 // --------------------------- INITIALIZATION ---------------------------
 
