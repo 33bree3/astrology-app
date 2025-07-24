@@ -19,6 +19,7 @@ import jupiterData from './astronomia/data/vsop87Djupiter.js';
 import saturnData from './astronomia/data/vsop87Dsaturn.js';
 import uranusData from './astronomia/data/vsop87Duranus.js';
 import neptuneData from './astronomia/data/vsop87Dneptune.js';
+import * as moonposition from './astronomia/src/moonposition.js';
 
 // --------------------------- TEXTURE LOADING ---------------------------
 
@@ -119,7 +120,7 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 3333333, 0, 2);
+const sunLight = new THREE.PointLight(0xffffff, 333333333, 0, 2);
 
 
 sunLight.castShadow = false;
@@ -176,14 +177,17 @@ for (let i = 0; i < tailParticlesCount; i++) {
 
 // --------------------------- PLANET TEXTURES ---------------------------
 const planetTextures = {
-  Mercury: { color: textureLoader.load('./images/merc.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Venus:   { color: textureLoader.load('./images/venus.cmap.jpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
-  Earth:   { color: textureLoader.load('./images/earth.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
-  Mars:    { color: textureLoader.load('./images/mars.cmap.jpg'), bump: textureLoader.load('./images/mars.bump.jpg') },
-  Jupiter: { color: textureLoader.load('./images/jupiter.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Saturn:  { color: textureLoader.load('./images/saturn.cmap.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
-  Uranus:  { color: textureLoader.load('./images/uranus.cmap.jpg'), bump: textureLoader.load('./images/pluto.bump.jpg') },
-  Neptune: { color: textureLoader.load('./images/neptune.cmap.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
+  Mercury: { color: textureLoader.load('./planets/mercury.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Venus:   { color: textureLoader.load('./planets/venus.jpg'), bump: textureLoader.load('./images/venus.bump.jpg') },
+  Earth:   { color: textureLoader.load('./planets/ earth.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
+  Mars:    { color: textureLoader.load('./planets/mars.jpg'), bump: textureLoader.load('./images/mars.bump.jpg') },
+  Jupiter: { color: textureLoader.load('./planets/jupiter.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Saturn:  { color: textureLoader.load('./planets/saturn.jpg'), bump: textureLoader.load('./images/merc.bump.jpg') },
+  Uranus:  { color: textureLoader.load('./planets/uranus.jpg'), bump: textureLoader.load('./images/pluto.bump.jpg') },
+  Neptune: { color: textureLoader.load('./planets/neptune.jpg'), bump: textureLoader.load('./images/earth.bump.jpg') },
+  
+  const moonTexture = textureLoader.load('./planets/moon.cmap.jpg'), bump; textureLoader.load('./images/pluto.bump.jpg')};
+
 };
 
 // --------------------------- PLANET DATA ---------------------------
@@ -196,6 +200,8 @@ const planets = [
   { name: 'Saturn',  data: new Planet(saturnData),  radius: 6, planetSize: 297 },
   { name: 'Uranus',  data: new Planet(uranusData),  radius: 7, planetSize: 201 },
   { name: 'Neptune', data: new Planet(neptuneData), radius: 8, planetSize: 154 },
+   { name: 'Moon', data: new Planet(moonData), radius: 3, planetSize: 54 },
+  
 ];
 
 planets.forEach(p => {
@@ -225,6 +231,23 @@ planets.forEach(p => solarSystem.add(p.mesh));
 
 sun.position.set(0, 0, 0);        // make sure sun is centered
 sunLight.position.copy(sun.position); // move the light to the Sun!
+
+// ----------------------------------------- MOON MES H0 --------------------------------------
+
+const moonSize = 33; // Scaled moon size
+const moonGeometry = new THREE.SphereGeometry(moonSize, 32, 32);
+const moonMaterial = new THREE.MeshStandardMaterial({
+  map: moonTexture,
+  bumpMap: textureLoader.load('./images/moon.bump.jpg'),
+  bumpScale: 1,
+  metalness: 0.1,
+  roughness: 1
+});
+const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+moon.receiveShadow = true;
+moon.castShadow = false;
+scene.add(moon);
+
 
 
 
@@ -317,6 +340,30 @@ function animate() {
     p.mesh.lookAt(sun.position);
     p.mesh.rotateZ(THREE.MathUtils.degToRad(23.5)); // axial tilt
   });
+
+//////// M0OOOOOOOOOOOOOOOOOOOONS DATA POSITIONS // ORBITTTT 
+
+// ------------------ MOON POSITION ------------------
+
+const moonData = moonposition.position(jd); // Geocentric (Earth-centered)
+const moonRange = moonData.range * 6371; // Earth radii to km
+const moonLon = moonData.lon;
+const moonLat = moonData.lat;
+
+// Find Earth position
+const earth = planets.find(p => p.name === 'Earth');
+if (earth) {
+  const moonOffset = new THREE.Vector3(
+    moonRange * Math.cos(moonLat) * Math.cos(moonLon),
+    moonRange * Math.sin(moonLat),
+    moonRange * Math.cos(moonLat) * Math.sin(moonLon)
+  ).multiplyScalar(0.1); // Scaled down to match visual scale
+
+  moon.position.copy(earth.mesh.position.clone().add(moonOffset));
+  moon.rotation.y += 0.09; // Simple rotation
+}
+
+
 
   
   // ------------------ COMET TAIL PARTICLES ------------------
