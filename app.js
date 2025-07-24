@@ -298,7 +298,13 @@ function animate() {
 
   const timeSpeedFactor = 200; // Increase to speed up orbits
 const jd = julian.DateToJD(new Date()) + t * timeSpeedFactor;
+
+
   
+  
+  const scale = 2222;                                     // scale for visibility
+  const baseScale = 2222;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
+
 
   //                                                                   orbit linesss 
   
@@ -309,10 +315,6 @@ planets.forEach(p => {
   const orbitLine = createOrbitLine(r);
   orbitLines.add(orbitLine);
 });
-
-  
-  const scale = 2222;                                     // scale for visibility
-  const baseScale = 2222;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
