@@ -334,11 +334,11 @@ if (p.name === 'Neptune') {
   p.mesh.position.set(orbitX, orbitY, orbitZ);
 
   
-    // MOOOOOOOOOOOOOON SIZE IF IT IS MOON MAKE DAT SIE
+    // MOOOOOOOOOOOOOON SIZE IF IT IS MOON MAKE DAT SIE - commented out 
 
 
-  if (p.name === 'Moon') {
-    p.mesh.scale.set(0.01, 0.01, 0.01); // Set Moon size here (tweak the 0.5 as needed)
+//  if (p.name === 'Moon') {
+  //  p.mesh.scale.set(0.01, 0.01, 0.01); // Set Moon size here (tweak the 0.5 as needed)
   }
 
 
