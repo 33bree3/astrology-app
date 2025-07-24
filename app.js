@@ -282,8 +282,8 @@ function animate() {
   const jd = julian.DateToJD(new Date());
 
   
-  const scale = 4444;                                     // scale for visibility
-  const baseScale = 4444;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
+  const scale = 1111;                                     // scale for visibility
+  const baseScale = 1111;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
 
   solarSystem.position.set(0, 0, 0);
   sunLight.position.copy(sun.position);
