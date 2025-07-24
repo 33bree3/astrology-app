@@ -85,6 +85,8 @@ scene.background = skyboxTexture;
 
 
 // --------------------------- CAMERA SETUP ---------------------------
+
+
 const camera = new THREE.PerspectiveCamera(
   123,
   canvas.clientWidth / canvas.clientHeight,
@@ -117,7 +119,7 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 3333, 0, 2);
+const sunLight = new THREE.PointLight(0xffffff, 333333, 0, 2);
 
 
 sunLight.castShadow = false;
