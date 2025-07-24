@@ -371,15 +371,14 @@ const earthPos = earth.data.position2000(jd); // heliocentric Earth position
 // Use Earth position to get Moon position relative to Earth
 const moonGeo = moonPosition.position(jd, earthPos);
 
-// Convert spherical to Cartesian (Moon relative to Earth)
 const moonVector = new THREE.Vector3(
-  moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
-  moonGeo.range * Math.sin(moonGeo.lat),
-  moonGeo.range * Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
-).multiplyScalar(22222);
+  Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
+  Math.sin(moonGeo.lat),
+  Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
+).multiplyScalar(moonGeo.range * baseScale); // correct Earth-relative position
 
-// Place moon relative to Earth
 moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
+
 
 
 
@@ -418,18 +417,16 @@ moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
     particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
   });
 
-  // Update controls and render
-  
+   // Update controls and render
   controls.update();
   renderer.render(scene, camera);
 
   // Increment time for animation
-  
   t += 0.01;
 
   // Request next frame
   requestAnimationFrame(animate);
-}
+} // <-- this closes animate()
 
 // --------------------------- INITIALIZATION ---------------------------
 
@@ -440,4 +437,4 @@ function initialize() {
   animate();
 }
 
-initialize();
+initialize(); // <-- this closes everything cleanly
