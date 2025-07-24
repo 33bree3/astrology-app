@@ -27,8 +27,8 @@ import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
 // --------------------------- CONSTANTS & SETTINGS ---------------------------
 
-const BASE_SCALE = 4444;
-const PLANET_SIZE_MULTIPLIER = 0.001;
+const BASE_SCALE = 999999
+const PLANET_SIZE_MULTIPLIER = 999999;
 const TIME_SPEED_FACTOR = 5;
 
 const degToRad = deg => deg * Math.PI / 180;
