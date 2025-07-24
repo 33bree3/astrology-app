@@ -10,6 +10,8 @@ import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/cont
 
 import julian from './astronomia/src/julian.js';
 import { Planet } from './astronomia/src/planetposition.js';
+import { position as moonPosition } from './astronomia/src/moonposition.js'; // NEW: Moon position
+import { illum } from './astronomia/src/moonphase.js'; // NEW: Moon illumination
 
 import mercuryData from './astronomia/data/vsop87Bmercury.js';
 import venusData from './astronomia/data/vsop87Bvenus.js';
@@ -21,7 +23,6 @@ import uranusData from './astronomia/data/vsop87Duranus.js';
 import neptuneData from './astronomia/data/vsop87Dneptune.js';
 
 // --------------------------- TEXTURE LOADING ---------------------------
-
 const textureLoader = new THREE.TextureLoader();
 
 textureLoader.load('./images/earth.cmap.jpg',
@@ -31,14 +32,12 @@ textureLoader.load('./images/earth.cmap.jpg',
 );
 
 // --------------------------- MOON TEXTURE ---------------------------
-
 const moonTextures = {
   color: textureLoader.load('./planets/moon.jpg'),
   bump: textureLoader.load('./images/pluto.bump.jpg')
 };
 
 // --------------------------- RENDERER SETUP ---------------------------
-
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -46,7 +45,6 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // --------------------------- SCENE SETUP ---------------------------
-
 const scene = new THREE.Scene();
 const cubeLoader = new THREE.CubeTextureLoader();
 const skyboxUrls = [
@@ -84,7 +82,7 @@ controls.addEventListener('end', () => { controls.userIsInteracting = false; });
 
 // --------------------------- LIGHTING ---------------------------
 scene.add(new THREE.AmbientLight(0x404040, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 33333333, 0, 2);
+const sunLight = new THREE.PointLight(0xffffff, 3333, 0, 2);
 sunLight.castShadow = false;
 sunLight.shadow.mapSize.width = 1000;
 sunLight.shadow.mapSize.height = 1000;
@@ -166,6 +164,21 @@ planets.forEach(p => {
   p.mesh.receiveShadow = true;
 });
 
+// --------------------------- MOON MESH SETUP ---------------------------
+const moonMesh = new THREE.Mesh(
+  new THREE.SphereGeometry(30, 32, 32),
+  new THREE.MeshPhongMaterial({
+    map: moonTextures.color,
+    bumpMap: moonTextures.bump,
+    bumpScale: 0.3,
+    shininess: 5,
+    emissive: new THREE.Color(0x111111)
+  })
+);
+moonMesh.castShadow = false;
+moonMesh.receiveShadow = true;
+scene.add(moonMesh);
+
 // --------------------------- SOLAR SYSTEM GROUP ---------------------------
 const solarSystem = new THREE.Group();
 scene.add(solarSystem);
@@ -225,6 +238,20 @@ function animate() {
 
   const earth = planets.find(p => p.name === 'Earth');
   if (earth) {
+    // --------------------------- MOON POSITION LOGIC ---------------------------
+    const moonGeo = moonPosition(jd);
+    const illumination = illum(jd);
+    const moonVector = new THREE.Vector3(
+      moonGeo.range * Math.cos(moonGeo.lat) * Math.cos(moonGeo.lon),
+      moonGeo.range * Math.sin(moonGeo.lat),
+      moonGeo.range * Math.cos(moonGeo.lat) * Math.sin(moonGeo.lon)
+    ).multiplyScalar(15); // Scaled for visualization
+
+    moonMesh.position.copy(earth.mesh.position.clone().add(moonVector));
+    moonMesh.lookAt(sun.position);
+    moonMesh.material.emissiveIntensity = illumination.k * 3; // Adjust brightness
+
+    // --------------------------- TAIL ANIMATION ---------------------------
     const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
     tailParticles.forEach((particle, idx) => {
       const distanceFromSun = (idx / tailParticlesCount) * tailLength;
@@ -258,3 +285,4 @@ document.querySelectorAll('.tab').forEach(btn => {
     document.getElementById(btn.dataset.tab).classList.add('active');
   });
 });
+
