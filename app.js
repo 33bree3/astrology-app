@@ -318,31 +318,31 @@ function animate() {
 
   // Choose Earth as reference for tail direction
   
-const referencePlanet = planets.find(p => p.name === 'sun') || planets[0];
+// Tail direction: From Sun to Earth, normalized
+const earth = planets.find(p => p.name === 'Earth');
+if (earth) {
+  const tailDirection = new THREE.Vector3().subVectors(earth.mesh.position, sun.position).normalize();
 
-const tailDirection = new THREE.Vector3()
-  .subVectors(referencePlanet.mesh.position, sun.position)
-  .normalize();
+  tailParticles.forEach((particle, idx) => {
+    const distanceFromSun = (idx / tailParticlesCount) * tailLength;
 
-tailParticles.forEach((particle, idx) => {
-  const distanceBehind = (idx / tailParticlesCount) * tailLength;
+    const jitter = new THREE.Vector3(
+      (Math.random() - 0.5) * 2,
+      (Math.random() - 0.5) * 2,
+      (Math.random() - 0.5) * 2
+    ).multiplyScalar(1.2); // adjust for some glow/spread
 
-  const jitter = new THREE.Vector3(
-    (Math.random() - 0.5) * 2,
-    (Math.random() - 0.5) * 2,
-    (Math.random() - 0.5) * 2
-  ).multiplyScalar(0.3);
+    const pos = new THREE.Vector3()
+      .copy(sun.position)
+      .addScaledVector(tailDirection, distanceFromSun)
+      .add(jitter);
 
-  const pos = new THREE.Vector3()
-    .copy(referencePlanet.mesh.position) // Fix: use planet position, not origin
-    .addScaledVector(tailDirection, -distanceBehind) //  go behind planet
-    .add(jitter); // add randomness
-
-  particle.position.copy(pos);
-  particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
-  const scale = 100 * (1 - idx / tailParticlesCount);
-  particle.scale.set(scale, scale, scale);
-});
+    particle.position.copy(pos);
+    particle.material.opacity = 0.3 * (1 - idx / tailParticlesCount);
+    const scale = 100 * (1 - idx / tailParticlesCount);
+    particle.scale.set(scale, scale, scale);
+  });
+}
 
 
   // ------------------ CAMERA AUTO-TRACKING ------------------
