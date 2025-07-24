@@ -251,8 +251,8 @@ scene.add(moonMesh);
 // --------------------------- SOLAR SYSTEM GROUP ---------------------------
 
   
-  const scale = 2222;                                     // scale for visibility
-  const baseScale = 2222;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
+  const scale = 22222;                                     // scale for visibility
+  const baseScale = 3333;                         // BASEEEEEEEEE SCALEEEEEE 🌟 MOVE IT HERE
 
 
 const solarSystem = new THREE.Group();
@@ -390,7 +390,7 @@ if (p.name === 'Neptune') {
   let scaledR = Math.log(r + 1) * baseScale;
 
   if (['Saturn', 'Uranus', 'Neptune'].includes(p.name)) {
-    scaledR *= 0.9; // bring last three planets closer by 90%
+    scaledR *= 0.3; // bring last three planets closer by 90%
   }
 
   // Calculate cartesian coords from spherical
