@@ -388,7 +388,7 @@ console.log(`Moon - Distance (AU): ${moonDistanceAU}`);
   // Normalize illumination
   const illumination = (1 + Math.cos(phaseAngle)) / 2;
   moonMesh.material.emissiveIntensity = illumination * 3;
-}};
+};
 
 // ---------------- Comet Tail Animation ----------------
 
