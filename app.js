@@ -18,7 +18,7 @@ const orbitalElementsData = {
   Earth:   { a: 1.1111, e: 0.0167, i: degToRad(0.000),   o: degToRad(0.000),   w: degToRad(114.207) },
   Mars:    { a: 1.5555, e: 0.0934, i: degToRad(1.850),   o: degToRad(49.558),  w: degToRad(286.502) },
   Jupiter: { a: 2.0000, e: 0.0484, i: degToRad(1.303),   o: degToRad(100.464), w: degToRad(273.867) },
-  Saturn:  { a: 2.7777, e: 0.0541,  i: degToRad(2.489),   o: degToRad(113.665), w: degToRad(339.392) },
+  Saturn:  { a: 2.5555, e: 0.0541,  i: degToRad(2.489),   o: degToRad(113.665), w: degToRad(339.392) },
   Uranus:  { a: 3.1111, e: 0.0472, i: degToRad(0.773),   o: degToRad(74.006),  w: degToRad(96.998) },
   Neptune: { a: 3.5555, e: 0.0086, i: degToRad(1.770),   o: degToRad(131.784), w: degToRad(272.846) }
 };
