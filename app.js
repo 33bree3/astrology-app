@@ -12,14 +12,14 @@ const TIME_SPEED_FACTOR = 5;
 const degToRad = deg => deg * Math.PI / 180;
 
 const orbitalElementsData = {
-  Mercury: { a: 1.5871, e: 0, i: degToRad(7.005),   o: degToRad(48.331),  w: degToRad(29.124) },
-  Venus:   { a: 2.8233, e: 0.03, i: degToRad(3.3946),  o: degToRad(76.680),  w: degToRad(54.884) },
-  Earth:   { a: 4.0000, e: 0.09, i: degToRad(0.000),   o: degToRad(0.000),   w: degToRad(114.207) },
-  Mars:    { a: 5.9237, e: 0.09, i: degToRad(1.850),   o: degToRad(49.558),  w: degToRad(286.502) },
-  Jupiter: { a: 6.9026, e: 0.03, i: degToRad(1.303),   o: degToRad(100.464), w: degToRad(273.867) },
-  Saturn:  { a: 7.5549, e: 0,  i: degToRad(2.489),   o: degToRad(113.665), w: degToRad(339.392) },
-  Uranus:  { a: 8.218, e: 0.03, i: degToRad(0.773),   o: degToRad(74.006),  w: degToRad(96.998) },
-  Neptune: { a: 9.110, e: 0, i: degToRad(1.770),   o: degToRad(131.784), w: degToRad(272.846) }
+  Mercury: { a: 0.5871, e: 0, i: degToRad(7.005),   o: degToRad(48.331),  w: degToRad(29.124) },
+  Venus:   { a: 0.8233, e: 0.01, i: degToRad(3.3946),  o: degToRad(76.680),  w: degToRad(54.884) },
+  Earth:   { a: 1.0000, e: 0.05, i: degToRad(0.000),   o: degToRad(0.000),   w: degToRad(114.207) },
+  Mars:    { a: 2.0237, e: 0.08, i: degToRad(1.850),   o: degToRad(49.558),  w: degToRad(286.502) },
+  Jupiter: { a: 3.0026, e: 0, i: degToRad(1.303),   o: degToRad(100.464), w: degToRad(273.867) },
+  Saturn:  { a: 3.9949, e: 0.03,  i: degToRad(2.489),   o: degToRad(113.665), w: degToRad(339.392) },
+  Uranus:  { a: 4.5180, e: 0.04, i: degToRad(0.773),   o: degToRad(74.006),  w: degToRad(96.998) },
+  Neptune: { a: 6.0000, e: 0.06, i: degToRad(1.770),   o: degToRad(131.784), w: degToRad(272.846) }
 };
 
 const planetSizes = {
