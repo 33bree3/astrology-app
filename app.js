@@ -67,14 +67,14 @@ const textureLoader = new THREE.TextureLoader();
 
 // Textures for each planet (assuming jpg files are in the 'planet' folder in your repo)
 const planetTextures = {
-  Mercury: textureLoader.load('planet/Mercury.jpg'),
-  Venus: textureLoader.load('planet/Venus.jpg'),
-  Earth: textureLoader.load('planet/Earth.jpg'),
-  Mars: textureLoader.load('planet/Mars.jpg'),
-  Jupiter: textureLoader.load('planet/Jupiter.jpg'),
-  Saturn: textureLoader.load('planet/Saturn.jpg'),
-  Uranus: textureLoader.load('planet/Uranus.jpg'),
-  Neptune: textureLoader.load('planet/Neptune.jpg'),
+  Mercury: textureLoader.load('planets/mercury.jpg'),
+  Venus: textureLoader.load('planets/venus.jpg'),
+  Earth: textureLoader.load('planets/earth.jpg'),
+  Mars: textureLoader.load('planets/mars.jpg'),
+  Jupiter: textureLoader.load('planets/jupiter.jpg'),
+  Saturn: textureLoader.load('planets/saturn.jpg'),
+  Uranus: textureLoader.load('planets/uranus.jpg'),
+  Neptune: textureLoader.load('planets/neptune.jpg'),
 };
 
 // --------------------------- PLANET MESHES ---------------------------
