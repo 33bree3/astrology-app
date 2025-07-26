@@ -12,7 +12,7 @@ const TIME_SPEED_FACTOR = 5;
 const degToRad = deg => deg * Math.PI / 180;
 
 const orbitalElementsData = {
-  Mercury: { a: 0.5871, e: 0.01, i: degToRad(7.005),   o: degToRad(48.331),  w: degToRad(29.124) },
+  Mercury: { a: 10.5871, e: 0.01, i: degToRad(7.005),   o: degToRad(48.331),  w: degToRad(29.124) },
   Venus:   { a: 0.8233, e: 0.03, i: degToRad(3.3946),  o: degToRad(76.680),  w: degToRad(54.884) },
   Earth:   { a: 1.0000, e: 0.15, i: degToRad(0.000),   o: degToRad(0.000),   w: degToRad(114.207) },
   Mars:    { a: 1.5237, e: 0.21, i: degToRad(1.850),   o: degToRad(49.558),  w: degToRad(286.502) },
