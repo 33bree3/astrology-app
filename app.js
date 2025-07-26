@@ -11,25 +11,22 @@ const PLANET_SIZE_MULTIPLIER = 1;
 const TIME_SPEED_FACTOR = 5;
 const degToRad = deg => deg * Math.PI / 180;
 
+// Orbital elements for each planet
 const orbitalElementsData = {
   Mercury: { a: 0.5871, e: 0, i: degToRad(7.005),   o: degToRad(48.331),  w: degToRad(29.124) },
   Venus:   { a: 0.8233, e: 0.01, i: degToRad(3.3946),  o: degToRad(76.680),  w: degToRad(54.884) },
   Earth:   { a: 1.0000, e: 0.05, i: degToRad(0.000),   o: degToRad(0.000),   w: degToRad(114.207) },
-  Mars:    { a: 2.0237, e: 0.08, i: degToRad(1.850),   o: degToRad(49.558),  w: degToRad(286.502) },
-  Jupiter: { a: 3.0026, e: 0, i: degToRad(1.303),   o: degToRad(100.464), w: degToRad(273.867) },
-  Saturn:  { a: 3.9949, e: 0.03,  i: degToRad(2.489),   o: degToRad(113.665), w: degToRad(339.392) },
-  Uranus:  { a: 4.5180, e: 0.04, i: degToRad(0.773),   o: degToRad(74.006),  w: degToRad(96.998) },
-  Neptune: { a: 6.0000, e: 0.06, i: degToRad(1.770),   o: degToRad(131.784), w: degToRad(272.846) }
+  Mars:    { a: 1.5237, e: 0.07, i: degToRad(1.850),   o: degToRad(49.558),  w: degToRad(286.502) },
+  Jupiter: { a: 2.0026, e: 0.03, i: degToRad(1.303),   o: degToRad(100.464), w: degToRad(273.867) },
+  Saturn:  { a: 2.5949, e: 0.05,  i: degToRad(2.489),   o: degToRad(113.665), w: degToRad(339.392) },
+  Uranus:  { a: 3.3180, e: 0.02, i: degToRad(0.773),   o: degToRad(74.006),  w: degToRad(96.998) },
+  Neptune: { a: 4.2000, e: 0.02, i: degToRad(1.770),   o: degToRad(131.784), w: degToRad(272.846) }
 };
 
+// Planet sizes in km (average diameter)
 const planetSizes = {
   Mercury: 69, Venus: 101, Earth: 123, Mars: 72,
   Jupiter: 369, Saturn: 297, Uranus: 201, Neptune: 154
-};
-
-const planetColors = {
-  Mercury: 0xaaaaaa, Venus: 0xffcc99, Earth: 0x3399ff, Mars: 0xff3300,
-  Jupiter: 0xffcc66, Saturn: 0xffcc00, Uranus: 0x66ffff, Neptune: 0x6666ff
 };
 
 // --------------------------- SCENE SETUP ---------------------------
@@ -57,20 +54,45 @@ scene.add(ambientLight);
 
 // --------------------------- SUN ---------------------------
 
+// Sun mesh (static, no texture applied)
 const sunGeometry = new THREE.SphereGeometry(300 * PLANET_SIZE_MULTIPLIER, 32, 32);
 const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
 scene.add(sunMesh);
 
+// --------------------------- PLANET TEXTURES ---------------------------
+
+// Texture loader for planets
+const textureLoader = new THREE.TextureLoader();
+
+// Textures for each planet (assuming jpg files are in the 'planet' folder in your repo)
+const planetTextures = {
+  Mercury: textureLoader.load('planet/Mercury.jpg'),
+  Venus: textureLoader.load('planet/Venus.jpg'),
+  Earth: textureLoader.load('planet/Earth.jpg'),
+  Mars: textureLoader.load('planet/Mars.jpg'),
+  Jupiter: textureLoader.load('planet/Jupiter.jpg'),
+  Saturn: textureLoader.load('planet/Saturn.jpg'),
+  Uranus: textureLoader.load('planet/Uranus.jpg'),
+  Neptune: textureLoader.load('planet/Neptune.jpg'),
+};
+
 // --------------------------- PLANET MESHES ---------------------------
 
 const planets = [];
 
+// Loop through each planet and create a mesh using its texture
 Object.keys(orbitalElementsData).forEach(name => {
   const geometry = new THREE.SphereGeometry(planetSizes[name] * PLANET_SIZE_MULTIPLIER, 32, 32);
-  const material = new THREE.MeshStandardMaterial({ color: planetColors[name] || 0xffffff });
+  
+  // Use the corresponding texture for the material
+  const material = new THREE.MeshStandardMaterial({
+    map: planetTextures[name] // Apply the texture to the material
+  });
+  
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
+  
   planets.push({ name, mesh });
 });
 
@@ -155,6 +177,7 @@ function animate() {
 
 animate();
 
+// Handle window resizing
 window.addEventListener('resize', () => {
   camera.aspect = canvas.clientWidth / canvas.clientHeight;
   camera.updateProjectionMatrix();
