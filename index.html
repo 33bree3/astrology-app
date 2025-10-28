@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Astrology App</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+    "three/": "https://unpkg.com/three@0.158.0/"
+  }
+}
+</script>
+  
+</head>
+<body>
+  <h1>Astrology App</h1>
+
+  <!-- Navigation Tabs -->
+  <nav>
+    <button class="tab active" data-tab="chart">Chart</button>
+    <button class="tab" data-tab="solar">Solar Data</button>
+    <button class="tab" data-tab="planets">Planets</button>
+  </nav>
+
+  <!-- Astrology Chart -->
+  <section id="chart" class="active">
+    <canvas id="chartCanvas" width="1080" height="1080"></canvas>
+    <div id="planetInfo"></div>
+  </section>
+
+  <!-- Solar Information -->
+  <section id="solar">
+    <h2>Solar Data</h2>
+    <div id="solarInfo">Loading...</div>
+  </section>
+
+  <!-- Planetary Table -->
+  <section id="planets">
+    <h2>Planetary Positions</h2>
+    <table>
+      <thead>
+        <tr><th>Planet</th><th>Longitude (°)</th></tr>
+      </thead>
+      <tbody id="planetTable"></tbody>
+    </table>
+  </section>
+
+  <!-- Main Logic -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
