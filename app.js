@@ -32,8 +32,9 @@ import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 function calcLongitude(vsop, t) {
   const sum = (series) =>
     series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
-  const Lset = vsop.L;
-  const L = sum(Lset.L0) + sum(Lset.L1) * t + sum(Lset.L2) * t ** 2;
+
+  const Lset = vsop.default.L; // <-- use .default
+  const L = sum(Lset[0]) + sum(Lset[1]) * t + sum(Lset[2]) * t ** 2;
   return (L * 180 / Math.PI + 360) % 360;
 }
 
@@ -42,6 +43,12 @@ function calcLongitude(vsop, t) {
 const now = new Date();
 const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
 const T = (JD - 2451545.0) / 365250;
+
+// Example usage
+// console.log('Neptune longitude:', calcLongitude(vsopNeptune, T));
+
+
+
 
 // --- Planet data ---
 
