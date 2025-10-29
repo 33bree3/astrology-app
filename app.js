@@ -4,6 +4,70 @@ import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/cont
 // ------------------------------ GOD KNOWS WHERE TO PUT THIS 
 //////                                   hope and pray 
 
+// ------------------------------   Tab logic
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ----------------         Imports from astronomia
+
+import * as vsopEarth   from './astronomia/data/vsop87Bearth.js';
+import * as vsopMars    from './astronomia/data/vsop87Bmars.js';
+import * as vsopMercury from './astronomia/data/vsop87Bmercury.js';
+import * as vsopVenus   from './astronomia/data/vsop87Bvenus.js';
+import * as vsopJupiter from './astronomia/data/vsop87Bjupiter.js';
+import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
+import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
+import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
+
+
+
+// ---------------   Helper to compute longitude
+
+
+function calcLongitude(vsop, t) {
+  const sum = (series) =>
+    series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
+  const L = sum(vsop.L0) + sum(vsop.L1) * t + sum(vsop.L2) * t ** 2;
+  return (L * 180 / Math.PI) % 360;
+}
+
+
+//  -------------------  Calculate current time & planet positions
+
+
+const now = new Date();
+const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
+const T = (JD - 2451545.0) / 365250;
+
+const planets = [
+  { name: "Mercury", longitude: calcLongitude(vsopMercury, T) },
+  { name: "Venus",   longitude: calcLongitude(vsopVenus, T) },
+  { name: "Earth",   longitude: calcLongitude(vsopEarth, T) },
+  { name: "Mars",    longitude: calcLongitude(vsopMars, T) },
+  { name: "Jupiter", longitude: calcLongitude(vsopJupiter, T) },
+  { name: "Saturn",  longitude: calcLongitude(vsopSaturn, T) },
+  { name: "Uranus",  longitude: calcLongitude(vsopUranus, T) },
+  { name: "Neptune", longitude: calcLongitude(vsopNeptune, T) },
+];
+
+// -----------------------  Render planets table
+
+const table = document.getElementById('planetTable');
+table.innerHTML = '';
+planets.forEach(p => {
+  const row = document.createElement('tr');
+  row.innerHTML = `<td>${p.name}</td><td>${p.longitude.toFixed(2)}°</td>`;
+  table.appendChild(row);
+});
+
+
 // ------------------------------------------ Tab switching
 
 document.querySelectorAll('.tab').forEach(btn => {
