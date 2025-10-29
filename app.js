@@ -34,13 +34,13 @@ import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
 
 // ---------------   Helper to compute longitude
+// problems w planets data temp removal of calculations 
 
-
-function calcLongitude(vsop, t) {
-  const sum = (series) =>
-    series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
-  const L = sum(vsop.L0) + sum(vsop.L1) * t + sum(vsop.L2) * t ** 2;
-  return (L * 180 / Math.PI) % 360;
+// function calcLongitude(vsop, t) {
+  // const sum = (series) =>
+    // series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
+  // const L = sum(vsop.L0) + sum(vsop.L1) * t + sum(vsop.L2) * t ** 2;
+  // return (L * 180 / Math.PI) % 360;
 }
 
 
