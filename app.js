@@ -20,28 +20,34 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
-// ----------------         Imports from astronomia
-
-import * as vsopEarth   from './astronomia/data/vsop87Bearth.js';
-import * as vsopMars    from './astronomia/data/vsop87Bmars.js';
-import * as vsopMercury from './astronomia/data/vsop87Bmercury.js';
-import * as vsopVenus   from './astronomia/data/vsop87Bvenus.js';
-import * as vsopJupiter from './astronomia/data/vsop87Bjupiter.js';
-import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
-import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
-import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
-
-
+/// another prayer 
 
 // ---------------   Helper to compute longitude
 // problems w planets data temp removal of calculations 
+//------------------ adjusted to fit data format 
 
-// function calcLongitude(vsop, t) {
-  // const sum = (series) =>
-    // series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
-  // const L = sum(vsop.L0) + sum(vsop.L1) * t + sum(vsop.L2) * t ** 2;
-  // return (L * 180 / Math.PI) % 360;
-//    }     /// silly bonk 
+ function calcLongitude(vsop, t) {
+  const sum = (series) =>
+    series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
+  const Lset = vsop.L;
+  const L = sum(Lset.L0) + sum(Lset.L1) * t + sum(Lset.L2) * t ** 2;
+  return (L * 180 / Math.PI) % 360;
+}
+
+// ----------------         Imports from astronomia
+---------------------- /// updated data formatting 
+
+const planetData = [
+  { name: "Mercury", longitude: calcLongitude(vsopMercury.default, T) },
+  { name: "Venus",   longitude: calcLongitude(vsopVenus.default, T) },
+  { name: "Earth",   longitude: calcLongitude(vsopEarth.default, T) },
+  { name: "Mars",    longitude: calcLongitude(vsopMars.default, T) },
+  { name: "Jupiter", longitude: calcLongitude(vsopJupiter.default, T) },
+  { name: "Saturn",  longitude: calcLongitude(vsopSaturn.default, T) },
+  { name: "Uranus",  longitude: calcLongitude(vsopUranus.default, T) },
+  { name: "Neptune", longitude: calcLongitude(vsopNeptune.default, T) },
+];
+
 
 
 //  -------------------  Calculate current time & planet positions
