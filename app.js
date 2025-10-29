@@ -3,6 +3,13 @@ import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/cont
 
 //// ---------------------------issues w data format - console log for help :(((( 
 
+console.log("Mercury VSOP keys:", Object.keys(vsopMercury));
+console.log("Mercury default:", vsopMercury.default);
+if (vsopMercury.default) {
+  console.log("Mercury.default keys:", Object.keys(vsopMercury.default));
+}
+
+
 console.log('Mercury VSOP data:', vsopMercury);
 
 
