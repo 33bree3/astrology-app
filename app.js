@@ -9,33 +9,34 @@ console.log('Mercury VSOP data:', vsopMercury);
 // ------------------------------ GOD KNOWS WHERE TO PUT THIS 
 //////                                   hope and pray 
 
-// ------------------------------   Tab logic
+// --- Imports from astronomia ---
 
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(btn.dataset.tab).classList.add('active');
-  });
-});
+import * as vsopEarth   from './astronomia/data/vsop87Bearth.js';
+import * as vsopMars    from './astronomia/data/vsop87Bmars.js';
+import * as vsopMercury from './astronomia/data/vsop87Bmercury.js';
+import * as vsopVenus   from './astronomia/data/vsop87Bvenus.js';
+import * as vsopJupiter from './astronomia/data/vsop87Bjupiter.js';
+import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
+import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
+import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
-/// another prayer 
+// --- Helper to compute longitude ---
 
-// ---------------   Helper to compute longitude
-// problems w planets data temp removal of calculations 
-//------------------ adjusted to fit data format 
-
- function calcLongitude(vsop, t) {
+function calcLongitude(vsop, t) {
   const sum = (series) =>
     series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
   const Lset = vsop.L;
   const L = sum(Lset.L0) + sum(Lset.L1) * t + sum(Lset.L2) * t ** 2;
-  return (L * 180 / Math.PI) % 360;
+  return (L * 180 / Math.PI + 360) % 360;
 }
 
-// ----------------         Imports from astronomia
----------------------- /// updated data formatting 
+// --- Time setup ---
+
+const now = new Date();
+const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
+const T = (JD - 2451545.0) / 365250;
+
+// --- Planet data ---
 
 const planetData = [
   { name: "Mercury", longitude: calcLongitude(vsopMercury.default, T) },
@@ -48,34 +49,26 @@ const planetData = [
   { name: "Neptune", longitude: calcLongitude(vsopNeptune.default, T) },
 ];
 
-
-
-//  -------------------  Calculate current time & planet positions
-
-
-const now = new Date();
-const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
-const T = (JD - 2451545.0) / 365250;
-
-const planetData = [
-  { name: "Mercury", longitude: calcLongitude(vsopMercury, T) },
-  { name: "Venus",   longitude: calcLongitude(vsopVenus, T) },
-  { name: "Earth",   longitude: calcLongitude(vsopEarth, T) },
-  { name: "Mars",    longitude: calcLongitude(vsopMars, T) },
-  { name: "Jupiter", longitude: calcLongitude(vsopJupiter, T) },
-  { name: "Saturn",  longitude: calcLongitude(vsopSaturn, T) },
-  { name: "Uranus",  longitude: calcLongitude(vsopUranus, T) },
-  { name: "Neptune", longitude: calcLongitude(vsopNeptune, T) },
-];
-
-// -----------------------  Render planets table
+// ------------------------------------------------ --- Render planets table ---
 
 const table = document.getElementById('planetTable');
 table.innerHTML = '';
-planets.forEach(p => {
+planetData.forEach(p => {
   const row = document.createElement('tr');
   row.innerHTML = `<td>${p.name}</td><td>${p.longitude.toFixed(2)}°</td>`;
   table.appendChild(row);
+});
+
+
+// ------------------------------   Tab logic
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
 });
 
 
