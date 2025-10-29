@@ -46,7 +46,7 @@ const now = new Date();
 const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
 const T = (JD - 2451545.0) / 365250;
 
-const planets = [
+const planetData = [
   { name: "Mercury", longitude: calcLongitude(vsopMercury, T) },
   { name: "Venus",   longitude: calcLongitude(vsopVenus, T) },
   { name: "Earth",   longitude: calcLongitude(vsopEarth, T) },
