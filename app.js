@@ -1,7 +1,9 @@
 import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
 
-// --- Imports from astronomia ---
+
+// ----------------------------------------------------  Imports from astronomia ---
+
 
 import * as vsopEarth   from './astronomia/data/vsop87Bearth.js';
 import * as vsopMars    from './astronomia/data/vsop87Bmars.js';
@@ -12,42 +14,56 @@ import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
 import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
-// ---------- TIME SETUP ----------
+
+// ---------------------------------------------------------- TIME SETUP ----------
+
 const now = new Date();
-// Julian Date since J2000 epoch
+
+// ----------------------------------------------- Julian Date since J2000 epoch
+
 const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
-// VSOP time variable (centuries since J2000)
+
+//-        -------------------------------- VSOP time variable (centuries since J2000)
+
 const t = (JD - 2451545.0) / 365250;
 
 
-// ---------- COMPUTE VSOP LONGITUDE/LATITUDE/RADIUS ----------
+// ------------------------------------------ COMPUTE VSOP LONGITUDE/LATITUDE/RADIUS ----------
+
 function vsopPosition(vsopModule, t) {
-  // Handle both `default` and direct exports
+  
+  // --------------------------------------- Handle both `default` and direct exports
   const data = (vsopModule && (vsopModule.default || vsopModule)) || {};
   const Lset = data.L || {};
   const Bset = data.B || {};
   const Rset = data.R || {};
 
-  // Sum a single VSOP series (A, B, C terms)
+  
+  // -------------------------------------------- Sum a single VSOP series (A, B, C terms)
+  
   const sumSeries = (series = []) =>
     Array.isArray(series)
       ? series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0)
       : 0;
 
-  // Combine all orders (L0, L1, L2...) with powers of t
+  // ---------------------------------------------- Combine all orders (L0, L1, L2...) with powers of t
+  
   const accumulate = (setObj) =>
     Object.keys(setObj)
       .map(Number)
       .filter((n) => !isNaN(n))
       .sort((a, b) => a - b)
       .reduce((acc, n) => acc + sumSeries(setObj[n]) * t ** n, 0);
+  
 
-  // Get heliocentric L, B, R
+  // -----------------------------------------Get heliocentric L, B, R
+  
   const Lrad = accumulate(Lset);
   const Brad = accumulate(Bset);
   const Rval = accumulate(Rset);
 
-  // Convert radians to degrees
+  // ------------------------------------------------- Convert radians to degrees
+  
   const Ldeg = ((Lrad * 180 / Math.PI) % 360 + 360) % 360;
   const Bdeg = Brad * 180 / Math.PI;
 
@@ -55,14 +71,18 @@ function vsopPosition(vsopModule, t) {
 }
 
 
-// ---------- CONVERT HELIOCENTRIC (L,B,R) -> RECTANGULAR COORDS ----------
+// -------------------------------------- CONVERT HELIOCENTRIC (L,B,R) -> RECTANGULAR COORDS ----------
+
+
 function heliocentricRect(vsopModule, t) {
   const p = vsopPosition(vsopModule, t);
   const L = p.Ldeg * Math.PI / 180;
   const B = p.Bdeg * Math.PI / 180;
   const R = p.R;
 
-  // Cartesian coordinates
+  //      -------------------------------------------------Cartesian coordinates
+
+
   const x = R * Math.cos(B) * Math.cos(L);
   const y = R * Math.cos(B) * Math.sin(L);
   const z = R * Math.sin(B);
@@ -71,36 +91,45 @@ function heliocentricRect(vsopModule, t) {
 }
 
 
-// ---------- COMPUTE GEOCENTRIC ECLIPTIC LONGITUDE (DEGREES) ----------
+// --------------------------------------------- COMPUTE GEOCENTRIC ECLIPTIC LONGITUDE (DEGREES) ----------
+
+
 function geocentricLongitude(vsopPlanetModule, vsopEarthModule, t) {
   // Get heliocentric rectangular coordinates
   const p = heliocentricRect(vsopPlanetModule, t);
   const e = heliocentricRect(vsopEarthModule, t);
 
-  // Subtract Earth’s heliocentric vector from planet’s
+  //------------------------------------------------ Subtract Earth’s heliocentric vector from planet’s
+  
   const x = p.x - e.x;
   const y = p.y - e.y;
 
-  // atan2 gives longitude in radians → convert to degrees and normalize
+  //-----------------------------------------  atan2 gives longitude in radians → convert to degrees and normalize
+  
   const lonDeg = ((Math.atan2(y, x) * 180 / Math.PI) % 360 + 360) % 360;
   return lonDeg;
 }
 
 
-// ---------- BUILD PLANET LONGITUDE DATA ----------
+// ---------------------------------------------------------- BUILD PLANET LONGITUDE DATA ----------
+
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
 };
 
 const planetData = Object.entries(planetModules).map(([name, mod]) => {
-  // Earth’s geocentric longitude = 0° by definition
+  
+  // ------------------------------------------------ Earth’s geocentric longitude = 0° by definition
+  
   const lon = (name === "Earth") ? 0 : geocentricLongitude(mod, vsopEarth, t);
   return { name, longitude: lon };
 });
 
 
-// ---------- RENDER PLANET LONGITUDES IN TABLE ----------
+// -------------------------------------------- RENDER PLANET LONGITUDES IN TABLE ----------
+
+
 const table = document.getElementById('planetTable');
 table.innerHTML = '';
 planetData.forEach(p => {
@@ -110,15 +139,8 @@ planetData.forEach(p => {
 });
 
 
-// ---------- FIX POINT LIGHT CREATION ----------
-const pl = new THREE.PointLight(0xffffff, 2);
-pl.position.set(0, 5000, 10000);
-scene.add(pl);
-scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+// ------------------------------------------------------------   Tab logic
 
-
-
-// ------------------------------   Tab logic
 
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -135,12 +157,12 @@ document.querySelectorAll('.tab').forEach(btn => {
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     
-    // -------------------------------- update active button
+    // ------------------------------------------- update active button
     
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    // ----------------------------  show the matching section
+    // -----------------------------------------------  show the matching section
     
     document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
     document.getElementById(btn.dataset.tab).classList.add('active');
@@ -148,8 +170,7 @@ document.querySelectorAll('.tab').forEach(btn => {
 });
 
 
-
-// -------------------------------- Initialize Texture Loader
+// ----------------------------------------- Initialize Texture Loader
 
 
 const textureLoader = new THREE.TextureLoader();
@@ -160,11 +181,11 @@ const textureLoader = new THREE.TextureLoader();
 
 const BASE_SCALE = 888, PLANET_SIZE_MULTIPLIER = 1, TIME_SPEED_FACTOR = 5, radius = 100000;
 
-//  ----------------------------------- Convert degrees to radians
+//  ------------------------------------------------------------------------- Convert degrees to radians
 
 const degToRad = deg => deg * Math.PI / 180;
 
-// ---------------------------------- Orbital elements for each planet
+// ----------------------------------------------------   Orbital elements for each planet
 
 const orbitalElementsData = {
   Mercury: { a: 0.5555, e: 0.2056, i: 0.36, o: 48.331, w: 29.124 },
@@ -177,28 +198,28 @@ const orbitalElementsData = {
   Neptune: { a: 3.5555, e: 0.0086, i: 0.18, o: 131.784, w: 272.846 }
 };
 
-// --------------------------------------------- Planet sizes in km
+// ------------------------------------------------------------------- Planet sizes in km
 
 const planetSizes = { Mercury: 69, Venus: 101, Earth: 123, Mars: 72, Jupiter: 369, Saturn: 297, Uranus: 201, Neptune: 154 };
 
 
 
-// ------------------------------------------------ Zodiac signs and images
+// -------------------------------------------------------------------- Zodiac signs and images
 
 const zodiacPositions = {
   Aries: 0, Taurus: 30, Gemini: 60, Cancer: 90, Leo: 120, Virgo: 150,
   Libra: 180, Scorpio: 210, Sag: 240, Capricorn: 270, Aquarius: 300, Pisces: 330
 };
 
-// ----------------------------   ----- Load textures for zodiac signs (ensure paths are correct)
+// ---------------------------- ----------  ----- Load textures for zodiac signs (ensure paths are correct)
 
 const zodiacTextures = {};
 Object.keys(zodiacPositions).forEach(sign => {
   zodiacTextures[sign] = textureLoader.load(`constellations/${sign.toLowerCase()}.png`);
 });
-// --------------------------------------- Ensure 'Sagittarius' texture is loaded
+// ----------------------------------------------------------------- Ensure 'Sagittarius' texture is loaded
 
-zodiacTextures['Sagittarius'] = textureLoader.load('constellations/sag.png'); // Fix this path if necessary
+zodiacTextures['Sagittarius'] = textureLoader.load('constellations/sag.png'); // ------------------ Fix this path if necessary
 
 
 // --------------------------------------------------- PLANET IMAGES
@@ -214,11 +235,11 @@ const planetTextures = {
   Uranus: textureLoader.load('planets/uranus.jpg'),
   Neptune: textureLoader.load('planets/neptune.jpg'),
   Sun: textureLoader.load('images/sun.cmap.jpg'),
-  Asteroid: textureLoader.load('images/rock.png') // Texture for the asteroid particles
+  Asteroid: textureLoader.load('images/rock.png') // ------------------------ Texture for the asteroid particles
 };
 
 
-// ----------------------------------------- --  Set up scene, camera, renderer
+// ---------------------------------------------- --  Set up scene, camera, renderer
 
 
 const canvas = document.getElementById('chartCanvas');
@@ -237,8 +258,15 @@ controls.enableDamping = true;
 
 //  --------------------------------------------------   Lights
 
-scene.add(new THREE.PointLight(0xffffff, 2).position.set(0, 5000, 10000));
+
+// ---------------------------------------------------- --- FIX POINT LIGHT CREATION ----------
+
+const pl = new THREE.PointLight(0xffffff, 2);
+pl.position.set(0, 5000, 10000);
+scene.add(pl);
 scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
+
 
 // Sun Mesh
 const sunGeometry = new THREE.SphereGeometry(333, 33, 33);
@@ -246,25 +274,27 @@ const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, em
 scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
 
 
-// ------------------------------------------ ----- Create zodiac marker using Sprite?
+// ------------------------------------------------------------ ----- Create zodiac marker using Sprite?
 
 const getZodiacPosition = angle => new THREE.Vector3(radius * Math.cos(degToRad(angle)), 0, radius * Math.sin(degToRad(angle)));
 
 const zodiacMarkers = Object.entries(zodiacPositions).map(([sign, angle]) => {
   const spriteMaterial = new THREE.SpriteMaterial({
-    map: zodiacTextures[sign], // Make sure this texture is loaded correctly
+    map: zodiacTextures[sign], // ----------------------------------------------------------- Make sure this texture is loaded correctly
     transparent: true,
-    depthTest: false,  // Prevent z-fighting
-    depthWrite: false  // Don't block other objects
+    depthTest: false,  // -------------------------------------------------------------------------------- Prevent z-fighting
+    depthWrite: false  // -------------------------------------------------------------------------------------Don't block other objects
   });
 
   const marker = new THREE.Sprite(spriteMaterial);
   marker.position.copy(getZodiacPosition(angle));
 
-  // Adjust sprite size for visibility
+  // ---------------------------------------------------------- Adjust sprite size for visibility
+  
   marker.scale.set(9999, 9999, 100);
 
-  // Add marker 
+  // ------------------------------------------- Add marker 
+  
   scene.add(marker);
 
   return marker;
@@ -272,7 +302,7 @@ const zodiacMarkers = Object.entries(zodiacPositions).map(([sign, angle]) => {
 
 
 
-// ------------------------------------------    Create planets
+// --------------------------------------------------------------------------------------------------------    Create planets
 
 
 const planets = Object.keys(orbitalElementsData).map(name => {
@@ -283,7 +313,7 @@ const planets = Object.keys(orbitalElementsData).map(name => {
   return { name, mesh };
 });
 
-// -------------------------------------           Orbit Lines
+// ----------------------------------------------------------------------------------           Orbit Lines
 
 
 function createOrbitLine(el, segments = 256) {
@@ -309,7 +339,7 @@ Object.entries(orbitalElementsData).forEach(([name, el]) => scene.add(createOrbi
 
 
 
-// 0-------------------------------- Function to create asteroid belts in spherical coordinates (3D)
+// 0------------------------------------------------------------------------------ Function to create asteroid belts in spherical coordinates (3D)
 
 
 
@@ -319,23 +349,23 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
   const colors = [];
 
   for (let i = 0; i < count; i++) {
-    // -------------------------    Random radius within the specified range
+    // -----------------------------------------------------------------------------------    Random radius within the specified range
     const radius = Math.random() * (maxRadius - minRadius) + minRadius;
 
-    // --------------------          Random theta (azimuthal angle) from 0 to 2 * PI (full circle)
+    // -----------------------------------------------------------------------          Random theta (azimuthal angle) from 0 to 2 * PI (full circle)
     const theta = Math.random() * Math.PI * 2;
 
-    // ---------------------        Random phi (polar angle) from 0 to PI (full sphere)
+    // -----------------------------------------------        Random phi (polar angle) from 0 to PI (full sphere)
     const phi = Math.random() * Math.PI;
 
-    // ------------------- Convert to Cartesian coordinates (x, y, z) using spherical coordinates
+    // ----------------------------------------------------- Convert to Cartesian coordinates (x, y, z) using spherical coordinates
     const x = radius * Math.sin(phi) * Math.cos(theta);
-    const y = radius * Math.cos(phi); // -------- `y` is directly determined by `phi` (polar angle)
+    const y = radius * Math.cos(phi); // ------------------------------- `y` is directly determined by `phi` (polar angle)
     const z = radius * Math.sin(phi) * Math.sin(theta);
 
     positions.push(x, y, z);
-    sizes.push(Math.random() * 50 + 5); // ------------  Random size for each asteroid
-    colors.push(Math.random(), Math.random(), Math.random()); //--------  Random color for each asteroid
+    sizes.push(Math.random() * 50 + 5); // ---------------------------------  Random size for each asteroid
+    colors.push(Math.random(), Math.random(), Math.random()); //--------------------------  Random color for each asteroid
   }
 
   const particleGeometry = new THREE.BufferGeometry();
@@ -354,17 +384,21 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
   return new THREE.Points(particleGeometry, particleMaterial);
 }
 
-// ----------------  Inner asteroid belt (closer to the Sun)
+// -------------------------------------------------------  Inner asteroid belt (closer to the Sun)
+
+
 const innerAsteroidBelt = createAsteroidBelt(1200, 2222, 1111); // ------  Min radius, max radius, and number of asteroids
 scene.add(innerAsteroidBelt);
 
-// -------------  Outer asteroid belt (further out in the solar system)
+// -----------------------------------------------------------------------------  Outer asteroid belt (further out in the solar system)
+
 const outerAsteroidBelt = createAsteroidBelt(15000, 21000, 8888); // ---- Different radius and more asteroids
 scene.add(outerAsteroidBelt);
 
 
 
-// -------   Animation Loop
+// ---------------------------------------------------------------------------------   Animation Loop
+
 let time = 0;
 function animate() {
   requestAnimationFrame(animate);
@@ -373,7 +407,7 @@ function animate() {
   planets.forEach(p => {
     const { a, e, i, o, w } = orbitalElementsData[p.name];
     const M = (time / 1000 + a) % (2 * Math.PI);
-    const E = M;  // -----------   Simplified for the example
+    const E = M;  // ----------------------------------------------------------------------   Simplified for the example
 
     const x = a * (Math.cos(E) - e), y = a * Math.sqrt(1 - e * e) * Math.sin(E);
     const cosO = Math.cos(o), sinO = Math.sin(o), cosI = Math.cos(i), sinI = Math.sin(i), cosW = Math.cos(w), sinW = Math.sin(w);
@@ -391,7 +425,9 @@ function animate() {
 
 animate();
 
-// ------------ Handle window resizing
+
+// ------------------------------------------------------------------------------- Handle window resizing
+
 window.addEventListener('resize', () => {
   camera.aspect = canvas.clientWidth / canvas.clientHeight;
   camera.updateProjectionMatrix();
