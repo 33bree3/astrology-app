@@ -200,7 +200,7 @@ const textureLoader = new THREE.TextureLoader();
 
 // ------------------------------------------------------  Constants
 
-const BASE_SCALE = 888, PLANET_SIZE_MULTIPLIER = 9 , TIME_SPEED_FACTOR = 1, radius = 100000;
+const BASE_SCALE = 8888, PLANET_SIZE_MULTIPLIER = 1 , TIME_SPEED_FACTOR = 1, radius = 100000;
 const degToRad = deg => deg * Math.PI / 180;
 
 
