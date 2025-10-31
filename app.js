@@ -102,7 +102,9 @@ function longitudeToZodiac(lonDeg) {
   return sign;
 }
 
+
 // ------------------ Function to update planet longitudes
+
 function updatePlanetLongitudes(selectedDate = null) {
   const date = selectedDate ? new Date(selectedDate) : new Date(dateInput?.value || new Date());
   const JD = 2451545.0 + (date - new Date('2000-01-01T12:00:00Z')) / 86400000;
@@ -199,9 +201,14 @@ document.querySelectorAll('.tab').forEach(btn => {
 const textureLoader = new THREE.TextureLoader();
 
 
+
+
 // ---------------------------------------------------------------------------------------------  sizing Constants
 
-const BASE_SCALE = 8888, PLANET_SIZE_MULTIPLIER = 3 , TIME_SPEED_FACTOR = 1, radius = 100000;
+
+
+
+const BASE_SCALE = 8888, PLANET_SIZE_MULTIPLIER = 7 , TIME_SPEED_FACTOR = 1, radius = 100000;
 const degToRad = deg => deg * Math.PI / 180;
 
 
@@ -355,9 +362,9 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
   return new THREE.Points(particleGeometry, particleMaterial);
 }
 
-const innerAsteroidBelt = createAsteroidBelt(1200, 2222, 1111);
+const innerAsteroidBelt = createAsteroidBelt(3333, 6666, 1111);
 scene.add(innerAsteroidBelt);
-const outerAsteroidBelt = createAsteroidBelt(15000, 21000, 8888);
+const outerAsteroidBelt = createAsteroidBelt(22222, 33333, 8888);
 scene.add(outerAsteroidBelt);
 
 // --------------------------------------------------------------------------------- Animation Loop
