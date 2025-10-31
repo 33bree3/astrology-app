@@ -12,25 +12,29 @@ import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
 import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
-// ---------- Time setup ----------
+// ---------- TIME SETUP ----------
 const now = new Date();
+// Julian Date since J2000 epoch
 const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
+// VSOP time variable (centuries since J2000)
 const t = (JD - 2451545.0) / 365250;
 
 
-// ---------- Compute VSOP longitude/latitude/radius ----------
-
+// ---------- COMPUTE VSOP LONGITUDE/LATITUDE/RADIUS ----------
 function vsopPosition(vsopModule, t) {
+  // Handle both `default` and direct exports
   const data = (vsopModule && (vsopModule.default || vsopModule)) || {};
   const Lset = data.L || {};
   const Bset = data.B || {};
   const Rset = data.R || {};
 
+  // Sum a single VSOP series (A, B, C terms)
   const sumSeries = (series = []) =>
     Array.isArray(series)
       ? series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0)
       : 0;
 
+  // Combine all orders (L0, L1, L2...) with powers of t
   const accumulate = (setObj) =>
     Object.keys(setObj)
       .map(Number)
@@ -38,67 +42,80 @@ function vsopPosition(vsopModule, t) {
       .sort((a, b) => a - b)
       .reduce((acc, n) => acc + sumSeries(setObj[n]) * t ** n, 0);
 
+  // Get heliocentric L, B, R
   const Lrad = accumulate(Lset);
   const Brad = accumulate(Bset);
   const Rval = accumulate(Rset);
 
+  // Convert radians to degrees
   const Ldeg = ((Lrad * 180 / Math.PI) % 360 + 360) % 360;
-  const Bdeg = (Brad * 180 / Math.PI);
+  const Bdeg = Brad * 180 / Math.PI;
 
   return { Ldeg, Bdeg, R: Rval };
 }
 
 
-// ---------- Convert VSOP (heliocentric L,B,R) -> rectangular coords ----------
-
+// ---------- CONVERT HELIOCENTRIC (L,B,R) -> RECTANGULAR COORDS ----------
 function heliocentricRect(vsopModule, t) {
   const p = vsopPosition(vsopModule, t);
   const L = p.Ldeg * Math.PI / 180;
   const B = p.Bdeg * Math.PI / 180;
   const R = p.R;
+
+  // Cartesian coordinates
   const x = R * Math.cos(B) * Math.cos(L);
   const y = R * Math.cos(B) * Math.sin(L);
   const z = R * Math.sin(B);
+
   return { x, y, z };
 }
 
 
-// ---------- Build planetData ----------
+// ---------- COMPUTE GEOCENTRIC ECLIPTIC LONGITUDE (DEGREES) ----------
+function geocentricLongitude(vsopPlanetModule, vsopEarthModule, t) {
+  // Get heliocentric rectangular coordinates
+  const p = heliocentricRect(vsopPlanetModule, t);
+  const e = heliocentricRect(vsopEarthModule, t);
+
+  // Subtract Earth’s heliocentric vector from planet’s
+  const x = p.x - e.x;
+  const y = p.y - e.y;
+
+  // atan2 gives longitude in radians → convert to degrees and normalize
+  const lonDeg = ((Math.atan2(y, x) * 180 / Math.PI) % 360 + 360) % 360;
+  return lonDeg;
+}
+
+
+// ---------- BUILD PLANET LONGITUDE DATA ----------
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
 };
 
 const planetData = Object.entries(planetModules).map(([name, mod]) => {
-  // Earth’s geocentric longitude is 0° by definition
-  const lon = (name === "Earth")
-    ? 0
-    : geocentricLongitude(mod, vsopEarth, t);
-
+  // Earth’s geocentric longitude = 0° by definition
+  const lon = (name === "Earth") ? 0 : geocentricLongitude(mod, vsopEarth, t);
   return { name, longitude: lon };
 });
 
 
-
-
-
-// ---------- Render table (unchanged but using new planetData) 
-
+// ---------- RENDER PLANET LONGITUDES IN TABLE ----------
 const table = document.getElementById('planetTable');
 table.innerHTML = '';
 planetData.forEach(p => {
   const row = document.createElement('tr');
-  row.innerHTML = `<td>${p.name}</td><td>${(p.longitude||0).toFixed(2)}°</td>`;
+  row.innerHTML = `<td>${p.name}</td><td>${(p.longitude || 0).toFixed(2)}°</td>`;
   table.appendChild(row);
 });
 
-// ---------- Fix PointLight creation (avoid calling .position.set inside scene.add) ----------
+
+// ---------- FIX POINT LIGHT CREATION ----------
 const pl = new THREE.PointLight(0xffffff, 2);
 pl.position.set(0, 5000, 10000);
 scene.add(pl);
-
-// ambient light (unchanged)
 scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
 
 
 // ------------------------------   Tab logic
