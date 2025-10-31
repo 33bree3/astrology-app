@@ -64,14 +64,17 @@ function heliocentricRect(vsopModule, t) {
 
 
 // ---------- Build planetData ----------
-
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
 };
 
 const planetData = Object.entries(planetModules).map(([name, mod]) => {
-  const lon = geocentricLongitude(mod, vsopEarth, t);
+  // Earth’s geocentric longitude is 0° by definition
+  const lon = (name === "Earth")
+    ? 0
+    : geocentricLongitude(mod, vsopEarth, t);
+
   return { name, longitude: lon };
 });
 
