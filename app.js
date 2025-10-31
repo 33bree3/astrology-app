@@ -16,7 +16,7 @@ import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
 /// hope an pray 
 
-const  = (JD - 2451545.0) / 365250;
+const t = (JD - 2451545.0) / 365250;
 
 
 // ---------- Convert VSOP (heliocentric L,B,R) -> rectangular coords ----------
