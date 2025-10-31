@@ -17,7 +17,40 @@ const now = new Date();
 const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
 const t = (JD - 2451545.0) / 365250;
 
+
+// ---------- Compute VSOP longitude/latitude/radius ----------
+
+function vsopPosition(vsopModule, t) {
+  const data = (vsopModule && (vsopModule.default || vsopModule)) || {};
+  const Lset = data.L || {};
+  const Bset = data.B || {};
+  const Rset = data.R || {};
+
+  const sumSeries = (series = []) =>
+    Array.isArray(series)
+      ? series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0)
+      : 0;
+
+  const accumulate = (setObj) =>
+    Object.keys(setObj)
+      .map(Number)
+      .filter((n) => !isNaN(n))
+      .sort((a, b) => a - b)
+      .reduce((acc, n) => acc + sumSeries(setObj[n]) * t ** n, 0);
+
+  const Lrad = accumulate(Lset);
+  const Brad = accumulate(Bset);
+  const Rval = accumulate(Rset);
+
+  const Ldeg = ((Lrad * 180 / Math.PI) % 360 + 360) % 360;
+  const Bdeg = (Brad * 180 / Math.PI);
+
+  return { Ldeg, Bdeg, R: Rval };
+}
+
+
 // ---------- Convert VSOP (heliocentric L,B,R) -> rectangular coords ----------
+
 function heliocentricRect(vsopModule, t) {
   const p = vsopPosition(vsopModule, t);
   const L = p.Ldeg * Math.PI / 180;
@@ -29,17 +62,9 @@ function heliocentricRect(vsopModule, t) {
   return { x, y, z };
 }
 
-// ---------- Compute geocentric ecliptic longitude (degrees) ----------
-function geocentricLongitude(vsopPlanetModule, vsopEarthModule, t) {
-  const p = heliocentricRect(vsopPlanetModule, t);
-  const e = heliocentricRect(vsopEarthModule, t);
-  const x = p.x - e.x;
-  const y = p.y - e.y;
-  const lonDeg = ((Math.atan2(y, x) * 180 / Math.PI) % 360 + 360) % 360;
-  return lonDeg;
-}
 
 // ---------- Build planetData ----------
+
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
@@ -54,7 +79,8 @@ const planetData = Object.entries(planetModules).map(([name, mod]) => {
 
 
 
-// ---------- Render table (unchanged but using new planetData) ----------
+// ---------- Render table (unchanged but using new planetData) 
+
 const table = document.getElementById('planetTable');
 table.innerHTML = '';
 planetData.forEach(p => {
