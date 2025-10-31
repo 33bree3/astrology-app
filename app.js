@@ -13,6 +13,12 @@ import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
 
+
+/// hope an pray 
+
+const  = (JD - 2451545.0) / 365250;
+
+
 // ---------- Convert VSOP (heliocentric L,B,R) -> rectangular coords ----------
 function heliocentricRect(vsopModule, t) {
   const p = vsopPosition(vsopModule, t); // expects { Ldeg, Bdeg, R } as earlier
