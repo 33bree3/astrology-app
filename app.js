@@ -11,114 +11,94 @@ import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
 import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
-// ---------------------------------------------------------- TIME SETUP ----------
-const now = new Date();
+// ---------------------------------------------------------- COMPUTE VSOP POSITION ----------
+function vsopPosition(vsopModule, t) {
+  const data = (vsopModule && (vsopModule.default || vsopModule)) || {};
+  const Lset = data.L || {};
+  const Bset = data.B || {};
+  const Rset = data.R || {};
 
-// ----------------------------------------------- Julian Date since J2000 epoch
-const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
+  const sumSeries = (series = []) =>
+    Array.isArray(series)
+      ? series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0)
+      : 0;
 
-//-        -------------------------------- VSOP time variable (centuries since J2000)
-const t = (JD - 2451545.0) / 365250;
+  const accumulate = (setObj) =>
+    Object.keys(setObj)
+      .map(Number)
+      .filter((n) => !isNaN(n))
+      .sort((a, b) => a - b)
+      .reduce((acc, n) => acc + sumSeries(setObj[n]) * t ** n, 0);
 
-// ----------------------------------------- Light-time constant (AU/day) ----------
-const C_AU_PER_DAY = 173.1446326846693; // speed of light
+  const Lrad = accumulate(Lset);
+  const Brad = accumulate(Bset);
+  const Rval = accumulate(Rset);
 
-// ------------------------------------------ KAHAN SUMMATION FOR HIGH-PRECISION ----------
-function kahanSum(terms) {
-  let sum = 0.0;
-  let c = 0.0; // compensation
-  for (let i = 0; i < terms.length; i++) {
-    const y = terms[i] - c;
-    const t = sum + y;
-    c = (t - sum) - y;
-    sum = t;
-  }
-  return sum;
+  const Ldeg = ((Lrad * 180 / Math.PI) % 360 + 360) % 360;
+  const Bdeg = Brad * 180 / Math.PI;
+
+  return { Ldeg, Bdeg, R: Rval };
 }
 
-// ------------------------------------------ VSOP POSITION (HIGH-PRECISION, B OR D) ----------
-function vsopPositionHigh(vsopModule, T) {
-  const data = vsopModule.default || vsopModule;
-  if (!data) return { Lrad: 0, Brad: 0, R: 0 };
+// -------------------------------------- CONVERT HELIOCENTRIC (L,B,R) -> RECTANGULAR COORDS ----------
+function heliocentricRect(vsopModule, t) {
+  const p = vsopPosition(vsopModule, t);
+  const L = p.Ldeg * Math.PI / 180;
+  const B = p.Bdeg * Math.PI / 180;
+  const R = p.R;
 
-  const sumSeries = (series = []) => {
-    if (!Array.isArray(series)) return 0;
-    const vals = series.map(([A, B, C]) => A * Math.cos(B + C * T));
-    return kahanSum(vals);
-  };
-
-  const accumulate = (setObj) => {
-    const keys = Object.keys(setObj).map(Number).filter(n => !Number.isNaN(n)).sort((a, b) => a - b);
-    return keys.reduce((acc, n) => acc + sumSeries(setObj[n]) * Math.pow(T, n), 0);
-  };
-
-  const Lrad = accumulate(data.L || {});
-  const Brad = accumulate(data.B || {});
-  const R = accumulate(data.R || {});
-
-  return { Lrad, Brad, R };
-}
-
-// -------------------------------------- HELIOCENTRIC RECTANGULAR COORDS ----------
-function heliocentricRectFromRad(Lrad, Brad, R) {
-  const x = R * Math.cos(Brad) * Math.cos(Lrad);
-  const y = R * Math.cos(Brad) * Math.sin(Lrad);
-  const z = R * Math.sin(Brad);
+  const x = R * Math.cos(B) * Math.cos(L);
+  const y = R * Math.cos(B) * Math.sin(L);
+  const z = R * Math.sin(B);
   return { x, y, z };
 }
 
-// --------------------------------------------- GEOCENTRIC LONGITUDE WITH LIGHT-TIME ----------
-function geocentricLongitudeHigh(vsopPlanetModule, vsopEarthModule, JD) {
-  const T0 = (JD - 2451545.0) / 365250;
+// --------------------------------------------- COMPUTE GEOCENTRIC ECLIPTIC LONGITUDE ----------
+function geocentricLongitude(vsopPlanetModule, vsopEarthModule, t) {
+  const p = heliocentricRect(vsopPlanetModule, t);
+  const e = heliocentricRect(vsopEarthModule, t);
 
-  // Earth heliocentric
-  const earth = vsopPositionHigh(vsopEarthModule, T0);
-  const eRect = heliocentricRectFromRad(earth.Lrad, earth.Brad, earth.R);
+  const x = p.x - e.x;
+  const y = p.y - e.y;
 
-  // Planet heliocentric (initial guess)
-  const planet0 = vsopPositionHigh(vsopPlanetModule, T0);
-  const pRect0 = heliocentricRectFromRad(planet0.Lrad, planet0.Brad, planet0.R);
-
-  // Geocentric vector
-  let gx = pRect0.x - eRect.x, gy = pRect0.y - eRect.y, gz = pRect0.z - eRect.z;
-  let dist = Math.sqrt(gx*gx + gy*gy + gz*gz);
-
-  // Single light-time iteration
-  const dt = dist / C_AU_PER_DAY;
-  const Tcorr = (JD - dt - 2451545.0) / 365250;
-  const planet1 = vsopPositionHigh(vsopPlanetModule, Tcorr);
-  const pRect1 = heliocentricRectFromRad(planet1.Lrad, planet1.Brad, planet1.R);
-
-  gx = pRect1.x - eRect.x;
-  gy = pRect1.y - eRect.y;
-
-  const lonRad = Math.atan2(gy, gx);
-  const lonDeg = ((lonRad * 180/Math.PI) % 360 + 360) % 360;
-
+  const lonDeg = ((Math.atan2(y, x) * 180 / Math.PI) % 360 + 360) % 360;
   return lonDeg;
 }
 
-// ---------------------------------------------------------- BUILD PLANET LONGITUDE DATA ----------
+// ---------------------------------------------------------- PLANET MODULES ----------
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
 };
 
-const planetData = Object.entries(planetModules).map(([name, mod]) => {
-  // ------------------------------------------------ Earth’s geocentric longitude = 0° by definition
-  const lon = (name === "Earth") ? 0 : geocentricLongitudeHigh(mod, vsopEarth, JD);
-  return { name, longitude: lon };
-});
-
-// -------------------------------------------- RENDER PLANET LONGITUDES IN TABLE ----------
+// -------------------------------------------- RENDER PLANET LONGITUDES IN TABLE (REAL TIME) ----------
 const table = document.getElementById('planetTable');
-table.innerHTML = '';
-planetData.forEach(p => {
-  const row = document.createElement('tr');
-  row.innerHTML = `<td>${p.name}</td><td>${(p.longitude || 0).toFixed(2)}°</td>`;
-  table.appendChild(row);
-});
 
+function updatePlanetLongitudes() {
+  const now = new Date();
+  const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
+  const t = (JD - 2451545.0) / 365250;
+
+  const planetData = Object.entries(planetModules).map(([name, mod]) => {
+    const lon = (name === "Earth") ? 0 : geocentricLongitude(mod, vsopEarth, t);
+    return { name, longitude: lon };
+  });
+
+  table.innerHTML = '';
+  planetData.forEach(p => {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${p.name}</td><td>${(p.longitude || 0).toFixed(2)}°</td>`;
+    table.appendChild(row);
+  });
+}
+
+// update every second
+
+setInterval(updatePlanetLongitudes, 1000);
+
+// ------------------ initial render
+
+updatePlanetLongitudes();
 
 
 // ------------------------------------------------------------   Tab logic
@@ -136,15 +116,19 @@ document.querySelectorAll('.tab').forEach(btn => {
 
 // ------------------------------------------ Tab switching
 
+
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
+
     
     // ------------------------------------------- update active button
+    
     
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
     // -----------------------------------------------  show the matching section
+    
     
     document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
     document.getElementById(btn.dataset.tab).classList.add('active');
