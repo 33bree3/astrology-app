@@ -71,7 +71,7 @@ const planetModules = {
 const dateInput = document.getElementById('dateInput'); // <input type="date" id="dateInput">
 const calcButton = document.getElementById('calcButton'); // <button id="calcButton">
 
-// ------------------ Set default date to today if no value
+// ------------------ Set default date to today if input is empty
 if (dateInput && !dateInput.value) {
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -80,18 +80,26 @@ if (dateInput && !dateInput.value) {
   dateInput.value = `${yyyy}-${mm}-${dd}`;
 }
 
+// ------------------ Function to update planet longitudes
 function updatePlanetLongitudes(selectedDate = null) {
-  const date = selectedDate ? new Date(selectedDate) : new Date(dateInput?.value || new Date());
+  // Use selected date, input value, or default to today
+  const date = selectedDate 
+    ? new Date(selectedDate) 
+    : new Date(dateInput?.value || new Date());
+
   const JD = 2451545.0 + (date - new Date('2000-01-01T12:00:00Z')) / 86400000;
   const t = (JD - 2451545.0) / 365250;
 
+  // Build planet data array
   const planetData = Object.entries(planetModules).map(([name, mod]) => {
     const lon = (name === "Earth") ? 0 : geocentricLongitude(mod, vsopEarth, t);
     return { name, longitude: lon };
   });
 
+  // Render table
   const table = document.getElementById('planetTable');
-  if (!table) return;
+  if (!table) return; // Safeguard if table doesn't exist
+
   table.innerHTML = '';
   planetData.forEach(p => {
     const row = document.createElement('tr');
@@ -99,6 +107,23 @@ function updatePlanetLongitudes(selectedDate = null) {
     table.appendChild(row);
   });
 }
+
+// ------------------ Initial calculation for today
+updatePlanetLongitudes();
+
+// ------------------ Update on button click
+if (calcButton) {
+  calcButton.addEventListener('click', () => {
+    const selectedDate = dateInput?.value; // format: "YYYY-MM-DD"
+    if (selectedDate) updatePlanetLongitudes(selectedDate);
+  });
+}
+
+// ------------------ Optional: update in real-time if no date is selected
+setInterval(() => {
+  if (!dateInput?.value) updatePlanetLongitudes();
+}, 1000);
+
 
 // ------------------------------------------------- initial calculation for today
 
