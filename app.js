@@ -216,7 +216,7 @@ const textureLoader = new THREE.TextureLoader();
 
 
 
-const BASE_SCALE = 88888, PLANET_SIZE_MULTIPLIER = 12 , TIME_SPEED_FACTOR = 0.1, radius = 100000000000;
+const BASE_SCALE = 88888, PLANET_SIZE_MULTIPLIER = 18 , TIME_SPEED_FACTOR = 0.1, radius = 100000000000;
 const degToRad = deg => deg * Math.PI / 180;
 
 
@@ -287,12 +287,26 @@ pl.position.set(0, 5000, 10000);
 scene.add(pl);
 scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 
-// Sun Mesh
-const sunGeometry = new THREE.SphereGeometry(333, 33, 33);
+
+
+
+// --------------------------------------------------------------------------------------SUN MESH ------
+
+
+
+const sunGeometry = new THREE.SphereGeometry(33333, 333, 333);
 const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, emissive: 0xffff00, emissiveIntensity: 1 });
 scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
 
+
+
+
+
+
 // ------------------------------------------------------------ Zodiac markers
+
+
+
 const getZodiacPosition = angle => new THREE.Vector3(radius * Math.cos(degToRad(angle)), 0, radius * Math.sin(degToRad(angle)));
 
 const zodiacMarkers = Object.entries(zodiacPositions).map(([sign, angle]) => {
@@ -309,7 +323,11 @@ const zodiacMarkers = Object.entries(zodiacPositions).map(([sign, angle]) => {
   return marker;
 });
 
+
+
 // -------------------------------------------------------------------------------------------------------- Create planets
+
+
 const planets = Object.keys(orbitalElementsData).map(name => {
   const geometry = new THREE.SphereGeometry(planetSizes[name] * PLANET_SIZE_MULTIPLIER, 32, 32);
   const material = new THREE.MeshStandardMaterial({ map: planetTextures[name] });
