@@ -197,22 +197,28 @@ document.querySelectorAll('.tab').forEach(btn => {
 
 // ------------------------------------------------------------ Initialize Texture Loader
 
-
 const textureLoader = new THREE.TextureLoader();
 
 
 
 
-// ---------------------------------------------------------------------------------------------  sizing Constants
+
+// ----------------------------------------------------------------------  PLANET SIZING CONSTANTS  AND SPEED ______________________
 
 
 
 
-const BASE_SCALE = 8888, PLANET_SIZE_MULTIPLIER = 7 , TIME_SPEED_FACTOR = 1, radius = 100000;
+
+
+const BASE_SCALE = 88888, PLANET_SIZE_MULTIPLIER = 8 , TIME_SPEED_FACTOR = 0.1, radius = 100000;
 const degToRad = deg => deg * Math.PI / 180;
 
 
+
+
+
 // ----------------------------------------------------   Orbital elements for each planet
+
 
 const orbitalElementsData = {
   Mercury: { a: 0.5555, e: 0.2056, i: 0.36, o: 48.331, w: 29.124 },
@@ -362,12 +368,27 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
   return new THREE.Points(particleGeometry, particleMaterial);
 }
 
+
+
+
+
+
+//// ------------------------------------------------------------------------------ ASTEROID BELT SIZING ---------------------------
+
+
+// --------------------------------------------------------------------- INNER , OUTER, DENSITY OF ASTEROIDS 
+
+
+
 const innerAsteroidBelt = createAsteroidBelt(3333, 6666, 1111);
 scene.add(innerAsteroidBelt);
 const outerAsteroidBelt = createAsteroidBelt(22222, 33333, 8888);
 scene.add(outerAsteroidBelt);
 
-// --------------------------------------------------------------------------------- Animation Loop
+
+
+
+// --------------------------------------------------------------------------------- Animation Loop---------------------------------
 let time = 0;
 function animate() {
   requestAnimationFrame(animate);
