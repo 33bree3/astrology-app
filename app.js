@@ -12,32 +12,49 @@ import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
 import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
-// --- Debugging imports ---
+// --- Compute VSOP longitude/latitude/radius (robust, minimal) ---
+// vsopModule: imported module (e.g. vsopMercury)
+// t: VSOP time variable (T = (JD-2451545.0)/365250)
 
-console.log("Mercury VSOP keys:", Object.keys(vsopMercury));
-console.log("Mercury default:", vsopMercury.default);
-if (vsopMercury.default) {
-  console.log("Mercury.default keys:", Object.keys(vsopMercury.default));
-}
-console.log('Mercury VSOP data:', vsopMercury);
+function vsopPosition(vsopModule, t) {
+  // Resolve actual data object whether exported as `default` or direct
+  const data = (vsopModule && (vsopModule.default || vsopModule)) || {};
+  const Lset = data.L || {}; // object: {0: [...], 1: [...], ...}
+  const Bset = data.B || {};
+  const Rset = data.R || {};
 
+  // sum a single series (array of [A,B,C] triples) robustly
+  const sumSeries = (series = []) => {
+    if (!Array.isArray(series)) return 0;
+    return series.reduce((acc, term) => {
+      if (!term || term.length < 3) return acc;
+      const [A, B, C] = term;
+      return acc + A * Math.cos(B + C * t);
+    }, 0);
+  };
 
-// --- Helper to compute longitude ---
+  
+  // generic accumulator: iterate numeric keys present in the set
+  
+  const accumulate = (setObj) => {
+    const keys = Object.keys(setObj)
+      .map(k => Number(k))
+      .filter(n => !Number.isNaN(n))
+      .sort((a, b) => a - b);
+    return keys.reduce((acc, n) => acc + sumSeries(setObj[n]) * t ** n, 0);
+  };
 
-function calcLongitude(vsop, t) {
-  const data = vsop.default || vsop;       // ensure we get the real object
-  const Lset = data.L;                     // L is inside the resolved default
-  if (!Lset) return NaN;                   // guard against missing data
+  // Compute L, B, R (radians for L/B, distance units for R)
+  
+  const Lrad = accumulate(Lset);
+  const Brad = accumulate(Bset);
+  const Rval = accumulate(Rset);
 
-  const sum = (series) =>
-    (series || []).reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
-
-  const L =
-    sum(Lset[0]) +
-    sum(Lset[1]) * t +
-    sum(Lset[2]) * t ** 2;
-
-  return (L * 180 / Math.PI + 360) % 360;
+  // Convert radians -> degrees and normalize longitude
+  
+  const Ldeg = ((Lrad * 180 / Math.PI) % 360 + 360) % 360;
+  const Bdeg = (Brad * 180 / Math.PI); // latitude can be negative, no wrap
+  return { Ldeg, Bdeg, R: Rval };
 }
 
 
@@ -48,7 +65,10 @@ const now = new Date();
 const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
 const T = (JD - 2451545.0) / 365250;
 
-console.log('Mercury longitude:', calcLongitude(vsopMercury, T));
+// call
+const mercury = vsopPosition(vsopMercury, T);
+console.log('Mercury L (deg):', mercury.Ldeg, 'B (deg):', mercury.B, 'R:', mercury.R);
+
 
 // Example usage
 // console.log('Neptune longitude:', calcLongitude(vsopNeptune, T));
