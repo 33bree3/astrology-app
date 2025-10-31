@@ -1,21 +1,6 @@
 import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
 
-//// ---------------------------issues w data format - console log for help :(((( 
-
-console.log("Mercury VSOP keys:", Object.keys(vsopMercury));
-console.log("Mercury default:", vsopMercury.default);
-if (vsopMercury.default) {
-  console.log("Mercury.default keys:", Object.keys(vsopMercury.default));
-}
-
-
-console.log('Mercury VSOP data:', vsopMercury);
-
-
-// ------------------------------ GOD KNOWS WHERE TO PUT THIS 
-//////                                   hope and pray 
-
 // --- Imports from astronomia ---
 
 import * as vsopEarth   from './astronomia/data/vsop87Bearth.js';
@@ -27,16 +12,27 @@ import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
 import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
+// --- Debugging imports ---
+
+console.log("Mercury VSOP keys:", Object.keys(vsopMercury));
+console.log("Mercury default:", vsopMercury.default);
+if (vsopMercury.default) {
+  console.log("Mercury.default keys:", Object.keys(vsopMercury.default));
+}
+console.log('Mercury VSOP data:', vsopMercury);
+
+
 // --- Helper to compute longitude ---
 
 function calcLongitude(vsop, t) {
   const sum = (series) =>
     series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
 
-  const Lset = vsop.default.L; // <-- use .default
+  const Lset = vsop.default.L;
   const L = sum(Lset[0]) + sum(Lset[1]) * t + sum(Lset[2]) * t ** 2;
   return (L * 180 / Math.PI + 360) % 360;
 }
+
 
 // --- Time setup ---
 
@@ -44,10 +40,10 @@ const now = new Date();
 const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
 const T = (JD - 2451545.0) / 365250;
 
+console.log('Mercury longitude:', calcLongitude(vsopMercury, T));
+
 // Example usage
 // console.log('Neptune longitude:', calcLongitude(vsopNeptune, T));
-
-
 
 
 // --- Planet data ---
