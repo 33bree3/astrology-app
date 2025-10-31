@@ -65,27 +65,31 @@ const now = new Date();
 const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
 const T = (JD - 2451545.0) / 365250;
 
-// call
+// --- call vsopPosition and log correctly ---
 const mercury = vsopPosition(vsopMercury, T);
-console.log('Mercury L (deg):', mercury.Ldeg, 'B (deg):', mercury.B, 'R:', mercury.R);
+console.log('Mercury L (deg):', mercury.Ldeg, 'B (deg):', mercury.Bdeg, 'R:', mercury.R);
+
+// --- Build planetData using vsopPosition (no calcLongitude) ---
+const planetModules = {
+  Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
+  Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
+};
+
+const planetData = Object.keys(planetModules).map(name => {
+  const pos = vsopPosition(planetModules[name], T);
+  return { name, longitude: pos.Ldeg, latitude: pos.Bdeg, R: pos.R };
+});
+
+// --- Render planets table ---
+const table = document.getElementById('planetTable');
+table.innerHTML = '';
+planetData.forEach(p => {
+  const row = document.createElement('tr');
+  row.innerHTML = `<td>${p.name}</td><td>${(p.longitude||0).toFixed(2)}°</td>`;
+  table.appendChild(row);
+});
 
 
-// Example usage
-// console.log('Neptune longitude:', calcLongitude(vsopNeptune, T));
-
-
-// --- Planet data ---
-
-const planetData = [
-  { name: "Mercury", longitude: calcLongitude(vsopMercury.default, T) },
-  { name: "Venus",   longitude: calcLongitude(vsopVenus.default, T) },
-  { name: "Earth",   longitude: calcLongitude(vsopEarth.default, T) },
-  { name: "Mars",    longitude: calcLongitude(vsopMars.default, T) },
-  { name: "Jupiter", longitude: calcLongitude(vsopJupiter.default, T) },
-  { name: "Saturn",  longitude: calcLongitude(vsopSaturn.default, T) },
-  { name: "Uranus",  longitude: calcLongitude(vsopUranus.default, T) },
-  { name: "Neptune", longitude: calcLongitude(vsopNeptune.default, T) },
-];
 
 // ------------------------------------------------ --- Render planets table ---
 
