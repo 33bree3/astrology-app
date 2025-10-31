@@ -12,16 +12,14 @@ import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
 import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
-
-
-/// hope an pray 
-
+// ---------- Time setup ----------
+const now = new Date();
+const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
 const t = (JD - 2451545.0) / 365250;
-
 
 // ---------- Convert VSOP (heliocentric L,B,R) -> rectangular coords ----------
 function heliocentricRect(vsopModule, t) {
-  const p = vsopPosition(vsopModule, t); // expects { Ldeg, Bdeg, R } as earlier
+  const p = vsopPosition(vsopModule, t);
   const L = p.Ldeg * Math.PI / 180;
   const B = p.Bdeg * Math.PI / 180;
   const R = p.R;
@@ -33,31 +31,28 @@ function heliocentricRect(vsopModule, t) {
 
 // ---------- Compute geocentric ecliptic longitude (degrees) ----------
 function geocentricLongitude(vsopPlanetModule, vsopEarthModule, t) {
-  // Get heliocentric rectangular coords for planet and Earth
   const p = heliocentricRect(vsopPlanetModule, t);
   const e = heliocentricRect(vsopEarthModule, t);
-
-  // Geocentric position = planet_heliocentric - earth_heliocentric
   const x = p.x - e.x;
   const y = p.y - e.y;
-  // z not needed for longitude, but could be used for latitude if desired
-  // const z = p.z - e.z;
-
-  // atan2(y, x) -> radians; convert to degrees and normalize 0..360
   const lonDeg = ((Math.atan2(y, x) * 180 / Math.PI) % 360 + 360) % 360;
   return lonDeg;
 }
 
-// ---------- Build planetData using geocentric longitudes ----------
+// ---------- Build planetData ----------
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
 };
 
 const planetData = Object.entries(planetModules).map(([name, mod]) => {
-  const lon = geocentricLongitude(mod, vsopEarth, t); // vsopEarth is Earth's module
+  const lon = geocentricLongitude(mod, vsopEarth, t);
   return { name, longitude: lon };
 });
+
+
+
+
 
 // ---------- Render table (unchanged but using new planetData) ----------
 const table = document.getElementById('planetTable');
