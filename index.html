@@ -38,16 +38,25 @@
     <div id="solarInfo">Loading...</div>
   </section>
 
-  <!-- Planetary Table -->
-  <section id="planets">
-    <h2>Planetary Positions</h2>
-    <table>
-      <thead>
-        <tr><th>Planet</th><th>Longitude (°)</th></tr>
-      </thead>
-      <tbody id="planetTable"></tbody>
-    </table>
-  </section>
+<section id="planets">
+  <h2>Planetary Positions</h2>
+
+  <!-- Date selector and button -->
+  <div id="dateCalcContainer" style="margin-top: 20px;">
+    <label for="dateInput">Select Date:</label>
+    <input type="date" id="dateInput" />
+    <button id="calcButton">Calculate</button>
+  </div>
+
+  <!-- Planet table -->
+  <table>
+    <thead>
+      <tr><th>Planet</th><th>Longitude (°)</th></tr>
+    </thead>
+    <tbody id="planetTable"></tbody>
+  </table>
+</section>
+
 
   <!-- Main Logic -->
   <script type="module" src="app.js"></script>
