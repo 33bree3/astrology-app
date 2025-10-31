@@ -81,32 +81,28 @@ if (dateInput && !dateInput.value) {
 }
 
 // ------------------ Function to update planet longitudes
-function updatePlanetLongitudes(selectedDate = null) {
-  // Use selected date, input value, or default to today
-  const date = selectedDate 
-    ? new Date(selectedDate) 
-    : new Date(dateInput?.value || new Date());
 
+function updatePlanetLongitudes(selectedDate = null) {
+  const date = selectedDate ? new Date(selectedDate) : new Date(dateInput?.value || new Date());
   const JD = 2451545.0 + (date - new Date('2000-01-01T12:00:00Z')) / 86400000;
   const t = (JD - 2451545.0) / 365250;
 
-  // Build planet data array
   const planetData = Object.entries(planetModules).map(([name, mod]) => {
     const lon = (name === "Earth") ? 0 : geocentricLongitude(mod, vsopEarth, t);
-    return { name, longitude: lon };
+    const zodiac = longitudeToZodiac(lon);
+    return { name, longitude: lon, zodiac };
   });
 
-  // Render table
   const table = document.getElementById('planetTable');
-  if (!table) return; // Safeguard if table doesn't exist
-
+  if (!table) return;
   table.innerHTML = '';
   planetData.forEach(p => {
     const row = document.createElement('tr');
-    row.innerHTML = `<td>${p.name}</td><td>${(p.longitude || 0).toFixed(2)}°</td>`;
+    row.innerHTML = `<td>${p.name}</td><td>${(p.longitude || 0).toFixed(2)}°</td><td>${p.zodiac}</td>`;
     table.appendChild(row);
   });
 }
+
 
 // ------------------ Initial calculation for today
 updatePlanetLongitudes();
