@@ -12,75 +12,48 @@ import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
 import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
-// --- Compute VSOP longitude/latitude/radius (robust, minimal) ---
-// vsopModule: imported module (e.g. vsopMercury)
-// t: VSOP time variable (T = (JD-2451545.0)/365250)
 
-function vsopPosition(vsopModule, t) {
-  // Resolve actual data object whether exported as `default` or direct
-  const data = (vsopModule && (vsopModule.default || vsopModule)) || {};
-  const Lset = data.L || {}; // object: {0: [...], 1: [...], ...}
-  const Bset = data.B || {};
-  const Rset = data.R || {};
-
-  // sum a single series (array of [A,B,C] triples) robustly
-  const sumSeries = (series = []) => {
-    if (!Array.isArray(series)) return 0;
-    return series.reduce((acc, term) => {
-      if (!term || term.length < 3) return acc;
-      const [A, B, C] = term;
-      return acc + A * Math.cos(B + C * t);
-    }, 0);
-  };
-
-  
-  // generic accumulator: iterate numeric keys present in the set
-  
-  const accumulate = (setObj) => {
-    const keys = Object.keys(setObj)
-      .map(k => Number(k))
-      .filter(n => !Number.isNaN(n))
-      .sort((a, b) => a - b);
-    return keys.reduce((acc, n) => acc + sumSeries(setObj[n]) * t ** n, 0);
-  };
-
-  // Compute L, B, R (radians for L/B, distance units for R)
-  
-  const Lrad = accumulate(Lset);
-  const Brad = accumulate(Bset);
-  const Rval = accumulate(Rset);
-
-  // Convert radians -> degrees and normalize longitude
-  
-  const Ldeg = ((Lrad * 180 / Math.PI) % 360 + 360) % 360;
-  const Bdeg = (Brad * 180 / Math.PI); // latitude can be negative, no wrap
-  return { Ldeg, Bdeg, R: Rval };
+// ---------- Convert VSOP (heliocentric L,B,R) -> rectangular coords ----------
+function heliocentricRect(vsopModule, t) {
+  const p = vsopPosition(vsopModule, t); // expects { Ldeg, Bdeg, R } as earlier
+  const L = p.Ldeg * Math.PI / 180;
+  const B = p.Bdeg * Math.PI / 180;
+  const R = p.R;
+  const x = R * Math.cos(B) * Math.cos(L);
+  const y = R * Math.cos(B) * Math.sin(L);
+  const z = R * Math.sin(B);
+  return { x, y, z };
 }
 
+// ---------- Compute geocentric ecliptic longitude (degrees) ----------
+function geocentricLongitude(vsopPlanetModule, vsopEarthModule, t) {
+  // Get heliocentric rectangular coords for planet and Earth
+  const p = heliocentricRect(vsopPlanetModule, t);
+  const e = heliocentricRect(vsopEarthModule, t);
 
+  // Geocentric position = planet_heliocentric - earth_heliocentric
+  const x = p.x - e.x;
+  const y = p.y - e.y;
+  // z not needed for longitude, but could be used for latitude if desired
+  // const z = p.z - e.z;
 
-// --- Time setup ---
+  // atan2(y, x) -> radians; convert to degrees and normalize 0..360
+  const lonDeg = ((Math.atan2(y, x) * 180 / Math.PI) % 360 + 360) % 360;
+  return lonDeg;
+}
 
-const now = new Date();
-const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
-const T = (JD - 2451545.0) / 365250;
-
-// --- call vsopPosition and log correctly ---
-const mercury = vsopPosition(vsopMercury, T);
-console.log('Mercury L (deg):', mercury.Ldeg, 'B (deg):', mercury.Bdeg, 'R:', mercury.R);
-
-// --- Build planetData using vsopPosition (no calcLongitude) ---
+// ---------- Build planetData using geocentric longitudes ----------
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
 };
 
-const planetData = Object.keys(planetModules).map(name => {
-  const pos = vsopPosition(planetModules[name], T);
-  return { name, longitude: pos.Ldeg, latitude: pos.Bdeg, R: pos.R };
+const planetData = Object.entries(planetModules).map(([name, mod]) => {
+  const lon = geocentricLongitude(mod, vsopEarth, T); // vsopEarth is Earth's module
+  return { name, longitude: lon };
 });
 
-// --- Render planets table ---
+// ---------- Render table (unchanged but using new planetData) ----------
 const table = document.getElementById('planetTable');
 table.innerHTML = '';
 planetData.forEach(p => {
@@ -88,6 +61,14 @@ planetData.forEach(p => {
   row.innerHTML = `<td>${p.name}</td><td>${(p.longitude||0).toFixed(2)}°</td>`;
   table.appendChild(row);
 });
+
+// ---------- Fix PointLight creation (avoid calling .position.set inside scene.add) ----------
+const pl = new THREE.PointLight(0xffffff, 2);
+pl.position.set(0, 5000, 10000);
+scene.add(pl);
+
+// ambient light (unchanged)
+scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 
 
 // ------------------------------   Tab logic
@@ -157,22 +138,24 @@ const planetSizes = { Mercury: 69, Venus: 101, Earth: 123, Mars: 72, Jupiter: 36
 
 // ------------------------------------------------ Zodiac signs and images
 
-
-
 const zodiacPositions = {
   Aries: 0, Taurus: 30, Gemini: 60, Cancer: 90, Leo: 120, Virgo: 150,
   Libra: 180, Scorpio: 210, Sag: 240, Capricorn: 270, Aquarius: 300, Pisces: 330
 };
 
 // ----------------------------   ----- Load textures for zodiac signs (ensure paths are correct)
+
 const zodiacTextures = {};
 Object.keys(zodiacPositions).forEach(sign => {
   zodiacTextures[sign] = textureLoader.load(`constellations/${sign.toLowerCase()}.png`);
 });
 // --------------------------------------- Ensure 'Sagittarius' texture is loaded
+
 zodiacTextures['Sagittarius'] = textureLoader.load('constellations/sag.png'); // Fix this path if necessary
 
+
 // --------------------------------------------------- PLANET IMAGES
+
 const planetTextures = {
   Mercury: textureLoader.load('planets/mercury.jpg'),
   Venus: textureLoader.load('planets/venus.jpg'),
