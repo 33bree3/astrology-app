@@ -11,7 +11,8 @@ import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
 import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
-// ---------------------------------------------------------- COMPUTE VSOP POSITION ----------
+// ---------------------------------------------------------- VSOP helper functions ----------
+
 function vsopPosition(vsopModule, t) {
   const data = (vsopModule && (vsopModule.default || vsopModule)) || {};
   const Lset = data.L || {};
@@ -40,43 +41,40 @@ function vsopPosition(vsopModule, t) {
   return { Ldeg, Bdeg, R: Rval };
 }
 
-// -------------------------------------- CONVERT HELIOCENTRIC (L,B,R) -> RECTANGULAR COORDS ----------
 function heliocentricRect(vsopModule, t) {
   const p = vsopPosition(vsopModule, t);
   const L = p.Ldeg * Math.PI / 180;
   const B = p.Bdeg * Math.PI / 180;
   const R = p.R;
-
   const x = R * Math.cos(B) * Math.cos(L);
   const y = R * Math.cos(B) * Math.sin(L);
   const z = R * Math.sin(B);
   return { x, y, z };
 }
 
-// --------------------------------------------- COMPUTE GEOCENTRIC ECLIPTIC LONGITUDE ----------
 function geocentricLongitude(vsopPlanetModule, vsopEarthModule, t) {
   const p = heliocentricRect(vsopPlanetModule, t);
   const e = heliocentricRect(vsopEarthModule, t);
-
   const x = p.x - e.x;
   const y = p.y - e.y;
-
-  const lonDeg = ((Math.atan2(y, x) * 180 / Math.PI) % 360 + 360) % 360;
-  return lonDeg;
+  return ((Math.atan2(y, x) * 180 / Math.PI) % 360 + 360) % 360;
 }
 
 // ---------------------------------------------------------- PLANET MODULES ----------
+
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
 };
 
-// -------------------------------------------- RENDER PLANET LONGITUDES IN TABLE (REAL TIME) ----------
-const table = document.getElementById('planetTable');
+// ---------------------------------------------------------- DATE INPUT AND UPDATE ----------
 
-function updatePlanetLongitudes() {
-  const now = new Date();
-  const JD = 2451545.0 + (now - new Date('2000-01-01T12:00:00Z')) / 86400000;
+const dateInput = document.getElementById('dateInput'); // <input type="date" id="dateInput">
+const calcButton = document.getElementById('calcButton'); // <button id="calcButton">
+
+function updatePlanetLongitudes(selectedDate = null) {
+  const date = selectedDate ? new Date(selectedDate) : new Date();
+  const JD = 2451545.0 + (date - new Date('2000-01-01T12:00:00Z')) / 86400000;
   const t = (JD - 2451545.0) / 365250;
 
   const planetData = Object.entries(planetModules).map(([name, mod]) => {
@@ -84,6 +82,7 @@ function updatePlanetLongitudes() {
     return { name, longitude: lon };
   });
 
+  const table = document.getElementById('planetTable');
   table.innerHTML = '';
   planetData.forEach(p => {
     const row = document.createElement('tr');
@@ -92,13 +91,19 @@ function updatePlanetLongitudes() {
   });
 }
 
-// update every second
-
-setInterval(updatePlanetLongitudes, 1000);
-
-// ------------------ initial render
-
+// initial calculation for today
 updatePlanetLongitudes();
+
+// update on button click
+calcButton.addEventListener('click', () => {
+  const selectedDate = dateInput.value; // format: "YYYY-MM-DD"
+  if (selectedDate) updatePlanetLongitudes(selectedDate);
+});
+
+// optional: update in real time if no date is selected
+setInterval(() => {
+  if (!dateInput.value) updatePlanetLongitudes();
+}, 1000);
 
 
 // ------------------------------------------------------------   Tab logic
