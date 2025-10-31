@@ -25,13 +25,21 @@ console.log('Mercury VSOP data:', vsopMercury);
 // --- Helper to compute longitude ---
 
 function calcLongitude(vsop, t) {
-  const sum = (series) =>
-    series.reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
+  const data = vsop.default || vsop;       // ensure we get the real object
+  const Lset = data.L;                     // L is inside the resolved default
+  if (!Lset) return NaN;                   // guard against missing data
 
-  const Lset = vsop.default.L;
-  const L = sum(Lset[0]) + sum(Lset[1]) * t + sum(Lset[2]) * t ** 2;
+  const sum = (series) =>
+    (series || []).reduce((acc, [A, B, C]) => acc + A * Math.cos(B + C * t), 0);
+
+  const L =
+    sum(Lset[0]) +
+    sum(Lset[1]) * t +
+    sum(Lset[2]) * t ** 2;
+
   return (L * 180 / Math.PI + 360) % 360;
 }
+
 
 
 // --- Time setup ---
