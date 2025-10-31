@@ -334,7 +334,14 @@ function createOrbitLine(el, segments = 256) {
 
 Object.entries(orbitalElementsData).forEach(([name, el]) => scene.add(createOrbitLine(el)));
 
-// 0------------------------------------------------------------------------------ Asteroid belts
+
+
+
+
+
+// 0------------------------------------------------------------------------------ Asteroid belts CREATION ----------------
+
+
 function createAsteroidBelt(minRadius, maxRadius, count) {
   const positions = [];
   const sizes = [];
@@ -371,8 +378,6 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
 
 
 
-
-
 //// ------------------------------------------------------------------------------ ASTEROID BELT SIZING ---------------------------
 
 
@@ -380,10 +385,14 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
 
 
 
-const innerAsteroidBelt = createAsteroidBelt(3333, 6666, 1111);
+
+
+const innerAsteroidBelt = createAsteroidBelt(8888, 1212, 4444);
 scene.add(innerAsteroidBelt);
-const outerAsteroidBelt = createAsteroidBelt(22222, 33333, 8888);
+const outerAsteroidBelt = createAsteroidBelt(55555, 77777, 1212);
 scene.add(outerAsteroidBelt);
+
+
 
 
 
