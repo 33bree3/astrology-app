@@ -140,8 +140,12 @@ if (calcButton) {
 
 // ----------------------------------------------------- update in real time if no date is selected
 
+
 setInterval(() => {
-  if (!dateInput.value) updatePlanetLongitudes();
+  // Only update if dateInput exists and no date is selected
+  if (dateInput && !dateInput.value) {
+    updatePlanetLongitudes();
+  }
 }, 1000);
 
 
