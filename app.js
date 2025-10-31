@@ -83,6 +83,14 @@ if (dateInput && !dateInput.value) {
   dateInput.value = `${yyyy}-${mm}-${dd}`;
 }
 
+
+// -------------------------------------------------------------------- Zodiac signs pos
+const zodiacPositions = {
+  Aries: 0, Taurus: 30, Gemini: 60, Cancer: 90, Leo: 120, Virgo: 150,
+  Libra: 180, Scorpio: 210, Sag: 240, Capricorn: 270, Aquarius: 300, Pisces: 330
+};
+
+
 // ------------------ Convert longitude to zodiac sign
 function longitudeToZodiac(lonDeg) {
   const signs = Object.entries(zodiacPositions); // zodiacPositions already defined
@@ -214,11 +222,6 @@ const orbitalElementsData = {
 const planetSizes = { Mercury: 69, Venus: 101, Earth: 123, Mars: 72, Jupiter: 369, Saturn: 297, Uranus: 201, Neptune: 154 };
 
 
-// -------------------------------------------------------------------- Zodiac signs and images
-const zodiacPositions = {
-  Aries: 0, Taurus: 30, Gemini: 60, Cancer: 90, Leo: 120, Virgo: 150,
-  Libra: 180, Scorpio: 210, Sag: 240, Capricorn: 270, Aquarius: 300, Pisces: 330
-};
 
 // ---------------------------- Load textures for zodiac signs
 
