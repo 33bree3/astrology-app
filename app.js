@@ -49,7 +49,7 @@ const planetModules = {
 };
 
 const planetData = Object.entries(planetModules).map(([name, mod]) => {
-  const lon = geocentricLongitude(mod, vsopEarth, T); // vsopEarth is Earth's module
+  const lon = geocentricLongitude(mod, vsopEarth, t); // vsopEarth is Earth's module
   return { name, longitude: lon };
 });
 
