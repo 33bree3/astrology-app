@@ -65,7 +65,10 @@ const planetModules = {
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
 };
 
+
 // ---------------------------------------------------------- DATE INPUT AND UPDATE ----------
+
+
 
 // Ensure these IDs exist in your HTML
 const dateInput = document.getElementById('dateInput'); // <input type="date" id="dateInput">
@@ -80,8 +83,18 @@ if (dateInput && !dateInput.value) {
   dateInput.value = `${yyyy}-${mm}-${dd}`;
 }
 
-// ------------------ Function to update planet longitudes
+// ------------------ Convert longitude to zodiac sign
+function longitudeToZodiac(lonDeg) {
+  const signs = Object.entries(zodiacPositions); // zodiacPositions already defined
+  let sign = 'Aries';
+  for (const [name, start] of signs) {
+    if (lonDeg >= start) sign = name;
+    else break;
+  }
+  return sign;
+}
 
+// ------------------ Function to update planet longitudes
 function updatePlanetLongitudes(selectedDate = null) {
   const date = selectedDate ? new Date(selectedDate) : new Date(dateInput?.value || new Date());
   const JD = 2451545.0 + (date - new Date('2000-01-01T12:00:00Z')) / 86400000;
@@ -102,6 +115,23 @@ function updatePlanetLongitudes(selectedDate = null) {
     table.appendChild(row);
   });
 }
+
+// ------------------ Initial calculation for today
+updatePlanetLongitudes();
+
+// ------------------ Update on button click
+if (calcButton) {
+  calcButton.addEventListener('click', () => {
+    const selectedDate = dateInput?.value; // format: "YYYY-MM-DD"
+    if (selectedDate) updatePlanetLongitudes(selectedDate);
+  });
+}
+
+// ----------------------------------- update in real-time if no date is selected
+setInterval(() => {
+  if (!dateInput?.value) updatePlanetLongitudes();
+}, 1000);
+
 
 
 // ------------------ Initial calculation for today
