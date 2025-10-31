@@ -12,7 +12,6 @@ import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
 // ---------------------------------------------------------- VSOP helper functions ----------
-
 function vsopPosition(vsopModule, t) {
   const data = (vsopModule && (vsopModule.default || vsopModule)) || {};
   const Lset = data.L || {};
@@ -61,7 +60,6 @@ function geocentricLongitude(vsopPlanetModule, vsopEarthModule, t) {
 }
 
 // ---------------------------------------------------------- PLANET MODULES ----------
-
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
@@ -69,11 +67,21 @@ const planetModules = {
 
 // ---------------------------------------------------------- DATE INPUT AND UPDATE ----------
 
+// Ensure these IDs exist in your HTML
 const dateInput = document.getElementById('dateInput'); // <input type="date" id="dateInput">
 const calcButton = document.getElementById('calcButton'); // <button id="calcButton">
 
+// ------------------ Set default date to today if no value
+if (dateInput && !dateInput.value) {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  dateInput.value = `${yyyy}-${mm}-${dd}`;
+}
+
 function updatePlanetLongitudes(selectedDate = null) {
-  const date = selectedDate ? new Date(selectedDate) : new Date();
+  const date = selectedDate ? new Date(selectedDate) : new Date(dateInput?.value || new Date());
   const JD = 2451545.0 + (date - new Date('2000-01-01T12:00:00Z')) / 86400000;
   const t = (JD - 2451545.0) / 365250;
 
@@ -83,6 +91,7 @@ function updatePlanetLongitudes(selectedDate = null) {
   });
 
   const table = document.getElementById('planetTable');
+  if (!table) return;
   table.innerHTML = '';
   planetData.forEach(p => {
     const row = document.createElement('tr');
@@ -91,24 +100,27 @@ function updatePlanetLongitudes(selectedDate = null) {
   });
 }
 
-// initial calculation for today
+// ------------------------------------------------- initial calculation for today
+
 updatePlanetLongitudes();
 
-// update on button click
-calcButton.addEventListener('click', () => {
-  const selectedDate = dateInput.value; // format: "YYYY-MM-DD"
-  if (selectedDate) updatePlanetLongitudes(selectedDate);
-});
+// -------------------------------------------------------- update on button click
 
-// optional: update in real time if no date is selected
+if (calcButton) {
+  calcButton.addEventListener('click', () => {
+    const selectedDate = dateInput.value; // ------------------------ format: "YYYY-MM-DD"
+    if (selectedDate) updatePlanetLongitudes(selectedDate);
+  });
+}
+
+// ----------------------------------------------------- update in real time if no date is selected
+
 setInterval(() => {
   if (!dateInput.value) updatePlanetLongitudes();
 }, 1000);
 
 
 // ------------------------------------------------------------   Tab logic
-
-
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
@@ -118,43 +130,15 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
-
-// ------------------------------------------ Tab switching
-
-
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-
-    
-    // ------------------------------------------- update active button
-    
-    
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    // -----------------------------------------------  show the matching section
-    
-    
-    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(btn.dataset.tab).classList.add('active');
-  });
-});
-
-
-// ----------------------------------------- Initialize Texture Loader
+// ------------------------------------------------------------ Initialize Texture Loader
 
 
 const textureLoader = new THREE.TextureLoader();
 
-
 // ------------------------------------------------------  Constants
-
-
 const BASE_SCALE = 888, PLANET_SIZE_MULTIPLIER = 1, TIME_SPEED_FACTOR = 5, radius = 100000;
-
-//  ------------------------------------------------------------------------- Convert degrees to radians
-
 const degToRad = deg => deg * Math.PI / 180;
+
 
 // ----------------------------------------------------   Orbital elements for each planet
 
@@ -171,30 +155,25 @@ const orbitalElementsData = {
 
 // ------------------------------------------------------------------- Planet sizes in km
 
+
 const planetSizes = { Mercury: 69, Venus: 101, Earth: 123, Mars: 72, Jupiter: 369, Saturn: 297, Uranus: 201, Neptune: 154 };
 
 
-
 // -------------------------------------------------------------------- Zodiac signs and images
-
 const zodiacPositions = {
   Aries: 0, Taurus: 30, Gemini: 60, Cancer: 90, Leo: 120, Virgo: 150,
   Libra: 180, Scorpio: 210, Sag: 240, Capricorn: 270, Aquarius: 300, Pisces: 330
 };
 
-// ---------------------------- ----------  ----- Load textures for zodiac signs (ensure paths are correct)
+// ---------------------------- Load textures for zodiac signs
 
 const zodiacTextures = {};
 Object.keys(zodiacPositions).forEach(sign => {
   zodiacTextures[sign] = textureLoader.load(`constellations/${sign.toLowerCase()}.png`);
 });
-// ----------------------------------------------------------------- Ensure 'Sagittarius' texture is loaded
-
-zodiacTextures['Sagittarius'] = textureLoader.load('constellations/sag.png'); // ------------------ Fix this path if necessary
-
+zodiacTextures['Sagittarius'] = textureLoader.load('constellations/sag.png');
 
 // --------------------------------------------------- PLANET IMAGES
-
 const planetTextures = {
   Mercury: textureLoader.load('planets/mercury.jpg'),
   Venus: textureLoader.load('planets/venus.jpg'),
@@ -206,13 +185,10 @@ const planetTextures = {
   Uranus: textureLoader.load('planets/uranus.jpg'),
   Neptune: textureLoader.load('planets/neptune.jpg'),
   Sun: textureLoader.load('images/sun.cmap.jpg'),
-  Asteroid: textureLoader.load('images/rock.png') // ------------------------ Texture for the asteroid particles
+  Asteroid: textureLoader.load('images/rock.png')
 };
 
-
-// ---------------------------------------------- --  Set up scene, camera, renderer
-
-
+// ---------------------------------------------- Set up scene, camera, renderer
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -226,56 +202,35 @@ camera.position.set(0, 5000, 10000);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
-
-//  --------------------------------------------------   Lights
-
-
-// ---------------------------------------------------- --- FIX POINT LIGHT CREATION ----------
-
+// -------------------------------------------------- Lights
 const pl = new THREE.PointLight(0xffffff, 2);
 pl.position.set(0, 5000, 10000);
 scene.add(pl);
 scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-
-
 
 // Sun Mesh
 const sunGeometry = new THREE.SphereGeometry(333, 33, 33);
 const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, emissive: 0xffff00, emissiveIntensity: 1 });
 scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
 
-
-// ------------------------------------------------------------ ----- Create zodiac marker using Sprite?
-
+// ------------------------------------------------------------ Zodiac markers
 const getZodiacPosition = angle => new THREE.Vector3(radius * Math.cos(degToRad(angle)), 0, radius * Math.sin(degToRad(angle)));
 
 const zodiacMarkers = Object.entries(zodiacPositions).map(([sign, angle]) => {
   const spriteMaterial = new THREE.SpriteMaterial({
-    map: zodiacTextures[sign], // ----------------------------------------------------------- Make sure this texture is loaded correctly
+    map: zodiacTextures[sign],
     transparent: true,
-    depthTest: false,  // -------------------------------------------------------------------------------- Prevent z-fighting
-    depthWrite: false  // -------------------------------------------------------------------------------------Don't block other objects
+    depthTest: false,
+    depthWrite: false
   });
-
   const marker = new THREE.Sprite(spriteMaterial);
   marker.position.copy(getZodiacPosition(angle));
-
-  // ---------------------------------------------------------- Adjust sprite size for visibility
-  
   marker.scale.set(9999, 9999, 100);
-
-  // ------------------------------------------- Add marker 
-  
   scene.add(marker);
-
   return marker;
 });
 
-
-
-// --------------------------------------------------------------------------------------------------------    Create planets
-
-
+// -------------------------------------------------------------------------------------------------------- Create planets
 const planets = Object.keys(orbitalElementsData).map(name => {
   const geometry = new THREE.SphereGeometry(planetSizes[name] * PLANET_SIZE_MULTIPLIER, 32, 32);
   const material = new THREE.MeshStandardMaterial({ map: planetTextures[name] });
@@ -284,9 +239,7 @@ const planets = Object.keys(orbitalElementsData).map(name => {
   return { name, mesh };
 });
 
-// ----------------------------------------------------------------------------------           Orbit Lines
-
-
+// ---------------------------------------------------------------------------------- Orbit Lines
 function createOrbitLine(el, segments = 256) {
   const points = [];
   const { a, e, i, o, w } = el;
@@ -308,35 +261,22 @@ function createOrbitLine(el, segments = 256) {
 
 Object.entries(orbitalElementsData).forEach(([name, el]) => scene.add(createOrbitLine(el)));
 
-
-
-// 0------------------------------------------------------------------------------ Function to create asteroid belts in spherical coordinates (3D)
-
-
-
+// 0------------------------------------------------------------------------------ Asteroid belts
 function createAsteroidBelt(minRadius, maxRadius, count) {
   const positions = [];
   const sizes = [];
   const colors = [];
 
   for (let i = 0; i < count; i++) {
-    // -----------------------------------------------------------------------------------    Random radius within the specified range
     const radius = Math.random() * (maxRadius - minRadius) + minRadius;
-
-    // -----------------------------------------------------------------------          Random theta (azimuthal angle) from 0 to 2 * PI (full circle)
     const theta = Math.random() * Math.PI * 2;
-
-    // -----------------------------------------------        Random phi (polar angle) from 0 to PI (full sphere)
     const phi = Math.random() * Math.PI;
-
-    // ----------------------------------------------------- Convert to Cartesian coordinates (x, y, z) using spherical coordinates
     const x = radius * Math.sin(phi) * Math.cos(theta);
-    const y = radius * Math.cos(phi); // ------------------------------- `y` is directly determined by `phi` (polar angle)
+    const y = radius * Math.cos(phi);
     const z = radius * Math.sin(phi) * Math.sin(theta);
-
     positions.push(x, y, z);
-    sizes.push(Math.random() * 50 + 5); // ---------------------------------  Random size for each asteroid
-    colors.push(Math.random(), Math.random(), Math.random()); //--------------------------  Random color for each asteroid
+    sizes.push(Math.random() * 50 + 5);
+    colors.push(Math.random(), Math.random(), Math.random());
   }
 
   const particleGeometry = new THREE.BufferGeometry();
@@ -355,21 +295,12 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
   return new THREE.Points(particleGeometry, particleMaterial);
 }
 
-// -------------------------------------------------------  Inner asteroid belt (closer to the Sun)
-
-
-const innerAsteroidBelt = createAsteroidBelt(1200, 2222, 1111); // ------  Min radius, max radius, and number of asteroids
+const innerAsteroidBelt = createAsteroidBelt(1200, 2222, 1111);
 scene.add(innerAsteroidBelt);
-
-// -----------------------------------------------------------------------------  Outer asteroid belt (further out in the solar system)
-
-const outerAsteroidBelt = createAsteroidBelt(15000, 21000, 8888); // ---- Different radius and more asteroids
+const outerAsteroidBelt = createAsteroidBelt(15000, 21000, 8888);
 scene.add(outerAsteroidBelt);
 
-
-
-// ---------------------------------------------------------------------------------   Animation Loop
-
+// --------------------------------------------------------------------------------- Animation Loop
 let time = 0;
 function animate() {
   requestAnimationFrame(animate);
@@ -378,15 +309,12 @@ function animate() {
   planets.forEach(p => {
     const { a, e, i, o, w } = orbitalElementsData[p.name];
     const M = (time / 1000 + a) % (2 * Math.PI);
-    const E = M;  // ----------------------------------------------------------------------   Simplified for the example
-
+    const E = M;
     const x = a * (Math.cos(E) - e), y = a * Math.sqrt(1 - e * e) * Math.sin(E);
     const cosO = Math.cos(o), sinO = Math.sin(o), cosI = Math.cos(i), sinI = Math.sin(i), cosW = Math.cos(w), sinW = Math.sin(w);
-
     let x1 = x * cosW - y * sinW, y1 = x * sinW + y * cosW, z1 = 0;
     let x2 = x1, y2 = y1 * cosI - z1 * sinI, z2 = y1 * sinI + z1 * cosI;
     let x3 = x2 * cosO - y2 * sinO, y3 = x2 * sinO + y2 * cosO, z3 = z2;
-
     p.mesh.position.set(x3, z3, y3).multiplyScalar(BASE_SCALE);
   });
 
@@ -396,9 +324,7 @@ function animate() {
 
 animate();
 
-
 // ------------------------------------------------------------------------------- Handle window resizing
-
 window.addEventListener('resize', () => {
   camera.aspect = canvas.clientWidth / canvas.clientHeight;
   camera.updateProjectionMatrix();
