@@ -90,18 +90,6 @@ planetData.forEach(p => {
 });
 
 
-
-// ------------------------------------------------ --- Render planets table ---
-
-const table = document.getElementById('planetTable');
-table.innerHTML = '';
-planetData.forEach(p => {
-  const row = document.createElement('tr');
-  row.innerHTML = `<td>${p.name}</td><td>${p.longitude.toFixed(2)}°</td>`;
-  table.appendChild(row);
-});
-
-
 // ------------------------------   Tab logic
 
 document.querySelectorAll('.tab').forEach(btn => {
@@ -234,28 +222,24 @@ const getZodiacPosition = angle => new THREE.Vector3(radius * Math.cos(degToRad(
 
 const zodiacMarkers = Object.entries(zodiacPositions).map(([sign, angle]) => {
   const spriteMaterial = new THREE.SpriteMaterial({
-    map: zodiacTextures[sign], // ---------------  Make sure this texture is loaded correctly
-    map: zodiacTextures[sign],
+    map: zodiacTextures[sign], // Make sure this texture is loaded correctly
     transparent: true,
-     depthTest: false, // -------- Disable depth testing so symbols always appear on top... 
-    //             ------DOESNT WORK AS INTENDED - OVERLAPS PLANETS BLANKIGN THEM OUT WHILE MOVING CAMERA 
-    depthWrite: false   // Prevent sprite from writing to the depth buffer
+    depthTest: false,  // Prevent z-fighting
+    depthWrite: false  // Don't block other objects
   });
 
   const marker = new THREE.Sprite(spriteMaterial);
   marker.position.copy(getZodiacPosition(angle));
 
-  //   -------------------------------                 Adjust the scale of the sprite for visibility
-  
-  marker.scale.set(9999, 9999, 100); // Adjust this scale for better visibility
- 
-  marker.scale.set(9999, 9999, 100); // Adjust for visibility
+  // Adjust sprite size for visibility
+  marker.scale.set(9999, 9999, 100);
 
-  scene.add(marker); // Add the sprite to the scene
+  // Add marker 
   scene.add(marker);
 
   return marker;
 });
+
 
 
 // ------------------------------------------    Create planets
