@@ -233,13 +233,13 @@ const textureLoader = new THREE.TextureLoader();
 
 
 
-const ORBIT_SCALE = 18;   // scales the orbital distances (a)
+const ORBIT_SCALE = 180000;   // scales the orbital distances (a)
 
-const PLANET_SCALE = 2;   // scales the planet meshes
+const PLANET_SCALE = 20;   // scales the planet meshes
 
-const PLANET_SIZE_MULTIPLIER = 3; // dupe i think?
+const PLANET_SIZE_MULTIPLIER = 1; // dupe i think?
 
-const TIME_SPEED_FACTOR = 100; // system speed 
+const TIME_SPEED_FACTOR = 1; // system speed 
 
 const radius = 8888888;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
 
