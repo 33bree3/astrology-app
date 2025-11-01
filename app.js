@@ -212,11 +212,11 @@ const textureLoader = new THREE.TextureLoader();
 
 
 
-// ------------------------------------ RADIUS = 
+// ------------------------------------ RADIUS = scene radius - 
 
 
 
-const BASE_SCALE = 444, PLANET_SIZE_MULTIPLIER = 1 , TIME_SPEED_FACTOR = 100, radius = 9;
+const BASE_SCALE = 111, PLANET_SIZE_MULTIPLIER = 1 , TIME_SPEED_FACTOR = 100, radius = 8888;
 const degToRad = deg => deg * Math.PI / 180;
 
 
@@ -411,9 +411,9 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
 
 
 
-const innerAsteroidBelt = createAsteroidBelt(888, 1212, 4444);
+const innerAsteroidBelt = createAsteroidBelt(555, 888, 444);
 scene.add(innerAsteroidBelt);
-const outerAsteroidBelt = createAsteroidBelt(5555, 7777, 1212);
+const outerAsteroidBelt = createAsteroidBelt(1212, 1212, 121212);
 scene.add(outerAsteroidBelt);
 
 
