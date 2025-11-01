@@ -220,7 +220,7 @@ const planetTextures = {
 const sunGeometry = new THREE.SphereGeometry(888, 333, 333); // ------------- SIZING 
 
 const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, emissive: 0xffff00, emissiveIntensity: 1 });
-scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
+
 
 
 // ------------------------------------------------------------------- PLANET VARIABLES ----------------------------
@@ -313,7 +313,6 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
 
-
 // -------------------------------------------------- Lights
 
 const pl = new THREE.PointLight(0xffffff, 2);
@@ -359,6 +358,7 @@ const planets = Object.keys(orbitalElementsData).map(name => {
   const material = new THREE.MeshStandardMaterial({ map: planetTextures[name] });
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
+  scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
   return { name, mesh };
 });
 
