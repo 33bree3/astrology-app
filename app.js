@@ -117,7 +117,7 @@ function longitudeToZodiac(lonDeg) {
 }
 
 
-// ------------------ Function to update planet longitudes
+// --------- ---------------------------------------------------------- --------- Function to update planet longitudes
 
 function updatePlanetLongitudes(selectedDate = null) {
   const date = selectedDate ? new Date(selectedDate) : new Date(dateInput?.value || new Date());
@@ -140,10 +140,14 @@ function updatePlanetLongitudes(selectedDate = null) {
   });
 }
 
-// ------------------ Initial calculation for today
+// ----------------------------------------------------------------- -------- Initial calculation for today
+
 updatePlanetLongitudes();
 
-// ------------------ Update on button click
+
+// ------------------------------------------------------------------------------ Update on button click
+
+
 if (calcButton) {
   calcButton.addEventListener('click', () => {
     const selectedDate = dateInput?.value; // format: "YYYY-MM-DD"
@@ -151,55 +155,20 @@ if (calcButton) {
   });
 }
 
-// ----------------------------------- update in real-time if no date is selected
-setInterval(() => {
-  if (!dateInput?.value) updatePlanetLongitudes();
-}, 1000);
-
-
-
-// ------------------ Initial calculation for today
-updatePlanetLongitudes();
-
-// ------------------ Update on button click
-if (calcButton) {
-  calcButton.addEventListener('click', () => {
-    const selectedDate = dateInput?.value; // format: "YYYY-MM-DD"
-    if (selectedDate) updatePlanetLongitudes(selectedDate);
-  });
-}
-
-// ------------------ Optional: update in real-time if no date is selected
-setInterval(() => {
-  if (!dateInput?.value) updatePlanetLongitudes();
-}, 1000);
-
-
-// ------------------------------------------------- initial calculation for today
-
-updatePlanetLongitudes();
-
-// -------------------------------------------------------- update on button click
-
-if (calcButton) {
-  calcButton.addEventListener('click', () => {
-    const selectedDate = dateInput.value; // ------------------------ format: "YYYY-MM-DD"
-    if (selectedDate) updatePlanetLongitudes(selectedDate);
-  });
-}
-
-// ----------------------------------------------------- update in real time if no date is selected
-
+// ------------------ Update in real-time if no date is selected
 
 setInterval(() => {
-  // Only update if dateInput exists and no date is selected
   if (dateInput && !dateInput.value) {
     updatePlanetLongitudes();
   }
 }, 1000);
 
 
-// ------------------------------------------------------------   Tab logic
+
+// -------------------------------------------------------------------------------------   Tab logic------------------------
+
+
+
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
@@ -221,71 +190,10 @@ const textureLoader = new THREE.TextureLoader();
 
 
 
-// ----------------------------------------------------------------------  PLANET SIZING CONSTANTS  AND SPEED ______________________
+// ----------------------------------------------------------------------  PLANET SYSTEM ----------------------______________________
 
 
 
-
-// ------------------------------------------------------------ rHELPER --------------------------
-
-
-
-
-
-
-const ORBIT_SCALE = 333;   // scales the orbital distances (a)
-
-const PLANET_SCALE = 20;   // scales the planet meshes
-
-const PLANET_SIZE_MULTIPLIER = 1; // dupe i think?
-
-const TIME_SPEED_FACTOR = 100; // system speed 
-
-const radius = 3333;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
-
-// ---------------------------------------------------- Degree to Radian conversion
-const degToRad = deg => deg * Math.PI / 180;
-const toRad = degToRad; 
-
-
-
-// ----------------------------------------------------   Orbital elements for each planet
-
-const orbitalElementsData = {
-  Mercury: { a: 0.39, e: 0.2056, i: 7.00, o: 48.331, w: 29.124 },
-  Venus:   { a: 0.72, e: 0.0068, i: 3.39, o: 76.680, w: 54.884 },
-  Earth:   { a: 1.00, e: 0.0167, i: 0.00, o: 0.000,  w: 114.207 },
-  Mars:    { a: 1.52, e: 0.0934, i: 1.85, o: 49.558, w: 286.502 },
-  Jupiter: { a: 5.20, e: 0.0484, i: 1.30, o: 100.464, w: 273.867 },
-  Saturn:  { a: 9.54, e: 0.0541, i: 2.49, o: 113.665, w: 339.392 },
-  Uranus:  { a: 19.19, e: 0.0472, i: 0.77, o: 74.006, w: 96.998 },
-  Neptune: { a: 30.07, e: 0.0086, i: 1.77, o: 131.784, w: 272.846 }
-};
-
-
-
-
-
-
-// ------------------------------------------------------------------- Planet sizes in km
-
-
-const planetSizes = { Mercury: 69, Venus: 101, Earth: 123, Mars: 72, Jupiter: 369, Saturn: 297, Uranus: 201, Neptune: 154 };
-
-
-
-
-// ----------------------------------------------------------------------- ZODIAC SIGNS -------------------------------------
-
-
-
-// ---------------------------- Load textures for zodiac signs
-
-const zodiacTextures = {};
-Object.keys(zodiacPositions).forEach(sign => {
-  zodiacTextures[sign] = textureLoader.load(`constellations/${sign.toLowerCase()}.png`);
-});
-zodiacTextures['Sagittarius'] = textureLoader.load('constellations/sag.png');
 
 // --------------------------------------------------- PLANET IMAGES
 
@@ -305,8 +213,90 @@ const planetTextures = {
 };
 
 
+// --------------------------------------------------------------------------------------SUN MESH ------
 
-// ---------------------------------------------- Set up scene, camera, renderer
+
+
+const sunGeometry = new THREE.SphereGeometry(888, 333, 333); // ------------- SIZING 
+
+const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, emissive: 0xffff00, emissiveIntensity: 1 });
+scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
+
+
+// ------------------------------------------------------------------- PLANET VARIABLES ----------------------------
+
+const ORBIT_SCALE = 333;   // scales the orbital distances (a)
+
+const PLANET_SCALE = 20;   // scales the planet meshes
+
+const PLANET_SIZE_MULTIPLIER = 1; // dupe i think?
+
+const TIME_SPEED_FACTOR = 100; // system speed 
+
+const radius = 3333;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
+
+
+// ------------------------------------------------------------------------------- Degree to Radian conversion----------- 
+const degToRad = deg => deg * Math.PI / 180;
+const toRad = degToRad; 
+
+
+
+// -----------------------------------------------------------   Orbital elements for each planet-------------------
+
+
+const orbitalElementsData = {
+  Mercury: { a: 0.39, e: 0.2056, i: 7.00, o: 48.331, w: 29.124 },
+  Venus:   { a: 0.72, e: 0.0068, i: 3.39, o: 76.680, w: 54.884 },
+  Earth:   { a: 1.00, e: 0.0167, i: 0.00, o: 0.000,  w: 114.207 },
+  Mars:    { a: 1.52, e: 0.0934, i: 1.85, o: 49.558, w: 286.502 },
+  Jupiter: { a: 5.20, e: 0.0484, i: 1.30, o: 100.464, w: 273.867 },
+  Saturn:  { a: 9.54, e: 0.0541, i: 2.49, o: 113.665, w: 339.392 },
+  Uranus:  { a: 19.19, e: 0.0472, i: 0.77, o: 74.006, w: 96.998 },
+  Neptune: { a: 30.07, e: 0.0086, i: 1.77, o: 131.784, w: 272.846 }
+};
+
+
+
+
+// ------------------------------------------------------------------- Planet sizes in km
+
+
+
+
+const planetSizes = { Mercury: 69, Venus: 101, Earth: 123, Mars: 72, Jupiter: 369, Saturn: 297, Uranus: 201, Neptune: 154 };
+
+
+
+
+
+
+// ----------------------------------------------------------------------- ZODIAC SIGNS -------------------------------------
+
+
+
+
+// ---------------------------- Load textures for zodiac signs
+
+
+
+const zodiacTextures = {};
+Object.keys(zodiacPositions).forEach(sign => {
+  zodiacTextures[sign] = textureLoader.load(`constellations/${sign.toLowerCase()}.png`);
+});
+zodiacTextures['Sagittarius'] = textureLoader.load('constellations/sag.png');
+
+
+
+
+
+
+
+// ----------------------------------------------               Set up scene, camera, renderer   -------------------------------------------
+
+
+
+
 
 
 const canvas = document.getElementById('chartCanvas');
@@ -334,13 +324,6 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 
 
 
-// --------------------------------------------------------------------------------------SUN MESH ------
-
-
-
-const sunGeometry = new THREE.SphereGeometry(888, 333, 333);
-const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, emissive: 0xffff00, emissiveIntensity: 1 });
-scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
 
 
 
@@ -350,8 +333,7 @@ scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
 // ------------------------------------------------------------ Zodiac markers
 
 
-
-const getZodiacPosition = angle => new THREE.Vector3(radius * Math.cos(degToRad(angle)), 0, radius * Math.sin(degToRad(angle)));
+ const getZodiacPosition = angle => new THREE.Vector3(radius * Math.cos(degToRad(angle)), 0, radius * Math.sin(degToRad(angle)));
 
 const zodiacMarkers = Object.entries(zodiacPositions).map(([sign, angle]) => {
   const spriteMaterial = new THREE.SpriteMaterial({
