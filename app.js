@@ -251,8 +251,9 @@ const orbitalElementsData = {
 };
 
 // helper 
-
+const BASE_SCALE = 40;
 const toRad = deg => (deg * Math.PI) / 180;
+
 
 
 // ------------------------------------------------------------------- Planet sizes in km
@@ -431,9 +432,9 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
 
 
 
-const innerAsteroidBelt = createAsteroidBelt(1212, 1818, 4444);
+const innerAsteroidBelt = createAsteroidBelt(1212, 1818, 1212);
 scene.add(innerAsteroidBelt);
-const outerAsteroidBelt = createAsteroidBelt(22222, 36363, 121212);
+const outerAsteroidBelt = createAsteroidBelt(22222, 363633, 44444);
 scene.add(outerAsteroidBelt);
 
 
