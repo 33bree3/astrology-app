@@ -343,7 +343,7 @@ const zodiacMarkers = Object.entries(zodiacPositions).map(([sign, angle]) => {
   });
   const marker = new THREE.Sprite(spriteMaterial);
   marker.position.copy(getZodiacPosition(angle));
-  marker.scale.set(9999, 9999, 100);
+  marker.scale.set(0, 0, 0); // ----------------------------- // VARIABLE 
   scene.add(marker);
   return marker;
 });
