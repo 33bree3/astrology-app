@@ -243,8 +243,9 @@ const TIME_SPEED_FACTOR = 100; // system speed
 
 const radius = 8888888;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
 
-
+// ---------------------------------------------------- Degree to Radian conversion
 const degToRad = deg => deg * Math.PI / 180;
+const toRad = degToRad; 
 
 
 
