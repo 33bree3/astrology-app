@@ -216,7 +216,7 @@ const textureLoader = new THREE.TextureLoader();
 
 
 
-const BASE_SCALE = 111, PLANET_SIZE_MULTIPLIER = 1 , TIME_SPEED_FACTOR = 100, radius = 8888;
+const BASE_SCALE = 1111, PLANET_SIZE_MULTIPLIER = 1 , TIME_SPEED_FACTOR = 1, radius = 888888888;
 const degToRad = deg => deg * Math.PI / 180;
 
 
@@ -294,7 +294,7 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 
 
 
-const sunGeometry = new THREE.SphereGeometry(333, 333, 333);
+const sunGeometry = new THREE.SphereGeometry(3333, 3333, 3333);
 const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, emissive: 0xffff00, emissiveIntensity: 1 });
 scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
 
@@ -411,9 +411,9 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
 
 
 
-const innerAsteroidBelt = createAsteroidBelt(555, 888, 444);
+const innerAsteroidBelt = createAsteroidBelt(1212, 1818, 4444);
 scene.add(innerAsteroidBelt);
-const outerAsteroidBelt = createAsteroidBelt(1212, 1212, 121212);
+const outerAsteroidBelt = createAsteroidBelt(22222, 36363, 121212);
 scene.add(outerAsteroidBelt);
 
 
