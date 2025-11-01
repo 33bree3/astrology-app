@@ -220,20 +220,31 @@ const textureLoader = new THREE.TextureLoader();
 
 
 
+
 // ----------------------------------------------------------------------  PLANET SIZING CONSTANTS  AND SPEED ______________________
 
 
 
 
-
-// ------------------------------------ RADIUS = scene radius - 
-
+// ------------------------------------------------------------ rHELPER --------------------------
 
 
-const BASE_SCALE = 11111, PLANET_SIZE_MULTIPLIER = 3 , TIME_SPEED_FACTOR = 100, radius = 8888888;
+
+
+
+
+const ORBIT_SCALE = 18;   // scales the orbital distances (a)
+
+const PLANET_SCALE = 2;   // scales the planet meshes
+
+const PLANET_SIZE_MULTIPLIER = 3; // dupe i think?
+
+const TIME_SPEED_FACTOR = 100; // system speed 
+
+const radius = 8888888;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
+
+
 const degToRad = deg => deg * Math.PI / 180;
-
-
 
 
 
@@ -250,9 +261,8 @@ const orbitalElementsData = {
   Neptune: { a: 30.07, e: 0.0086, i: 1.77, o: 131.784, w: 272.846 }
 };
 
-// helper 
 
-const toRad = deg => (deg * Math.PI) / 180;
+
 
 
 
@@ -260,6 +270,11 @@ const toRad = deg => (deg * Math.PI) / 180;
 
 
 const planetSizes = { Mercury: 69, Venus: 101, Earth: 123, Mars: 72, Jupiter: 369, Saturn: 297, Uranus: 201, Neptune: 154 };
+
+
+
+
+// ----------------------------------------------------------------------- ZODIAC SIGNS -------------------------------------
 
 
 
@@ -272,6 +287,8 @@ Object.keys(zodiacPositions).forEach(sign => {
 zodiacTextures['Sagittarius'] = textureLoader.load('constellations/sag.png');
 
 // --------------------------------------------------- PLANET IMAGES
+
+
 const planetTextures = {
   Mercury: textureLoader.load('planets/mercury.jpg'),
   Venus: textureLoader.load('planets/venus.jpg'),
@@ -286,7 +303,11 @@ const planetTextures = {
   Asteroid: textureLoader.load('images/rock.png')
 };
 
+
+
 // ---------------------------------------------- Set up scene, camera, renderer
+
+
 const canvas = document.getElementById('chartCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -300,7 +321,10 @@ camera.position.set(0, 5000, 10000);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
+
+
 // -------------------------------------------------- Lights
+
 const pl = new THREE.PointLight(0xffffff, 2);
 pl.position.set(0, 5000, 10000);
 scene.add(pl);
@@ -371,7 +395,8 @@ const i = toRad(el.i), o = toRad(el.o), w = toRad(el.w);
     let x2 = x1, y2 = y1 * cosI - z1 * sinI, z2 = y1 * sinI + z1 * cosI;
     let x3 = x2 * cosO - y2 * sinO, y3 = x2 * sinO + y2 * cosO, z3 = z2;
 
-    points.push(new THREE.Vector3(x3, z3, y3).multiplyScalar(BASE_SCALE));
+    points.push(new THREE.Vector3(x3, z3, y3).multiplyScalar(ORBIT_SCALE));
+
   }
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
   return new THREE.LineLoop(geometry, new THREE.LineBasicMaterial({ color: 0xffffff }));
@@ -461,7 +486,8 @@ const w = toRad(orbitalElementsData[p.name].w);
     let x1 = x * cosW - y * sinW, y1 = x * sinW + y * cosW, z1 = 0;
     let x2 = x1, y2 = y1 * cosI - z1 * sinI, z2 = y1 * sinI + z1 * cosI;
     let x3 = x2 * cosO - y2 * sinO, y3 = x2 * sinO + y2 * cosO, z3 = z2;
-    p.mesh.position.set(x3, z3, y3).multiplyScalar(BASE_SCALE);
+   p.mesh.position.set(x3, z3, y3).multiplyScalar(ORBIT_SCALE);
+
   });
 
   controls.update();
