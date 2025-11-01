@@ -216,7 +216,7 @@ const textureLoader = new THREE.TextureLoader();
 
 
 
-const BASE_SCALE = 2222, PLANET_SIZE_MULTIPLIER = 8 , TIME_SPEED_FACTOR = 1, radius = 10000000;
+const BASE_SCALE = 2222, PLANET_SIZE_MULTIPLIER = 3 , TIME_SPEED_FACTOR = 10, radius = 10000000;
 const degToRad = deg => deg * Math.PI / 180;
 
 
