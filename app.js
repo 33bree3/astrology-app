@@ -233,15 +233,15 @@ const textureLoader = new THREE.TextureLoader();
 
 
 
-const ORBIT_SCALE = 180000;   // scales the orbital distances (a)
+const ORBIT_SCALE = 333;   // scales the orbital distances (a)
 
 const PLANET_SCALE = 20;   // scales the planet meshes
 
 const PLANET_SIZE_MULTIPLIER = 1; // dupe i think?
 
-const TIME_SPEED_FACTOR = 1; // system speed 
+const TIME_SPEED_FACTOR = 100; // system speed 
 
-const radius = 8888888;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
+const radius = 3333;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
 
 // ---------------------------------------------------- Degree to Radian conversion
 const degToRad = deg => deg * Math.PI / 180;
