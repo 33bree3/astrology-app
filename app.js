@@ -227,13 +227,13 @@ const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, em
 
 const ORBIT_SCALE = 333;   // scales the orbital distances (a)
 
-const PLANET_SCALE = 20;   // scales the planet meshes
+const PLANET_SCALE = 21;   // scales the planet meshes
 
-const PLANET_SIZE_MULTIPLIER = 1; // dupe i think?
+const PLANET_SIZE_MULTIPLIER = 0.963; // dupe i think?
 
-const TIME_SPEED_FACTOR = 100; // system speed 
+const TIME_SPEED_FACTOR = 0; // system speed 
 
-const radius = 3333;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
+const radius = 333333;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
 
 
 // ------------------------------------------------------------------------------- Degree to Radian conversion----------- 
@@ -440,9 +440,9 @@ function createAsteroidBelt(minRadius, maxRadius, count) {
 
 
 
-const innerAsteroidBelt = createAsteroidBelt(1212, 1818, 1212);
+const innerAsteroidBelt = createAsteroidBelt(18181, 18181, 12121);
 scene.add(innerAsteroidBelt);
-const outerAsteroidBelt = createAsteroidBelt(22222, 363633, 44444);
+const outerAsteroidBelt = createAsteroidBelt(22222, 3636333, 44444);
 scene.add(outerAsteroidBelt);
 
 
