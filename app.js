@@ -2,6 +2,7 @@ import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
 
 // ----------------------------------------------------  Imports from astronomia ---
+
 import * as vsopEarth   from './astronomia/data/vsop87Bearth.js';
 import * as vsopMars    from './astronomia/data/vsop87Bmars.js';
 import * as vsopMercury from './astronomia/data/vsop87Bmercury.js';
@@ -11,7 +12,11 @@ import * as vsopSaturn  from './astronomia/data/vsop87Bsaturn.js';
 import * as vsopUranus  from './astronomia/data/vsop87Buranus.js';
 import * as vsopNeptune from './astronomia/data/vsop87Bneptune.js';
 
+
+
 // ---------------------------------------------------------- VSOP helper functions ----------
+
+
 function vsopPosition(vsopModule, t) {
   const data = (vsopModule && (vsopModule.default || vsopModule)) || {};
   const Lset = data.L || {};
@@ -57,16 +62,25 @@ function geocentricLongitude(vsopPlanetModule, vsopEarthModule, t) {
   const x = p.x - e.x;
   const y = p.y - e.y;
   return ((Math.atan2(y, x) * 180 / Math.PI) % 360 + 360) % 360;
+
+  
 }
 
 // ---------------------------------------------------------- PLANET MODULES ----------
+
+
 const planetModules = {
   Mercury: vsopMercury, Venus: vsopVenus, Earth: vsopEarth, Mars: vsopMars,
   Jupiter: vsopJupiter, Saturn: vsopSaturn, Uranus: vsopUranus, Neptune: vsopNeptune
+
+
+  
 };
 
 
 // ---------------------------------------------------------- DATE INPUT AND UPDATE ----------
+
+
 
 
 
@@ -225,17 +239,21 @@ const degToRad = deg => deg * Math.PI / 180;
 
 // ----------------------------------------------------   Orbital elements for each planet
 
-
 const orbitalElementsData = {
-  Mercury: { a: 0.5555, e: 0.2056, i: 0.36, o: 48.331, w: 29.124 },
-  Venus: { a: 0.7777, e: 0.0068, i: 0.27, o: 76.680, w: 54.884 },
-  Earth: { a: 1.1111, e: 0.0167, i: 0.00, o: 0.000, w: 114.207 },
-  Mars: { a: 1.5555, e: 0.0934, i: 0.18, o: 49.558, w: 286.502 },
-  Jupiter: { a: 2.0000, e: 0.0484, i: 0.15, o: 100.464, w: 273.867 },
-  Saturn: { a: 2.5555, e: 0.0541, i: 0.24, o: 113.665, w: 339.392 },
-  Uranus: { a: 3.1111, e: 0.0472, i: 0.09, o: 74.006, w: 96.998 },
-  Neptune: { a: 3.5555, e: 0.0086, i: 0.18, o: 131.784, w: 272.846 }
+  Mercury: { a: 0.39, e: 0.2056, i: 7.00, o: 48.331, w: 29.124 },
+  Venus:   { a: 0.72, e: 0.0068, i: 3.39, o: 76.680, w: 54.884 },
+  Earth:   { a: 1.00, e: 0.0167, i: 0.00, o: 0.000,  w: 114.207 },
+  Mars:    { a: 1.52, e: 0.0934, i: 1.85, o: 49.558, w: 286.502 },
+  Jupiter: { a: 5.20, e: 0.0484, i: 1.30, o: 100.464, w: 273.867 },
+  Saturn:  { a: 9.54, e: 0.0541, i: 2.49, o: 113.665, w: 339.392 },
+  Uranus:  { a: 19.19, e: 0.0472, i: 0.77, o: 74.006, w: 96.998 },
+  Neptune: { a: 30.07, e: 0.0086, i: 1.77, o: 131.784, w: 272.846 }
 };
+
+// helper 
+
+const toRad = deg => (deg * Math.PI) / 180;
+
 
 // ------------------------------------------------------------------- Planet sizes in km
 
@@ -339,7 +357,9 @@ const planets = Object.keys(orbitalElementsData).map(name => {
 // ---------------------------------------------------------------------------------- Orbit Lines
 function createOrbitLine(el, segments = 256) {
   const points = [];
-  const { a, e, i, o, w } = el;
+  const { a, e } = el;
+const i = toRad(el.i), o = toRad(el.o), w = toRad(el.w);
+
   const b = a * Math.sqrt(1 - e * e);
 
   for (let t = 0; t <= 2 * Math.PI; t += (2 * Math.PI) / segments) {
@@ -428,7 +448,11 @@ function animate() {
   time += TIME_SPEED_FACTOR;
 
   planets.forEach(p => {
-    const { a, e, i, o, w } = orbitalElementsData[p.name];
+   const { a, e } = orbitalElementsData[p.name];
+const i = toRad(orbitalElementsData[p.name].i);
+const o = toRad(orbitalElementsData[p.name].o);
+const w = toRad(orbitalElementsData[p.name].w);
+
     const M = (time / 1000 + a) % (2 * Math.PI);
     const E = M;
     const x = a * (Math.cos(E) - e), y = a * Math.sqrt(1 - e * e) * Math.sin(E);
