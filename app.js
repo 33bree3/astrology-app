@@ -216,7 +216,7 @@ const textureLoader = new THREE.TextureLoader();
 
 
 
-const BASE_SCALE = 777, PLANET_SIZE_MULTIPLIER = 1 , TIME_SPEED_FACTOR = 1, radius = 999900000;
+const BASE_SCALE = 777, PLANET_SIZE_MULTIPLIER = 1 , TIME_SPEED_FACTOR = 100, radius = 99990000000;
 const degToRad = deg => deg * Math.PI / 180;
 
 
@@ -294,7 +294,7 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 
 
 
-const sunGeometry = new THREE.SphereGeometry(333, 333, 333);
+const sunGeometry = new THREE.SphereGeometry(444, 333, 333);
 const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, emissive: 0xffff00, emissiveIntensity: 1 });
 scene.add(new THREE.Mesh(sunGeometry, sunMaterial));
 
