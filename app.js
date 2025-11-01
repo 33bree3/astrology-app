@@ -225,7 +225,7 @@ const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, em
 
 // ------------------------------------------------------------------- PLANET VARIABLES ----------------------------
 
-const ORBIT_SCALE = 8888;   // scales the orbital distances (a)
+const ORBIT_SCALE = 3333;   // scales the orbital distances (a)
 
 const PLANET_SCALE = 21;   // scales the planet meshes
 
