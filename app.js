@@ -225,13 +225,13 @@ const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, em
 
 // ------------------------------------------------------------------- PLANET VARIABLES ----------------------------
 
-const ORBIT_SCALE = 111;   // scales the orbital distances (a)
+const ORBIT_SCALE = 1111;   // scales the orbital distances (a)
 
-const PLANET_SCALE = 9;   // scales the planet meshes
+const PLANET_SCALE = 1;   // scales the planet meshes
 
 const PLANET_SIZE_MULTIPLIER = 0.963; // dupe i think?
 
-const TIME_SPEED_FACTOR = 0; // system speed 
+const TIME_SPEED_FACTOR = 10; // system speed 
 
 const radius = 3333;    // SCENE RADIUS - CHECK RATIOS W ASTEROID BELT 
 
