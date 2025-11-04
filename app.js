@@ -217,7 +217,7 @@ const planetTextures = {
 
 
 
-const sunGeometry = new THREE.SphereGeometry(333, 333, 333); // ------------- SIZING 
+const sunGeometry = new THREE.SphereGeometry(111, 111, 111); // ------------- SIZING 
 
 const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, emissive: 0xffff00, emissiveIntensity: 1 });
 
@@ -225,9 +225,9 @@ const sunMaterial = new THREE.MeshStandardMaterial({ map: planetTextures.Sun, em
 
 // ------------------------------------------------------------------- PLANET VARIABLES ----------------------------
 
-const ORBIT_SCALE = 777;   // scales the orbital distances (a)
+const ORBIT_SCALE = 111;   // scales the orbital distances (a)
 
-const PLANET_SCALE = 21;   // scales the planet meshes
+const PLANET_SCALE = 18;   // scales the planet meshes
 
 const PLANET_SIZE_MULTIPLIER = 0.963; // dupe i think?
 
